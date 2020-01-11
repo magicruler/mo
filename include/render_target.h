@@ -35,9 +35,9 @@ public:
             }
 
             texture.SetData2D(width, height, internalFormat, GL_RGBA, dataType, 0);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture, 0);
-            colorAttachments.push_back(texture);
+            
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture.AsID(), 0);
+            colorAttachments.push_back(std::move(texture));
         }
 
         if (hasDepth)
@@ -50,25 +50,41 @@ public:
             texture.isMipmapped = false;
 
             texture.SetData2D(width, height, GL_DEPTH_STENCIL, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
 
-            depthAttachment = texture;
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture.AsID(), 0);
+            depthAttachment = std::move(texture);
         }
 
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
         {
+            switch (status)
+            {
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                spdlog::error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+                spdlog::error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                spdlog::error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_UNSUPPORTED:
+                spdlog::error("GL_FRAMEBUFFER_UNSUPPORTED");
+                break;
+            }
             spdlog::error("Framebuffer Creation Error");
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    Texture *getDepthTexture()
+    Texture *GetDepthTexture()
     {
         return &depthAttachment;
     }
 
-    Texture *getAttachmentTexture(unsigned int index)
+    Texture *GetAttachmentTexture(unsigned int index)
     {
         if (index >= colorAttachments.size())
         {
@@ -79,6 +95,32 @@ public:
         {
             return &colorAttachments[index];
         }
+    }
+
+    void Resize(unsigned int width, unsigned int height)
+    {
+        this->width = width;
+        this->height = height;
+
+        for (unsigned int i = 0; i < colorAttachments.size(); ++i)
+        {
+            colorAttachments[i].Resize(width, height);
+        }
+
+        if (hasDepth)
+        {
+            depthAttachment.Resize(width, height);
+        }
+    }
+
+    void Bind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, ID);
+    }
+
+    void Unbind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
 private:

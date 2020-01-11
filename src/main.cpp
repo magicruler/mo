@@ -89,6 +89,8 @@ int main(int, char **args)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     static bool p_open = true;
 
+    RenderTarget renderTarget = RenderTarget(300, 300);
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -97,6 +99,13 @@ int main(int, char **args)
 
         glfwPollEvents();
 
+        // Test Frame Buffer Rendering
+        renderTarget.Bind();
+        glViewport(0, 0, 300, 300);
+        glClearColor(1.0f, clear_color.y, clear_color.z, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+        renderTarget.Unbind();
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -104,7 +113,12 @@ int main(int, char **args)
 
         ImGui::ShowDemoWindow(&p_open);
 
+        ImGui::Begin("Test");
+        ImGui::Image((ImTextureID)renderTarget.GetAttachmentTexture(0)->AsID(), ImVec2(300, 300));
+        ImGui::End();
+
         ImGui::Render();
+
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
