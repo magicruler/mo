@@ -68,6 +68,11 @@ public:
         }
     }
 
+protected:
+    glm::vec2 contentMin;
+    glm::vec2 contentMax;
+    glm::vec2 contentSize;
+
 private:
     virtual void Init()
     {
@@ -93,10 +98,6 @@ private:
 
 private:
     std::string title;
-
-    glm::vec2 contentMin;
-    glm::vec2 contentMax;
-    glm::vec2 contentSize;
 
     unsigned int initialWidth;
     unsigned int initialHeight;

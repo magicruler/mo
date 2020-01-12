@@ -10,7 +10,74 @@ public:
         : dataType(dataType),
           width(width),
           height(height),
-          hasDepth(hasDepth)
+          hasDepth(hasDepth),
+          attachmentCount(attachmentCount)
+    {
+        Init();
+    }
+
+    RenderTarget(const RenderTarget &other)
+    {
+        ID = other.ID;
+        dataType = other.dataType;
+        width = other.width;
+        height = other.height;
+        hasDepth = other.hasDepth;
+        depthAttachment = other.depthAttachment;
+        colorAttachments = other.colorAttachments;
+    }
+
+    ~RenderTarget()
+    {
+        glDeleteFramebuffers(1, &ID);
+        spdlog::info("Framebuffer Destroy Compelete");
+    }
+
+    std::shared_ptr<Texture> GetDepthTexture() const
+    {
+        return depthAttachment;
+    }
+
+    std::shared_ptr<Texture> GetAttachmentTexture(unsigned int index) const
+    {
+        if (index >= colorAttachments.size())
+        {
+            spdlog::info("Try to get a non-exist attachment with index {}", index);
+            return nullptr;
+        }
+        else
+        {
+            return colorAttachments[index];
+        }
+    }
+
+    void Resize(unsigned int width, unsigned int height)
+    {
+        spdlog::info("Render Target Resize To {}, {}", width, height);
+        this->width = width;
+        this->height = height;
+
+        glDeleteFramebuffers(1, &ID);
+        Init();
+    }
+
+    void Bind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, ID);
+    }
+
+    void Unbind()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    glm::vec2 GetSize() const
+    {
+        return glm::vec2(width, height);
+    }
+
+private:
+    void Init()
     {
         glGenFramebuffers(1, &ID);
         glBindFramebuffer(GL_FRAMEBUFFER, ID);
@@ -81,72 +148,11 @@ public:
         spdlog::info("Framebuffer Creation Compelete");
     }
 
-    RenderTarget(const RenderTarget &other)
-    {
-        ID = other.ID;
-        dataType = other.dataType;
-        width = other.width;
-        height = other.height;
-        hasDepth = other.hasDepth;
-        depthAttachment = other.depthAttachment;
-        colorAttachments = other.colorAttachments;
-    }
-
-    ~RenderTarget()
-    {
-        glDeleteFramebuffers(1, &ID);
-        spdlog::info("Framebuffer Destroy Compelete");
-    }
-
-    std::shared_ptr<Texture> GetDepthTexture() const
-    {
-        return depthAttachment;
-    }
-
-    std::shared_ptr<Texture> GetAttachmentTexture(unsigned int index) const
-    {
-        if (index >= colorAttachments.size())
-        {
-            spdlog::info("Try to get a non-exist attachment with index {}", index);
-            return nullptr;
-        }
-        else
-        {
-            return colorAttachments[index];
-        }
-    }
-
-    void Resize(unsigned int width, unsigned int height)
-    {
-        this->width = width;
-        this->height = height;
-
-        for (unsigned int i = 0; i < colorAttachments.size(); ++i)
-        {
-            colorAttachments[i]->Resize(width, height);
-        }
-
-        if (hasDepth)
-        {
-            depthAttachment->Resize(width, height);
-        }
-    }
-
-    void Bind()
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, ID);
-    }
-
-    void Unbind()
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-private:
     int dataType;
     unsigned int width;
     unsigned int height;
     bool hasDepth;
+    unsigned int attachmentCount;
     std::shared_ptr<Texture> depthAttachment;
     std::vector<std::shared_ptr<Texture>> colorAttachments;
     unsigned int ID;

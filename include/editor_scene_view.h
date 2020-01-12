@@ -16,7 +16,12 @@ public:
 private:
     void OnIMGUI() override
     {
-        ImGui::Image((ImTextureID)sceneViewRenderTarget->GetAttachmentTexture(0)->AsID(), ImVec2(300, 300));
+        ImGui::Image((ImTextureID)sceneViewRenderTarget->GetAttachmentTexture(0)->AsID(), sceneViewRenderTarget->GetSize());
+    }
+
+    void OnResize() override
+    {
+        sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
     }
 
     std::shared_ptr<RenderTarget> sceneViewRenderTarget;

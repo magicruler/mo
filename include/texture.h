@@ -10,58 +10,12 @@ public:
     {
     }
 
-    // Texture(Texture &&other)
-    // {
-    //     spdlog::info("move constructor happen");
-    //     width = other.width;
-    //     height = other.height;
-    //     depth = other.depth;
-    //     ID = other.ID;
-    //     target = other.target;
-    //     format = other.format;
-    //     internalFormat = other.internalFormat;
-    //     dataType = other.dataType;
-    //     isMipmapped = other.isMipmapped;
-    //     filterMin = other.filterMin;
-    //     filterMag = other.filterMag;
-    //     wrapR = other.wrapR;
-    //     wrapS = other.wrapS;
-    //     wrapT = other.wrapT;
-    //     created = other.created;
-
-    //     other.created = false;
-    // }
-
-    // Texture& operator=(Texture&& rhs)
-    // {
-    //     spdlog::info("move assignment happen");
-    //     width = rhs.width;
-    //     height = rhs.height;
-    //     depth = rhs.depth;
-    //     ID = rhs.ID;
-    //     target = rhs.target;
-    //     format = rhs.format;
-    //     internalFormat = rhs.internalFormat;
-    //     dataType = rhs.dataType;
-    //     isMipmapped = rhs.isMipmapped;
-    //     filterMin = rhs.filterMin;
-    //     filterMag = rhs.filterMag;
-    //     wrapR = rhs.wrapR;
-    //     wrapS = rhs.wrapS;
-    //     wrapT = rhs.wrapT;
-    //     created = rhs.created;
-
-    //     rhs.created = false;
-        
-    //     return *this;
-    // }
-
     ~Texture()
     {
         if (created)
         {
             spdlog::info("texture destroyed");
-            //glDeleteTextures(1, &ID);
+            glDeleteTextures(1, &ID);
         }
     }
 
