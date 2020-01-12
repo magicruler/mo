@@ -13,6 +13,9 @@
 #include "texture.h"
 #include "render_target.h"
 
+#include "editor_window.h"
+#include "editor_window_system.h"
+
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
 
@@ -89,7 +92,12 @@ int main(int, char **args)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     static bool p_open = true;
 
-    RenderTarget renderTarget = RenderTarget(300, 300);
+    auto renderTarget = std::make_shared<RenderTarget>(300, 300);
+
+    // EditorWindow testWindow = EditorWindow(800, 600, true, "Hello!");
+    EditorWindowSystem::Init();
+    auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
+    editorSceneView->SetSceneViewRenderTarget(renderTarget);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -100,11 +108,11 @@ int main(int, char **args)
         glfwPollEvents();
 
         // Test Frame Buffer Rendering
-        renderTarget.Bind();
+        renderTarget->Bind();
         glViewport(0, 0, 300, 300);
         glClearColor(1.0f, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        renderTarget.Unbind();
+        renderTarget->Unbind();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -113,9 +121,7 @@ int main(int, char **args)
 
         ImGui::ShowDemoWindow(&p_open);
 
-        ImGui::Begin("Test");
-        ImGui::Image((ImTextureID)renderTarget.GetAttachmentTexture(0)->AsID(), ImVec2(300, 300));
-        ImGui::End();
+        EditorWindowSystem::GetInstance()->Update();
 
         ImGui::Render();
 

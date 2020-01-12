@@ -17,12 +17,12 @@ public:
 
         for (unsigned int i = 0; i < attachmentCount; i++)
         {
-            Texture texture;
-            texture.filterMin = GL_LINEAR;
-            texture.filterMag = GL_LINEAR;
-            texture.wrapS = GL_CLAMP_TO_EDGE;
-            texture.wrapT = GL_CLAMP_TO_EDGE;
-            texture.isMipmapped = false;
+            std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+            texture->filterMin = GL_LINEAR;
+            texture->filterMag = GL_LINEAR;
+            texture->wrapS = GL_CLAMP_TO_EDGE;
+            texture->wrapT = GL_CLAMP_TO_EDGE;
+            texture->isMipmapped = false;
 
             int internalFormat = GL_RGBA;
             if (dataType == GL_HALF_FLOAT)
@@ -34,25 +34,25 @@ public:
                 internalFormat = GL_RGBA32F;
             }
 
-            texture.SetData2D(width, height, internalFormat, GL_RGBA, dataType, 0);
-            
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture.AsID(), 0);
-            colorAttachments.push_back(std::move(texture));
+            texture->SetData2D(width, height, internalFormat, GL_RGBA, dataType, 0);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->AsID(), 0);
+            colorAttachments.push_back(texture);
         }
 
         if (hasDepth)
         {
-            Texture texture;
-            texture.filterMin = GL_LINEAR;
-            texture.filterMag = GL_LINEAR;
-            texture.wrapS = GL_CLAMP_TO_EDGE;
-            texture.wrapT = GL_CLAMP_TO_EDGE;
-            texture.isMipmapped = false;
+            std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+            texture->filterMin = GL_LINEAR;
+            texture->filterMag = GL_LINEAR;
+            texture->wrapS = GL_CLAMP_TO_EDGE;
+            texture->wrapT = GL_CLAMP_TO_EDGE;
+            texture->isMipmapped = false;
 
-            texture.SetData2D(width, height, GL_DEPTH_STENCIL, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
+            texture->SetData2D(width, height, GL_DEPTH_STENCIL, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture.AsID(), 0);
-            depthAttachment = std::move(texture);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture->AsID(), 0);
+            depthAttachment = texture;
         }
 
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -77,14 +77,33 @@ public:
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        spdlog::info("Framebuffer Creation Compelete");
     }
 
-    Texture *GetDepthTexture()
+    RenderTarget(const RenderTarget &other)
     {
-        return &depthAttachment;
+        ID = other.ID;
+        dataType = other.dataType;
+        width = other.width;
+        height = other.height;
+        hasDepth = other.hasDepth;
+        depthAttachment = other.depthAttachment;
+        colorAttachments = other.colorAttachments;
     }
 
-    Texture *GetAttachmentTexture(unsigned int index)
+    ~RenderTarget()
+    {
+        glDeleteFramebuffers(1, &ID);
+        spdlog::info("Framebuffer Destroy Compelete");
+    }
+
+    std::shared_ptr<Texture> GetDepthTexture() const
+    {
+        return depthAttachment;
+    }
+
+    std::shared_ptr<Texture> GetAttachmentTexture(unsigned int index) const
     {
         if (index >= colorAttachments.size())
         {
@@ -93,7 +112,7 @@ public:
         }
         else
         {
-            return &colorAttachments[index];
+            return colorAttachments[index];
         }
     }
 
@@ -104,12 +123,12 @@ public:
 
         for (unsigned int i = 0; i < colorAttachments.size(); ++i)
         {
-            colorAttachments[i].Resize(width, height);
+            colorAttachments[i]->Resize(width, height);
         }
 
         if (hasDepth)
         {
-            depthAttachment.Resize(width, height);
+            depthAttachment->Resize(width, height);
         }
     }
 
@@ -128,7 +147,7 @@ private:
     unsigned int width;
     unsigned int height;
     bool hasDepth;
-    Texture depthAttachment;
-    std::vector<Texture> colorAttachments;
+    std::shared_ptr<Texture> depthAttachment;
+    std::vector<std::shared_ptr<Texture>> colorAttachments;
     unsigned int ID;
 };
