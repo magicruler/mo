@@ -16,6 +16,13 @@
 #include "editor_window.h"
 #include "editor_window_system.h"
 
+#include "shader.h"
+#include "gameobject.h"
+#include "gameobject_system.h"
+
+#include "component_system.h"
+#include "scene_system.h"
+
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
 
@@ -94,8 +101,11 @@ int main(int, char **args)
 
     auto renderTarget = std::make_shared<RenderTarget>(300, 300);
 
-    // EditorWindow testWindow = EditorWindow(800, 600, true, "Hello!");
+    GameObjectSystem::Init();
+    ComponentSystem::Init();
     EditorWindowSystem::Init();
+    SceneSystem::Init();
+    
     auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
     editorSceneView->SetSceneViewRenderTarget(renderTarget);
 
@@ -122,6 +132,8 @@ int main(int, char **args)
 
         ImGui::ShowDemoWindow(&p_open);
 
+        GameObjectSystem::GetInstance()->Update();
+        ComponentSystem::GetInstance()->Update();
         EditorWindowSystem::GetInstance()->Update();
 
         ImGui::Render();

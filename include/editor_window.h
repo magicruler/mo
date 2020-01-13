@@ -2,8 +2,9 @@
 #include "common.h"
 #include "imgui.h"
 
-class EditorWindow
+class EditorWindow: public Object
 {
+    MO_OBJECT("EditorWindow")
 public:
     EditorWindow(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : initialWidth(initialWidth),
                                                                                                                initialHeight(initialHeight),

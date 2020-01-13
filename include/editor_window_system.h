@@ -14,6 +14,7 @@ public:
 
     static EditorWindowSystem *GetInstance()
     {
+        assert(instance != nullptr);
         return instance;
     }
 
@@ -29,12 +30,12 @@ public:
     template <typename T>
     std::shared_ptr<T> GetEditor()
     {
-        size_t target_hash_code = typeid(T).hash_code();
+        size_t target_hash_code = T::GetHashIDStatic();
         for (size_t i = 0; i < editorWindows.size(); i++)
         {
             std::shared_ptr<EditorWindow> editor = editorWindows[i];
-            spdlog::info("Editor Name Is {}", typeid(*editor).name());
-            if (target_hash_code == typeid(*editor).hash_code())
+            spdlog::info("Editor Name Is {}", editor->GetType());
+            if (target_hash_code == editor->GetHashID())
             {
                 return std::dynamic_pointer_cast<T>(editor);
             }
@@ -48,6 +49,11 @@ public:
 private:
     EditorWindowSystem()
     {
+    }
+
+    ~EditorWindowSystem()
+    {
+        delete instance;
     }
 
     void InitWindows()

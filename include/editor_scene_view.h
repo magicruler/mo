@@ -4,15 +4,17 @@
 
 class EditorSceneView : public EditorWindow
 {
+    MO_OBJECT("EditorSceneView")
 public:
     EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
     {
     }
 
-    void SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget){
+    void SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget)
+    {
         sceneViewRenderTarget = renderTarget;
     }
-    
+
 private:
     void OnIMGUI() override
     {
