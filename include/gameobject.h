@@ -82,6 +82,32 @@ public:
         RemoveAllComponent();
     }
 
+    void AddChild(std::shared_ptr<GameObject> child)
+    {
+        child->parent = shared_from_this();
+        children.push_back(child);
+    }
+
+    void RemoveChild(size_t index)
+    {
+        if (index >= children.size())
+        {
+            spdlog::info("Try to remove a non-exist child");
+            return;
+        }
+        children[index]->parent = nullptr;
+        children.erase(children.begin + index);
+    }
+
+    void RemoveAllChildren()
+    {
+        for(auto& child: children)
+        {
+            child->parent = nullptr;
+        }
+
+        children.clear();
+    }
 
 private:
     bool needDestroy = false;
@@ -89,6 +115,14 @@ private:
 
     unsigned int ID;
     static unsigned int IdCounter;
+    // node trait
+    std::shared_ptr<GameObject> parent;
+    std::vector<std::shared_ptr<GameObject>> children;
+    glm::mat4 transform;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale = glm::vec3(1.0f);
+    bool isDirty = false;
 };
 
 unsigned int GameObject::IdCounter = 0;

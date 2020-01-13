@@ -22,6 +22,7 @@
 
 #include "component_system.h"
 #include "scene_system.h"
+#include "resource_system.h"
 
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
@@ -101,11 +102,12 @@ int main(int, char **args)
 
     auto renderTarget = std::make_shared<RenderTarget>(300, 300);
 
+    ResourceSystem::Init();
     GameObjectSystem::Init();
     ComponentSystem::Init();
     EditorWindowSystem::Init();
     SceneSystem::Init();
-    
+
     auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
     editorSceneView->SetSceneViewRenderTarget(renderTarget);
 
