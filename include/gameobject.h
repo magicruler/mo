@@ -1,35 +1,23 @@
 #pragma once
 #include "common.h"
-#include "component.h"
 
+class Component;
 class GameObjectSystem;
 
-class GameObject : public std::enable_shared_from_this<GameObject>, public Object
+class GameObject : public Object
 {
     MO_OBJECT("GameObject")
 
     friend class GameObjectSystem;
 
 public:
-    GameObject()
-    {
-        IdCounter++;
-        ID = IdCounter;
-    }
+    GameObject();
 
     static std::shared_ptr<GameObject> Create();
 
-    static void Destroy(std::shared_ptr<GameObject> gameobject)
-    {
-        gameobject->needDestroy = true;
-    }
+    static void Destroy(std::shared_ptr<GameObject> gameobject);
 
-    void AddComponent(std::shared_ptr<Component> component)
-    {
-        component->gameObject = shared_from_this();
-        size_t typeHashCode = component->GetHashID();
-        components[typeHashCode] = component;
-    }
+    void AddComponent(std::shared_ptr<Component> component);
 
     template <typename T>
     void RemoveComponent()
@@ -41,19 +29,7 @@ public:
         }
     }
 
-    void RemoveComponent(std::shared_ptr<Component> component)
-    {
-        size_t typeHashCode = component->GetHashID();
-        if (components[typeHashCode] == component)
-        {
-            component->gameObject = nullptr;
-            components.erase(typeHashCode);
-        }
-        else
-        {
-            spdlog::info("Try to remove component which is not attached in this gameobject");
-        }
-    }
+    void RemoveComponent(std::shared_ptr<Component> component);
 
     template <typename T>
     std::shared_ptr<T> GetComponent()
@@ -67,85 +43,31 @@ public:
         return nullptr;
     }
 
-    void RemoveAllComponent()
-    {
-        for (auto const &pair : components)
-        {
-            pair.second->gameObject = nullptr;
-        }
+    void RemoveAllComponent();
 
-        components.clear();
-    }
-
-    void Clear()
-    {
-        RemoveAllComponent();
-        RemoveAllChildren();
-        parent = nullptr;
-    }
+    void Clear();
 
     // Node Traits
 public:
-    std::shared_ptr<GameObject> GetParent() const
-    {
-        return parent;
-    }
+    std::shared_ptr<GameObject> GetParent() const;
+    void AddChild(std::shared_ptr<GameObject> child);
+    void RemoveChild(size_t index);
+    void RemoveAllChildren();
 
-    void AddChild(std::shared_ptr<GameObject> child)
-    {
-        child->parent = shared_from_this();
-        children.push_back(child);
-    }
-
-    void RemoveChild(size_t index)
-    {
-        if (index >= children.size())
-        {
-            spdlog::info("Try to remove a non-exist child");
-            return;
-        }
-        children[index]->parent = nullptr;
-        children.erase(children.begin() + index);
-    }
-
-    void RemoveAllChildren()
-    {
-        for (auto &child : children)
-        {
-            child->parent = nullptr;
-        }
-
-        children.clear();
-    }
-
-    std::vector<std::shared_ptr<GameObject>> GetChildren()
-    {
-        return children;
-    }
-
-    std::shared_ptr<GameObject> GetChild(size_t index)
-    {
-        return children[index];
-    }
-
-    size_t GetChildCount() const
-    {
-        return children.size();
-    }
+    std::vector<std::shared_ptr<GameObject>> GetChildren();
+    std::shared_ptr<GameObject> GetChild(size_t index);
+    size_t GetChildCount() const;
 
     void SetPosition(glm::vec3 position);
     glm::vec3 GetPosition() const;
-
     void SetRotation(glm::vec3 rotation);
     glm::vec3 GetRoation() const;
-
     void SetScale(glm::vec3 scale);
     glm::vec3 GetScale() const;
 
     glm::mat4 GetTransform();
 
 private:
-
     void RecalculateTransform();
 
     bool needDestroy = false;

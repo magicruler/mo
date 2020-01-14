@@ -1,69 +1,40 @@
 #pragma once
 #include "common.h"
-#include "editor_window.h"
-#include "editor_scene_view.h"
+
+class EditorWindow;
 
 class EditorWindowSystem
 {
 public:
-    static void Init()
-    {
-        instance = new EditorWindowSystem();
-        instance->InitWindows();
-    }
+    static void Init();
 
-    static EditorWindowSystem *GetInstance()
-    {
-        assert(instance != nullptr);
-        return instance;
-    }
+    static EditorWindowSystem *GetInstance();
 
-    void Update()
-    {
-        for (size_t i = 0; i < editorWindows.size(); i++)
-        {
-            std::shared_ptr<EditorWindow> editor = editorWindows[i];
-            editor->OnFrame();
-        }
-    }
+    void Update();
 
     template <typename T>
     std::shared_ptr<T> GetEditor()
     {
-        size_t target_hash_code = T::GetHashIDStatic();
-        for (size_t i = 0; i < editorWindows.size(); i++)
+        size_t hashId = T::GetHashIDStatic();
+        auto target = GetEditorById(hashId);
+        if (target != nullptr)
         {
-            std::shared_ptr<EditorWindow> editor = editorWindows[i];
-            spdlog::info("Editor Name Is {}", editor->GetType());
-            if (target_hash_code == editor->GetHashID())
-            {
-                return std::dynamic_pointer_cast<T>(editor);
-            }
+            return std::dynamic_pointer_cast<T>(target);
         }
 
         return nullptr;
     }
 
+    std::shared_ptr<EditorWindow> GetEditorById(size_t hashId);
+
     std::vector<std::shared_ptr<EditorWindow>> editorWindows;
 
 private:
-    EditorWindowSystem()
-    {
-    }
+    EditorWindowSystem();
 
-    ~EditorWindowSystem()
-    {
-        delete instance;
-    }
+    ~EditorWindowSystem();
 
-    void InitWindows()
-    {
-        editorWindows.push_back(std::make_shared<EditorWindow>(800, 600, true, "Base Editor Window"));
-        editorWindows.push_back(std::make_shared<EditorWindow>(200, 200, true, "Other Base Editor Window"));
-        editorWindows.push_back(std::make_shared<EditorSceneView>(200, 200, true, "Scene View"));
-    }
+    void InitWindows();
 
     static EditorWindowSystem *instance;
 };
-
-EditorWindowSystem *EditorWindowSystem::instance = nullptr;

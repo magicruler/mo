@@ -1,77 +1,21 @@
 #pragma once
-
-#include "glad/glad.h"
 #include "common.h"
+#include "glad/glad.h"
 
 class Texture
 {
 public:
-    Texture()
-    {
-    }
+    Texture();
+    ~Texture();
 
-    ~Texture()
-    {
-        if (created)
-        {
-            spdlog::info("texture destroyed");
-            glDeleteTextures(1, &ID);
-        }
-    }
+    void SetData2D(unsigned int width, unsigned int height, int internalFormat, int format, int dataType, void *data);
 
-    void SetData2D(unsigned int width, unsigned int height, int internalFormat, int format, int dataType, void *data)
-    {
-        glGenTextures(1, &ID);
-        created = true;
+    void Bind(int texUnit = 0);
+    void Unbind();
 
-        this->width = width;
-        this->height = height;
-        this->depth = 0;
-        this->internalFormat = internalFormat;
-        this->format = format;
-        this->dataType = dataType;
+    void Resize(unsigned int width, unsigned int height);
 
-        assert(target == GL_TEXTURE_2D);
-
-        Bind();
-        glTexImage2D(target, 0, internalFormat, width, height, 0, format, dataType, data);
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filterMin);
-        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filterMag);
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
-        if (isMipmapped)
-        {
-            glGenerateMipmap(target);
-        }
-        Unbind();
-    }
-
-    void Bind(int texUnit = 0)
-    {
-        if (texUnit > 0)
-        {
-            glActiveTexture(GL_TEXTURE0 + texUnit);
-        }
-        glBindTexture(target, ID);
-    }
-
-    void Unbind()
-    {
-        glBindTexture(target, 0);
-    }
-
-    void Resize(unsigned int width, unsigned int height)
-    {
-        assert(target == GL_TEXTURE_2D);
-        Bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, dataType, 0);
-        Unbind();
-    }
-
-    unsigned int AsID() const
-    {
-        return ID;
-    }
+    unsigned int AsID() const;
 
     int target = GL_TEXTURE_2D;
 

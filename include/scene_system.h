@@ -1,46 +1,25 @@
 #pragma once
 #include "common.h"
-#include "scene.h"
+
+class Scene;
 
 class SceneSystem
 {
 public:
-    static void Init()
-    {
-        instance = new SceneSystem();
-        instance->LoadDefaultScene();
-    }
+    static void Init();
 
-    static SceneSystem *GetInstance()
-    {
-        assert(instance != nullptr);
-        return instance;
-    }
+    static SceneSystem *GetInstance();
 
-    std::shared_ptr<Scene> GetActivatedScene() const
-    {
-        return activatedScene;
-    }
+    std::shared_ptr<Scene> GetActivatedScene() const;
 
 private:
+    void LoadDefaultScene();
 
-    void LoadDefaultScene()
-    {
-        activatedScene = std::make_shared<Scene>();
-    }
+    SceneSystem();
 
-    SceneSystem()
-    {
-    }
-
-    ~SceneSystem()
-    {
-        delete instance;
-    }
+    ~SceneSystem();
 
     std::shared_ptr<Scene> activatedScene;
 
     static SceneSystem *instance;
 };
-
-SceneSystem *SceneSystem::instance = nullptr;

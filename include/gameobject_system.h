@@ -1,51 +1,24 @@
 #pragma once
 #include "common.h"
-#include "gameobject.h"
+
+class GameObject;
 
 class GameObjectSystem
 {
 public:
-    static void Init()
-    {
-        instance = new GameObjectSystem();
-    }
+    static void Init();
 
-    static GameObjectSystem *GetInstance()
-    {
-        assert(instance != nullptr);
-        return instance;
-    }
+    static GameObjectSystem *GetInstance();
 
-    void AddGameObject(std::shared_ptr<GameObject> gameObject)
-    {
-        gameobjects.push_back(gameObject);
-    }
+    void AddGameObject(std::shared_ptr<GameObject> gameObject);
 
-    void Update()
-    {
-        // check gameoject need destroy state
-        for (int i = gameobjects.size() - 1; i >= 0; i--)
-        {
-            std::shared_ptr<GameObject> gameobect = gameobjects[i];
-            if (gameobect->needDestroy)
-            {
-                gameobect->Clear();
-                gameobjects.erase(gameobjects.begin() + i);
-            }
-        }
-    }
+    void Update();
 
 private:
-    GameObjectSystem()
-    {
-    }
+    GameObjectSystem();
 
-    ~GameObjectSystem()
-    {
-        delete instance;
-    }
+    ~GameObjectSystem();
 
     static GameObjectSystem *instance;
     std::vector<std::shared_ptr<GameObject>> gameobjects;
 };
-

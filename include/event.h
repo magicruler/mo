@@ -10,14 +10,3 @@ class UpdateEvent: public Event
 {
     MO_OBJECT("UpdateEvent")
 };
-
-class EventWrapper
-{
-public:
-    EventWrapper(Object* target, std::function<void(Object &, std::shared_ptr<Event>)> func) : target(target),
-                                                                                                               func(func)
-    {
-    }
-    Object* target;
-    std::function<void(Object &, std::shared_ptr<Event>)> func;
-};

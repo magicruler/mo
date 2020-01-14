@@ -4,28 +4,13 @@
 class ResourceSystem
 {
 public:
-    static void Init()
-    {
-        instance = new ResourceSystem();
-    }
+    static void Init();
 
-    static ResourceSystem *GetInstance()
-    {
-        assert(instance != nullptr);
-        return instance;
-    }
+    static ResourceSystem *GetInstance();
 
 private:
-    ResourceSystem()
-    {
-    }
-
-    ~ResourceSystem()
-    {
-        delete instance;
-    }
+    ResourceSystem();
+    ~ResourceSystem();
 
     static ResourceSystem *instance;
 };
-
-ResourceSystem *ResourceSystem::instance = nullptr;

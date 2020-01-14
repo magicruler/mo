@@ -11,11 +11,7 @@ class Component : public Object
     friend class ComponentSystem;
 
 public:
-    Component()
-    {
-        IdCounter++;
-        ID = IdCounter;
-    }
+    Component();
     std::shared_ptr<GameObject> gameObject;
 
 private:

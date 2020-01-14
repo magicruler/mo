@@ -2,72 +2,15 @@
 #include "common.h"
 #include "imgui.h"
 
-class EditorWindow: public Object
+class EditorWindow : public Object
 {
     MO_OBJECT("EditorWindow")
 public:
-    EditorWindow(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : initialWidth(initialWidth),
-                                                                                                               initialHeight(initialHeight),
-                                                                                                               title(title),
-                                                                                                               open(initialOpen),
-                                                                                                               previousOpen(initialOpen)
-    {
-        Init();
-    }
+    EditorWindow(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title);
 
-    ~EditorWindow()
-    {
-    }
+    ~EditorWindow();
 
-    void OnFrame()
-    {
-        if (previousOpen != open)
-        {
-            previousOpen = open;
-            if (!open)
-            {
-                OnClose();
-                return;
-            }
-            else
-            {
-                OnOpen();
-            }
-        }
-
-        if (!open)
-        {
-            return;
-        }
-
-        ImGui::SetNextWindowSize(glm::vec2(initialWidth, initialHeight), ImGuiCond_FirstUseEver);
-
-        if (ImGui::Begin(title.c_str(), &open))
-        {
-
-            glm::vec2 windowPos = ImGui::GetWindowPos();
-            contentMin = glm::vec2(ImGui::GetWindowContentRegionMin()) + windowPos;
-            contentMax = glm::vec2(ImGui::GetWindowContentRegionMax()) + windowPos;
-
-            if (firstFrame)
-            {
-                firstFrame = false;
-                contentSize = contentMax - contentMin;
-            }
-            else
-            {
-                if (contentSize != contentMax - contentMin)
-                {
-                    contentSize = contentMax - contentMin;
-                    OnResize();
-                }
-            }
-
-            OnIMGUI();
-
-            ImGui::End();
-        }
-    }
+    void OnFrame();
 
 protected:
     glm::vec2 contentMin;
@@ -75,27 +18,15 @@ protected:
     glm::vec2 contentSize;
 
 private:
-    virtual void Init()
-    {
-    }
+    virtual void Init();
 
-    virtual void OnIMGUI()
-    {
-    }
+    virtual void OnIMGUI();
 
-    virtual void OnResize()
-    {
-    }
+    virtual void OnResize();
 
-    virtual void OnOpen()
-    {
-        spdlog::info("OnOpen");
-    }
+    virtual void OnOpen();
 
-    virtual void OnClose()
-    {
-        spdlog::info("OnClose");
-    }
+    virtual void OnClose();
 
 private:
     std::string title;

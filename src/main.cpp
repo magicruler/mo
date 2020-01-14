@@ -1,14 +1,4 @@
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-#include "spdlog/spdlog.h"
-
-#include <cstdio>
+#include "game.h"
 
 #include "texture.h"
 #include "render_target.h"
@@ -24,7 +14,17 @@
 #include "scene_system.h"
 #include "resource_system.h"
 
-#include "game.h"
+#include "editor_scene_view.h"
+
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+#include <cstdio>
 
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
@@ -106,7 +106,7 @@ int main(int, char **args)
 
     auto renderTarget = std::make_shared<RenderTarget>(300, 300);
 
-    InitSystem();
+    Game::Init();
 
     auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
     editorSceneView->SetSceneViewRenderTarget(renderTarget);
@@ -134,9 +134,7 @@ int main(int, char **args)
 
         ImGui::ShowDemoWindow(&p_open);
 
-        GameObjectSystem::GetInstance()->Update();
-        ComponentSystem::GetInstance()->Update();
-        EditorWindowSystem::GetInstance()->Update();
+        Game::Update(deltaTime);
 
         ImGui::Render();
 

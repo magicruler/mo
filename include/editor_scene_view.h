@@ -1,30 +1,22 @@
 #pragma once
+#include "common.h"
+
 #include "editor_window.h"
-#include "render_target.h"
+
+class RenderTarget;
 
 class EditorSceneView : public EditorWindow
 {
     MO_OBJECT("EditorSceneView")
 public:
-    EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
-    {
-    }
+    EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title);
 
-    void SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget)
-    {
-        sceneViewRenderTarget = renderTarget;
-    }
+    void SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget);
 
 private:
-    void OnIMGUI() override
-    {
-        ImGui::Image((ImTextureID)sceneViewRenderTarget->GetAttachmentTexture(0)->AsID(), sceneViewRenderTarget->GetSize());
-    }
+    virtual void OnIMGUI();
 
-    void OnResize() override
-    {
-        sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
-    }
+    virtual void OnResize();
 
     std::shared_ptr<RenderTarget> sceneViewRenderTarget;
 };

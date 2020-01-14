@@ -1,9 +1,9 @@
 #pragma once
-
 #include <string>
 #include <functional>
 #include <map>
 #include <vector>
+#include <memory>
 
 #define MO_OBJECT(NAME)                                  \
 public:                                                  \
@@ -12,9 +12,8 @@ public:                                                  \
     static size_t GetHashIDStatic() { return std::hash<std::string>{}(NAME); }
 
 class Event;
-class EventWrapper;
 
-class Object
+class Object: public std::enable_shared_from_this<Object>
 {
 public:
     virtual std::string GetType() const
@@ -32,16 +31,16 @@ public:
         return "Object";
     }
 
-    void SendEvent(std::shared_ptr<Event> event);
+    static void SendEvent(std::shared_ptr<Event> event);
 
     template <typename T>
-    void RegisterEventListener(std::function<void(Object &, std::shared_ptr<Event>)> func)
+    void RegisterEventListener()
     {
         size_t hashId = T::GetHashIDStatic();
-        RegisterEventListener(hashId, func);
+        RegisterEventListener(hashId);
     }
 
-    void RegisterEventListener(size_t hashId, std::function<void(Object &, std::shared_ptr<Event>)> func);
+    void RegisterEventListener(size_t hashId);
 
     template <typename T>
     void RemoveEventListener()
@@ -52,5 +51,9 @@ public:
 
     void RemoveEventListener(size_t hashId);
 
-    static std::map<size_t, std::vector<std::shared_ptr<EventWrapper>>> listeners;
+    virtual void OnEvent(std::shared_ptr<Event> event)
+    {
+    }
+
+    static std::map<size_t, std::vector<std::shared_ptr<Object>>> listeners;
 };
