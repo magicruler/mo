@@ -49,4 +49,3 @@ private:
     std::vector<std::shared_ptr<GameObject>> gameobjects;
 };
 
-GameObjectSystem *GameObjectSystem::instance = nullptr;

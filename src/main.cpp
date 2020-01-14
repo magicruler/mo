@@ -24,6 +24,8 @@
 #include "scene_system.h"
 #include "resource_system.h"
 
+#include "game.h"
+
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
 
@@ -31,6 +33,8 @@ static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+
+GLFWwindow *window = nullptr;
 
 int main(int, char **args)
 {
@@ -60,7 +64,7 @@ int main(int, char **args)
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Mo", nullptr, nullptr);
+    window = glfwCreateWindow(800, 600, "Mo", nullptr, nullptr);
     if (window == NULL)
     {
         return 0;
@@ -102,11 +106,7 @@ int main(int, char **args)
 
     auto renderTarget = std::make_shared<RenderTarget>(300, 300);
 
-    ResourceSystem::Init();
-    GameObjectSystem::Init();
-    ComponentSystem::Init();
-    EditorWindowSystem::Init();
-    SceneSystem::Init();
+    InitSystem();
 
     auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
     editorSceneView->SetSceneViewRenderTarget(renderTarget);

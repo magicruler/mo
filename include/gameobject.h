@@ -80,6 +80,15 @@ public:
     void Clear()
     {
         RemoveAllComponent();
+        RemoveAllChildren();
+        parent = nullptr;
+    }
+
+    // Node Traits
+public:
+    std::shared_ptr<GameObject> GetParent() const
+    {
+        return parent;
     }
 
     void AddChild(std::shared_ptr<GameObject> child)
@@ -96,12 +105,12 @@ public:
             return;
         }
         children[index]->parent = nullptr;
-        children.erase(children.begin + index);
+        children.erase(children.begin() + index);
     }
 
     void RemoveAllChildren()
     {
-        for(auto& child: children)
+        for (auto &child : children)
         {
             child->parent = nullptr;
         }
@@ -109,13 +118,44 @@ public:
         children.clear();
     }
 
+    std::vector<std::shared_ptr<GameObject>> GetChildren()
+    {
+        return children;
+    }
+
+    std::shared_ptr<GameObject> GetChild(size_t index)
+    {
+        return children[index];
+    }
+
+    size_t GetChildCount() const
+    {
+        return children.size();
+    }
+
+    void SetPosition(glm::vec3 position);
+    glm::vec3 GetPosition() const;
+
+    void SetRotation(glm::vec3 rotation);
+    glm::vec3 GetRoation() const;
+
+    void SetScale(glm::vec3 scale);
+    glm::vec3 GetScale() const;
+
+    glm::mat4 GetTransform();
+
 private:
+
+    void RecalculateTransform();
+
     bool needDestroy = false;
     std::map<size_t, std::shared_ptr<Component>> components;
 
     unsigned int ID;
     static unsigned int IdCounter;
-    // node trait
+
+    // Node Traits
+private:
     std::shared_ptr<GameObject> parent;
     std::vector<std::shared_ptr<GameObject>> children;
     glm::mat4 transform;
@@ -124,5 +164,3 @@ private:
     glm::vec3 scale = glm::vec3(1.0f);
     bool isDirty = false;
 };
-
-unsigned int GameObject::IdCounter = 0;

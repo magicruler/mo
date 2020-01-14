@@ -24,4 +24,3 @@ private:
     bool needDestroy = false;
 };
 
-unsigned int Component::IdCounter = 0;
