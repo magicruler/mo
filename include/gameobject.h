@@ -47,6 +47,8 @@ public:
 
     void Clear();
 
+    unsigned int GetID() const;
+
     // Node Traits
 public:
     GameObject* GetParent() const;
@@ -66,6 +68,11 @@ public:
     glm::vec3 GetScale() const;
 
     glm::mat4 GetTransform();
+    void SetIsSceneRoot(bool val);
+    bool GetIsSceneRoot();
+
+    std::string GetName() const;
+    void SetName(std::string name);
 
 private:
     void RecalculateTransform();
@@ -85,4 +92,6 @@ private:
     glm::vec3 rotation;
     glm::vec3 scale = glm::vec3(1.0f);
     bool isDirty = false;
+    bool isSceneRoot = false;
+    std::string name;
 };

@@ -1,6 +1,8 @@
 #include "gameobject.h"
 #include "gameobject_system.h"
 #include "component.h"
+#include "scene_system.h"
+#include "scene.h"
 
 unsigned int GameObject::IdCounter = 0;
 
@@ -26,6 +28,8 @@ GameObject *GameObject::Create()
 {
     GameObjectSystem *gameObjectSystem = GameObjectSystem::GetInstance();
     auto newGameObject = new GameObject();
+    newGameObject->SetName("NewGameObject");
+
     gameObjectSystem->AddGameObject(newGameObject);
 
     return newGameObject;
@@ -67,7 +71,16 @@ void GameObject::Clear()
 {
     RemoveAllComponent();
     RemoveAllChildren();
+    if (isSceneRoot)
+    {
+        SceneSystem::GetInstance()->GetActivatedScene()->RemoveGameObject(this);
+    }
     parent = nullptr;
+}
+
+unsigned int GameObject::GetID() const
+{
+    return ID;
 }
 
 GameObject *GameObject::GetParent() const
@@ -180,4 +193,24 @@ glm::mat4 GameObject::GetTransform()
         this->RecalculateTransform();
     }
     return transform;
+}
+
+void GameObject::SetIsSceneRoot(bool val)
+{
+    isSceneRoot = val;
+}
+bool GameObject::GetIsSceneRoot()
+{
+    return isSceneRoot;
+}
+
+
+std::string GameObject::GetName() const
+{
+    return name;
+}
+
+void GameObject::SetName(std::string name)
+{
+    this->name = name;
 }

@@ -5,9 +5,9 @@ class GameObject;
 class Scene
 {
 public:
-    void AddGameObject(std::shared_ptr<GameObject> gameObject);
-    void RemoveGameObject(std::shared_ptr<GameObject> gameObject);
-
+    void AddGameObject(GameObject* gameObject);
+    void RemoveGameObject(GameObject* gameObject);
+    std::vector<GameObject*> GetRootList() const;
 private:
-    std::vector<std::shared_ptr<GameObject>> root;
+    std::vector<GameObject*> root;
 };
