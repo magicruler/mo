@@ -9,7 +9,6 @@ SceneSystem::SceneSystem()
 
 SceneSystem::~SceneSystem()
 {
-    delete instance;
 }
 
 void SceneSystem::Init()
@@ -18,18 +17,23 @@ void SceneSystem::Init()
     instance->LoadDefaultScene();
 }
 
+void SceneSystem::Destroy()
+{
+    delete instance;
+}
+
 SceneSystem *SceneSystem::GetInstance()
 {
     assert(instance != nullptr);
     return instance;
 }
 
-std::shared_ptr<Scene> SceneSystem::GetActivatedScene() const
+Scene *SceneSystem::GetActivatedScene() const
 {
     return activatedScene;
 }
 
 void SceneSystem::LoadDefaultScene()
 {
-    activatedScene = std::make_shared<Scene>();
+    activatedScene = new Scene();
 }

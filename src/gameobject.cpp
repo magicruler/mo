@@ -10,12 +10,19 @@ GameObject::GameObject()
     ID = IdCounter;
 }
 
-void GameObject::Destroy(GameObject* gameobject)
+void GameObject::Destroy(GameObject *gameObject, bool recursive)
 {
-    gameobject->needDestroy = true;
+    gameObject->needDestroy = true;
+    if (recursive)
+    {
+        for (auto child : gameObject->children)
+        {
+            GameObject::Destroy(child);
+        }
+    }
 }
 
-GameObject* GameObject::Create()
+GameObject *GameObject::Create()
 {
     GameObjectSystem *gameObjectSystem = GameObjectSystem::GetInstance();
     auto newGameObject = new GameObject();
@@ -63,12 +70,12 @@ void GameObject::Clear()
     parent = nullptr;
 }
 
-GameObject* GameObject::GetParent() const
+GameObject *GameObject::GetParent() const
 {
     return parent;
 }
 
-void GameObject::AddChild(GameObject* child)
+void GameObject::AddChild(GameObject *child)
 {
     child->parent = this;
     children.push_back(child);
@@ -95,12 +102,12 @@ void GameObject::RemoveAllChildren()
     children.clear();
 }
 
-std::vector<GameObject*> GameObject::GetChildren()
+std::vector<GameObject *> GameObject::GetChildren()
 {
     return children;
 }
 
-GameObject* GameObject::GetChild(size_t index)
+GameObject *GameObject::GetChild(size_t index)
 {
     return children[index];
 }

@@ -1,29 +1,25 @@
 #include "render_target.h"
 #include "texture.h"
 
-RenderTarget::RenderTarget(const RenderTarget &other)
-{
-    ID = other.ID;
-    dataType = other.dataType;
-    width = other.width;
-    height = other.height;
-    hasDepth = other.hasDepth;
-    depthAttachment = other.depthAttachment;
-    colorAttachments = other.colorAttachments;
-}
-
 RenderTarget::~RenderTarget()
 {
     glDeleteFramebuffers(1, &ID);
     spdlog::info("Framebuffer Destroy Compelete");
+
+    for(int i = colorAttachments.size() - 1; i >= 0; i--)
+    {
+        delete colorAttachments[i];
+    }
+
+    delete depthAttachment;
 }
 
-std::shared_ptr<Texture> RenderTarget::GetDepthTexture() const
+Texture* RenderTarget::GetDepthTexture() const
 {
     return depthAttachment;
 }
 
-std::shared_ptr<Texture> RenderTarget::GetAttachmentTexture(unsigned int index) const
+Texture* RenderTarget::GetAttachmentTexture(unsigned int index) const
 {
     if (index >= colorAttachments.size())
     {
@@ -68,7 +64,7 @@ void RenderTarget::Init()
 
     for (unsigned int i = 0; i < attachmentCount; i++)
     {
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+        Texture* texture = new Texture();
         texture->filterMin = GL_LINEAR;
         texture->filterMag = GL_LINEAR;
         texture->wrapS = GL_CLAMP_TO_EDGE;
@@ -93,7 +89,7 @@ void RenderTarget::Init()
 
     if (hasDepth)
     {
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+        Texture* texture = new Texture();
         texture->filterMin = GL_LINEAR;
         texture->filterMag = GL_LINEAR;
         texture->wrapS = GL_CLAMP_TO_EDGE;

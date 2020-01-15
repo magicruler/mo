@@ -26,4 +26,13 @@ void Update(float dt)
     ComponentSystem::GetInstance()->Update();
     EditorWindowSystem::GetInstance()->Update();
 }
+
+void End()
+{
+    GameObjectSystem::Destroy();
+    ComponentSystem::Destroy();
+    ResourceSystem::Destroy();
+    EditorWindowSystem::Destroy();
+    SceneSystem::Destroy();
+}
 } // namespace Game

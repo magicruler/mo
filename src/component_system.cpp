@@ -9,12 +9,24 @@ ComponentSystem::ComponentSystem()
 
 ComponentSystem::~ComponentSystem()
 {
-    delete instance;
+    // remove remaining coms
+    for(auto& each : componentsMap)
+    {
+        for(auto com : each.second)
+        {
+            delete com;
+        }
+    }
 }
 
 void ComponentSystem::Init()
 {
     instance = new ComponentSystem();
+}
+
+void ComponentSystem::Destroy()
+{
+    delete instance;
 }
 
 ComponentSystem *ComponentSystem::GetInstance()

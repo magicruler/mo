@@ -16,12 +16,11 @@ public:
         Init();
     }
 
-    RenderTarget(const RenderTarget &other);
     ~RenderTarget();
 
-    std::shared_ptr<Texture> GetDepthTexture() const;
+    Texture *GetDepthTexture() const;
 
-    std::shared_ptr<Texture> GetAttachmentTexture(unsigned int index) const;
+    Texture *GetAttachmentTexture(unsigned int index) const;
 
     void Resize(unsigned int width, unsigned int height);
 
@@ -39,7 +38,7 @@ private:
     unsigned int height;
     bool hasDepth;
     unsigned int attachmentCount;
-    std::shared_ptr<Texture> depthAttachment;
-    std::vector<std::shared_ptr<Texture>> colorAttachments;
+    Texture *depthAttachment;
+    std::vector<Texture *> colorAttachments;
     unsigned int ID;
 };

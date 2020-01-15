@@ -7,7 +7,7 @@ EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initial
 {
 }
 
-void EditorSceneView::SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget)
+void EditorSceneView::SetSceneViewRenderTarget(RenderTarget* renderTarget)
 {
     sceneViewRenderTarget = renderTarget;
 }

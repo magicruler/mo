@@ -8,14 +8,16 @@ ResourceSystem::ResourceSystem()
 
 ResourceSystem::~ResourceSystem()
 {
-    delete instance;
 }
-
-
 
 void ResourceSystem::Init()
 {
     instance = new ResourceSystem();
+}
+
+void ResourceSystem::Destroy()
+{
+    delete instance;
 }
 
 ResourceSystem *ResourceSystem::GetInstance()

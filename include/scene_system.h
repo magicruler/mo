@@ -7,10 +7,11 @@ class SceneSystem
 {
 public:
     static void Init();
+    static void Destroy();
 
     static SceneSystem *GetInstance();
 
-    std::shared_ptr<Scene> GetActivatedScene() const;
+    Scene* GetActivatedScene() const;
 
 private:
     void LoadDefaultScene();
@@ -19,7 +20,7 @@ private:
 
     ~SceneSystem();
 
-    std::shared_ptr<Scene> activatedScene;
+    Scene* activatedScene;
 
     static SceneSystem *instance;
 };

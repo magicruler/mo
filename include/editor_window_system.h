@@ -7,27 +7,28 @@ class EditorWindowSystem
 {
 public:
     static void Init();
+    static void Destroy();
 
     static EditorWindowSystem *GetInstance();
 
     void Update();
 
     template <typename T>
-    std::shared_ptr<T> GetEditor()
+    T* GetEditor()
     {
         size_t hashId = T::GetHashIDStatic();
         auto target = GetEditorById(hashId);
         if (target != nullptr)
         {
-            return std::dynamic_pointer_cast<T>(target);
+            return (T*)(target);
         }
 
         return nullptr;
     }
 
-    std::shared_ptr<EditorWindow> GetEditorById(size_t hashId);
+    EditorWindow* GetEditorById(size_t hashId);
 
-    std::vector<std::shared_ptr<EditorWindow>> editorWindows;
+    std::vector<EditorWindow*> editorWindows;
 
 private:
     EditorWindowSystem();

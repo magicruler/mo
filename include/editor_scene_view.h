@@ -11,12 +11,12 @@ class EditorSceneView : public EditorWindow
 public:
     EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title);
 
-    void SetSceneViewRenderTarget(std::shared_ptr<RenderTarget> renderTarget);
+    void SetSceneViewRenderTarget(RenderTarget* renderTarget);
 
 private:
     virtual void OnIMGUI();
 
     virtual void OnResize();
 
-    std::shared_ptr<RenderTarget> sceneViewRenderTarget;
+    RenderTarget* sceneViewRenderTarget;
 };

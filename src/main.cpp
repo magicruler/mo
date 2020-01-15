@@ -104,7 +104,7 @@ int main(int, char **args)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     static bool p_open = true;
 
-    auto renderTarget = std::make_shared<RenderTarget>(300, 300);
+    auto renderTarget = new RenderTarget(300, 300);
 
     Game::Init();
 
@@ -156,6 +156,8 @@ int main(int, char **args)
 
         glfwSwapBuffers(window);
     }
+
+    delete renderTarget;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

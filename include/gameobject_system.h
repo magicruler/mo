@@ -7,6 +7,7 @@ class GameObjectSystem
 {
 public:
     static void Init();
+    static void Destroy();
 
     static GameObjectSystem *GetInstance();
 

@@ -7,6 +7,7 @@ class ComponentSystem
 {
 public:
     static void Init();
+    static void Destroy();
 
     static ComponentSystem *GetInstance();
 

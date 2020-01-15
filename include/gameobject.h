@@ -15,7 +15,7 @@ public:
 
     static GameObject* Create();
 
-    static void Destroy(GameObject* gameobject);
+    static void Destroy(GameObject* gameObject, bool recursive = true);
 
     void AddComponent(Component *component);
 
