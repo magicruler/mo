@@ -10,15 +10,15 @@ GameObject::GameObject()
     ID = IdCounter;
 }
 
-void GameObject::Destroy(std::shared_ptr<GameObject> gameobject)
+void GameObject::Destroy(GameObject* gameobject)
 {
     gameobject->needDestroy = true;
 }
 
-std::shared_ptr<GameObject> GameObject::Create()
+GameObject* GameObject::Create()
 {
     GameObjectSystem *gameObjectSystem = GameObjectSystem::GetInstance();
-    auto newGameObject = std::make_shared<GameObject>();
+    auto newGameObject = new GameObject();
     gameObjectSystem->AddGameObject(newGameObject);
 
     return newGameObject;
@@ -63,14 +63,14 @@ void GameObject::Clear()
     parent = nullptr;
 }
 
-std::shared_ptr<GameObject> GameObject::GetParent() const
+GameObject* GameObject::GetParent() const
 {
     return parent;
 }
 
-void GameObject::AddChild(std::shared_ptr<GameObject> child)
+void GameObject::AddChild(GameObject* child)
 {
-    child->parent = std::dynamic_pointer_cast<GameObject>(shared_from_this());
+    child->parent = this;
     children.push_back(child);
 }
 
@@ -95,12 +95,12 @@ void GameObject::RemoveAllChildren()
     children.clear();
 }
 
-std::vector<std::shared_ptr<GameObject>> GameObject::GetChildren()
+std::vector<GameObject*> GameObject::GetChildren()
 {
     return children;
 }
 
-std::shared_ptr<GameObject> GameObject::GetChild(size_t index)
+GameObject* GameObject::GetChild(size_t index)
 {
     return children[index];
 }

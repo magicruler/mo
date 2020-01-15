@@ -13,9 +13,9 @@ class GameObject : public Object
 public:
     GameObject();
 
-    static std::shared_ptr<GameObject> Create();
+    static GameObject* Create();
 
-    static void Destroy(std::shared_ptr<GameObject> gameobject);
+    static void Destroy(GameObject* gameobject);
 
     void AddComponent(Component *component);
 
@@ -49,13 +49,13 @@ public:
 
     // Node Traits
 public:
-    std::shared_ptr<GameObject> GetParent() const;
-    void AddChild(std::shared_ptr<GameObject> child);
+    GameObject* GetParent() const;
+    void AddChild(GameObject* child);
     void RemoveChild(size_t index);
     void RemoveAllChildren();
 
-    std::vector<std::shared_ptr<GameObject>> GetChildren();
-    std::shared_ptr<GameObject> GetChild(size_t index);
+    std::vector<GameObject*> GetChildren();
+    GameObject* GetChild(size_t index);
     size_t GetChildCount() const;
 
     void SetPosition(glm::vec3 position);
@@ -78,8 +78,8 @@ private:
 
     // Node Traits
 private:
-    std::shared_ptr<GameObject> parent;
-    std::vector<std::shared_ptr<GameObject>> children;
+    GameObject* parent;
+    std::vector<GameObject*> children;
     glm::mat4 transform;
     glm::vec3 position;
     glm::vec3 rotation;

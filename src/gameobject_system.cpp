@@ -23,21 +23,22 @@ GameObjectSystem *GameObjectSystem::GetInstance()
     return instance;
 }
 
-void GameObjectSystem::AddGameObject(std::shared_ptr<GameObject> gameObject)
+void GameObjectSystem::AddGameObject(GameObject* gameObject)
 {
-    gameobjects.push_back(gameObject);
+    gameObjects.push_back(gameObject);
 }
 
 void GameObjectSystem::Update()
 {
     // check gameoject need destroy state
-    for (int i = gameobjects.size() - 1; i >= 0; i--)
+    for (int i = gameObjects.size() - 1; i >= 0; i--)
     {
-        std::shared_ptr<GameObject> gameobect = gameobjects[i];
-        if (gameobect->needDestroy)
+        GameObject* gameObject = gameObjects[i];
+        if (gameObject->needDestroy)
         {
-            gameobect->Clear();
-            gameobjects.erase(gameobjects.begin() + i);
+            gameObjects.erase(gameObjects.begin() + i);
+            gameObject->Clear();
+            delete gameObject;
         }
     }
 }

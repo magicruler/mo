@@ -13,7 +13,7 @@ public:                                                  \
 
 class Event;
 
-class Object: public std::enable_shared_from_this<Object>
+class Object
 {
 public:
     virtual std::string GetType() const
@@ -30,30 +30,4 @@ public:
     {
         return "Object";
     }
-
-    static void SendEvent(std::shared_ptr<Event> event);
-
-    template <typename T>
-    void RegisterEventListener()
-    {
-        size_t hashId = T::GetHashIDStatic();
-        RegisterEventListener(hashId);
-    }
-
-    void RegisterEventListener(size_t hashId);
-
-    template <typename T>
-    void RemoveEventListener()
-    {
-        size_t hashId = T::GetHashIDStatic();
-        RemoveEventListener(hashId);
-    }
-
-    void RemoveEventListener(size_t hashId);
-
-    virtual void OnEvent(std::shared_ptr<Event> event)
-    {
-    }
-
-    static std::map<size_t, std::vector<std::shared_ptr<Object>>> listeners;
 };

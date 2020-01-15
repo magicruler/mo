@@ -10,7 +10,7 @@ public:
 
     static GameObjectSystem *GetInstance();
 
-    void AddGameObject(std::shared_ptr<GameObject> gameObject);
+    void AddGameObject(GameObject* gameObject);
 
     void Update();
 
@@ -20,5 +20,5 @@ private:
     ~GameObjectSystem();
 
     static GameObjectSystem *instance;
-    std::vector<std::shared_ptr<GameObject>> gameobjects;
+    std::vector<GameObject*> gameObjects;
 };
