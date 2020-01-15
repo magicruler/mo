@@ -122,7 +122,7 @@ int main(int, char **args)
         // Test Frame Buffer Rendering
         renderTarget->Bind();
         glm::vec2 renderTargetSize = renderTarget->GetSize();
-        glViewport(0, 0, renderTargetSize.x, renderTargetSize.y);
+        glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
         glClearColor(1.0f, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         renderTarget->Unbind();

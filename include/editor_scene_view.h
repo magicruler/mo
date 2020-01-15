@@ -1,6 +1,5 @@
 #pragma once
 #include "common.h"
-
 #include "editor_window.h"
 
 class RenderTarget;

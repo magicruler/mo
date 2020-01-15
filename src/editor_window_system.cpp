@@ -1,6 +1,7 @@
 #include "editor_window_system.h"
 #include "editor_window.h"
 #include "editor_scene_view.h"
+#include "editor_hierarchy.h"
 
 EditorWindowSystem *EditorWindowSystem::instance = nullptr;
 
@@ -60,6 +61,6 @@ EditorWindowSystem::~EditorWindowSystem()
 void EditorWindowSystem::InitWindows()
 {
     editorWindows.push_back(new EditorWindow(800, 600, true, "Base Editor Window"));
-    editorWindows.push_back(new EditorWindow(200, 200, true, "Other Base Editor Window"));
+    editorWindows.push_back(new EditorHierarchy(200, 400, true, "Hierarchy"));
     editorWindows.push_back(new EditorSceneView(200, 200, true, "Scene View"));
 }
