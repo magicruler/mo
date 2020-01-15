@@ -23,10 +23,10 @@ ComponentSystem *ComponentSystem::GetInstance()
     return instance;
 }
 
-void ComponentSystem::AddComponent(std::shared_ptr<Component> component)
+void ComponentSystem::AddComponent(Component *component)
 {
     size_t typeHashCode = component->GetHashID();
-    std::map<size_t, std::vector<std::shared_ptr<Component>>>::iterator it = componentsMap.find(typeHashCode);
+    std::map<size_t, std::vector<Component *>>::iterator it = componentsMap.find(typeHashCode);
     // already has this type, add into, else create a list, and add into
     if (it != componentsMap.end())
     {
@@ -34,8 +34,26 @@ void ComponentSystem::AddComponent(std::shared_ptr<Component> component)
     }
     else
     {
-        componentsMap[typeHashCode] = std::vector<std::shared_ptr<Component>>();
+        componentsMap[typeHashCode] = std::vector<Component *>();
         componentsMap[typeHashCode].push_back(component);
+    }
+}
+
+void ComponentSystem::RemoveComponent(Component *component)
+{
+    size_t typeHashCode = component->GetHashID();
+    std::map<size_t, std::vector<Component *>>::iterator it = componentsMap.find(typeHashCode);
+
+    if (it != componentsMap.end())
+    {
+        for (int i = it->second.size() - 1; i >= 0; i--)
+        {
+            if (component == it->second[i])
+            {
+                it->second.erase(it->second.begin() + i);
+                return;
+            }
+        }
     }
 }
 

@@ -24,20 +24,20 @@ std::shared_ptr<GameObject> GameObject::Create()
     return newGameObject;
 }
 
-void GameObject::AddComponent(std::shared_ptr<Component> component)
+void GameObject::AddComponent(Component *component)
 {
-    component->gameObject = std::dynamic_pointer_cast<GameObject>(shared_from_this());
+    component->gameObject = this;
     size_t typeHashCode = component->GetHashID();
     components[typeHashCode] = component;
 }
 
-void GameObject::RemoveComponent(std::shared_ptr<Component> component)
+void GameObject::RemoveComponent(Component *component)
 {
     size_t typeHashCode = component->GetHashID();
     if (components[typeHashCode] == component)
     {
-        component->gameObject = nullptr;
         components.erase(typeHashCode);
+        Component::Destroy(component);
     }
     else
     {
@@ -47,9 +47,10 @@ void GameObject::RemoveComponent(std::shared_ptr<Component> component)
 
 void GameObject::RemoveAllComponent()
 {
+    // delete all components
     for (auto const &pair : components)
     {
-        pair.second->gameObject = nullptr;
+        Component::Destroy(pair.second);
     }
 
     components.clear();

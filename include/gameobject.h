@@ -17,7 +17,7 @@ public:
 
     static void Destroy(std::shared_ptr<GameObject> gameobject);
 
-    void AddComponent(std::shared_ptr<Component> component);
+    void AddComponent(Component *component);
 
     template <typename T>
     void RemoveComponent()
@@ -29,16 +29,16 @@ public:
         }
     }
 
-    void RemoveComponent(std::shared_ptr<Component> component);
+    void RemoveComponent(Component *component);
 
     template <typename T>
-    std::shared_ptr<T> GetComponent()
+    T *GetComponent()
     {
         size_t typeHashCode = T::GetHashIDStatic();
-        std::map<size_t, std::shared_ptr<Component>>::iterator it = components.find(typeHashCode);
+        std::map<size_t, Component *>::iterator it = components.find(typeHashCode);
         if (it != components.end())
         {
-            return std::dynamic_pointer_cast<T>(it->second);
+            return (T *)(it->second);
         }
         return nullptr;
     }
@@ -71,7 +71,7 @@ private:
     void RecalculateTransform();
 
     bool needDestroy = false;
-    std::map<size_t, std::shared_ptr<Component>> components;
+    std::map<size_t, Component *> components;
 
     unsigned int ID;
     static unsigned int IdCounter;

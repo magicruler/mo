@@ -10,7 +10,8 @@ public:
 
     static ComponentSystem *GetInstance();
 
-    void AddComponent(std::shared_ptr<Component> component);
+    void AddComponent(Component* component);
+    void RemoveComponent(Component* component);
 
     void Update();
 
@@ -20,5 +21,5 @@ private:
     ~ComponentSystem();
 
     static ComponentSystem *instance;
-    std::map<size_t, std::vector<std::shared_ptr<Component>>> componentsMap;
+    std::map<size_t, std::vector<Component*>> componentsMap;
 };

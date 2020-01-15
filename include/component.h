@@ -12,7 +12,8 @@ class Component : public Object
 
 public:
     Component();
-    std::shared_ptr<GameObject> gameObject;
+    GameObject* gameObject;
+    static void Destroy(Component* component);
 
 private:
     static unsigned int IdCounter;
