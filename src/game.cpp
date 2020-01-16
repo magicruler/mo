@@ -9,10 +9,13 @@
 #include "test_object.h"
 #include "event.h"
 
+#include "task_system.h"
+
 namespace Game
 {
 void Init()
 {
+    TaskSystem::Init();
     GameObjectSystem::Init();
     ComponentSystem::Init();
     ResourceSystem::Init();
@@ -29,6 +32,7 @@ void Update(float dt)
 
 void End()
 {
+    TaskSystem::Destroy();
     GameObjectSystem::Destroy();
     ComponentSystem::Destroy();
     ResourceSystem::Destroy();
