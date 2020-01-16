@@ -24,6 +24,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "input.h"
+
 #include <cstdio>
 
 float deltaTime = 0.0f; // time between current frame and last frame
@@ -106,6 +108,7 @@ int main(int, char **args)
 
     auto renderTarget = new RenderTarget(300, 300);
 
+    Input::Init(window);
     Game::Init();
 
     auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
