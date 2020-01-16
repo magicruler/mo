@@ -13,7 +13,7 @@ class GameObject : public Object
 public:
     GameObject();
 
-    static GameObject* Create();
+    static GameObject* Create(GameObject* parent = nullptr);
 
     static void Destroy(GameObject* gameObject, bool recursive = true);
 
@@ -54,6 +54,7 @@ public:
     GameObject* GetParent() const;
     void AddChild(GameObject* child);
     void RemoveChild(size_t index);
+    void RemoveChild(GameObject* gameObject);
     void RemoveAllChildren();
 
     std::vector<GameObject*> GetChildren();

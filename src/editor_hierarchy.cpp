@@ -1,6 +1,7 @@
 #include "editor_hierarchy.h"
 #include "scene_system.h"
 #include "scene.h"
+#include "gameobject.h"
 
 EditorHierarchy::EditorHierarchy(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
@@ -30,7 +31,7 @@ void TreeView()
 	
 	for (auto root : rootList)
 	{
-		if (ImGui::TreeNodeEx("Haha0", tree_flags))
+		if (ImGui::TreeNodeEx(root->GetName().c_str(), tree_flags))
 		{
 			if (ImGui::IsItemClicked())
 			{

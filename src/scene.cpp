@@ -3,13 +3,23 @@
 
 void Scene::AddGameObject(GameObject* gameObject)
 {
+    assert(gameObject->GetIsSceneRoot() == false);
+
+    // if parent != null, remove from parent first
+    if (gameObject->GetParent() != nullptr)
+    {
+        gameObject->GetParent()->RemoveChild(gameObject);
+    }
+
     gameObject->SetIsSceneRoot(true);
     root.push_back(gameObject);
 }
 
 void Scene::RemoveGameObject(GameObject* gameObject)
 {
-    for (size_t i = root.size(); i >= 0; i--)
+    assert(gameObject->GetParent() == nullptr);
+
+    for (int i = root.size() - 1; i >= 0; i--)
     {
         if (root[i] == gameObject)
         {

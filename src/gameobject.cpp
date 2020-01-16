@@ -8,6 +8,11 @@ unsigned int GameObject::IdCounter = 0;
 
 GameObject::GameObject()
 {
+    parent = nullptr;
+    position = glm::vec3(0.0f, 0.0f, 0.0f);
+    rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    transform = glm::mat4(1.0f);
+
     IdCounter++;
     ID = IdCounter;
 }
@@ -22,15 +27,35 @@ void GameObject::Destroy(GameObject *gameObject, bool recursive)
             GameObject::Destroy(child);
         }
     }
+    // non recursive
+    else
+    {
+        // add direct children into current scene
+        for (int i = gameObject->GetChildren().size() - 1; i >= 0; i--)
+        {
+            SceneSystem::GetInstance()->GetActivatedScene()->AddGameObject(gameObject->GetChildren()[i]);
+        }
+    }
 }
 
-GameObject *GameObject::Create()
+GameObject *GameObject::Create(GameObject* parent)
 {
     GameObjectSystem *gameObjectSystem = GameObjectSystem::GetInstance();
     auto newGameObject = new GameObject();
     newGameObject->SetName("NewGameObject");
 
+    // Use GameObject System To Manage And Track All GameObjects
     gameObjectSystem->AddGameObject(newGameObject);
+
+    // if no parent provided, directly attach on current scene
+    if (parent == nullptr)
+    {
+        SceneSystem::GetInstance()->GetActivatedScene()->AddGameObject(newGameObject);
+    }
+    else
+    {
+        parent->AddChild(newGameObject);
+    }
 
     return newGameObject;
 }
@@ -75,7 +100,11 @@ void GameObject::Clear()
     {
         SceneSystem::GetInstance()->GetActivatedScene()->RemoveGameObject(this);
     }
-    parent = nullptr;
+    //
+    if (parent != nullptr)
+    {
+        parent->RemoveChild(this);
+    }
 }
 
 unsigned int GameObject::GetID() const
@@ -90,6 +119,18 @@ GameObject *GameObject::GetParent() const
 
 void GameObject::AddChild(GameObject *child)
 {
+    // if child in scene root, first remove 
+    if (child->isSceneRoot)
+    {
+        SceneSystem::GetInstance()->GetActivatedScene()->RemoveGameObject(child);
+    }
+
+    // if child already has a parent, remove from this parent
+    if (child->parent != nullptr)
+    {
+        child->parent->RemoveChild(child);
+    }
+
     child->parent = this;
     children.push_back(child);
 }
@@ -103,6 +144,19 @@ void GameObject::RemoveChild(size_t index)
     }
     children[index]->parent = nullptr;
     children.erase(children.begin() + index);
+}
+
+void GameObject::RemoveChild(GameObject* gameObject)
+{
+    for (int i = children.size() - 1; i >= 0; i--)
+    {
+        auto child = children[i];
+        if (child == gameObject)
+        {
+            child->parent = nullptr;
+            children.erase(children.begin() + i);
+        }
+    }
 }
 
 void GameObject::RemoveAllChildren()

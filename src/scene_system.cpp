@@ -5,6 +5,7 @@ SceneSystem *SceneSystem::instance = nullptr;
 
 SceneSystem::SceneSystem()
 {
+    activatedScene = nullptr;
 }
 
 SceneSystem::~SceneSystem()
