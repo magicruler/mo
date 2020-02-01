@@ -3,6 +3,7 @@
 
 Texture::Texture()
 {
+    ID = 0;
 }
 
 Texture::~Texture()

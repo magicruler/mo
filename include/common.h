@@ -19,3 +19,4 @@
 #include "glm/gtx/euler_angles.hpp"
 
 #include "object.h"
+#include "mathematica.h"

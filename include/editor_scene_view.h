@@ -18,4 +18,5 @@ private:
     virtual void OnResize();
 
     RenderTarget* sceneViewRenderTarget;
+    bool initialized = false;
 };
