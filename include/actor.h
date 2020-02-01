@@ -127,7 +127,18 @@ private:
 	glm::vec3 localScale;
 
 	bool tickable = false;
+	std::string name = "";
 
 public:
+	std::string GetName()
+	{
+		return name;
+	}
+
+	void SetName(const std::string newName)
+	{
+		name = newName;
+	}
+
 	AABB aabb;
 };

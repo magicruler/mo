@@ -28,7 +28,7 @@ namespace Time
 
 	void LimitFPS()
 	{
-		float expected_next_frame_time = (lastTime + 1.0f / Configuration::FPS);
+		float expected_next_frame_time = (lastTime + 1.0f / Configuration::GetFPS());
 		float currentTime = GetTime();
 
 		if (currentTime < expected_next_frame_time)

@@ -50,6 +50,8 @@ int main(int, char **args)
 	{
 		environmentPath += (tokens[i] + "\\");
 	}
+    environmentPath += "assets\\";
+
 	_chdir(environmentPath.c_str());
 	#else
 	auto tokens = StringUtils::Split(path, "/");
@@ -57,6 +59,7 @@ int main(int, char **args)
 	{
 		environmentPath += (tokens[i] + "/");
 	}
+    environmentPath += "assets/";
 
 	chdir(environmentPath.c_str());
 	#endif

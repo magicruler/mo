@@ -6,6 +6,9 @@
 
 #include "editor_scene_view.h"
 #include "camera.h"
+#include "serialization.h"
+#include "string_utils.h"
+#include "configs.h"
 
 namespace Game
 {
@@ -13,17 +16,18 @@ namespace Game
     RenderTarget* mainRenderTarget = nullptr;
     glm::vec4 clearColor = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    void InitDefaultScene()
+    void InitEntryScene()
     {
-        activeScene = new Scene();
-
-        auto camera = new Camera();
-        activeScene->rootNode->AddChild(camera);
+        auto scenePath = "scenes/" + Configuration::GetEntryScene();
+        auto sceneContent = StringUtils::ReadFile(scenePath);
+        activeScene = Serialization::DeserializeScene(sceneContent);
     }
 
     void Init()
     {
-        InitDefaultScene();
+        Serialization::LoadProject();
+
+        InitEntryScene();
 
         mainRenderTarget = new RenderTarget(300, 300);
 
@@ -31,6 +35,11 @@ namespace Game
 
         auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
         editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
+    }
+
+    RenderTarget* MainRenderTargetGetPointer()
+    {
+        return mainRenderTarget;
     }
 
     glm::vec2 MainRenderTargetGetSize()
@@ -46,14 +55,12 @@ namespace Game
 
     void Render()
     {
+        // for loop camera render
         mainRenderTarget->Bind();
         glm::vec2 renderTargetSize = mainRenderTarget->GetSize();
         glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
         glClearColor(1.0f, clearColor.y, clearColor.z, clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
         mainRenderTarget->Unbind();
     }
 
@@ -61,7 +68,11 @@ namespace Game
     {
         EditorWindowSystem::Destroy();
 
-        delete activeScene;
+        if (activeScene != nullptr)
+        {
+            delete activeScene;
+        }
+
         delete mainRenderTarget;
     }
 } // namespace Game

@@ -1,4 +1,4 @@
 {
-    "startScene":"default.json",
+    "entryScene":"default.json",
     "frameRate":60
 }

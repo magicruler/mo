@@ -39,7 +39,7 @@ add_subdirectory(thirdparty/glm)
 # Assimp Building
 add_subdirectory(thirdparty/assimp)
 
-file(GLOB HEADERS include/*.h)
+file(GLOB HEADERS include/*.h include/*.hpp)
 file(GLOB SOURCES src/*.cpp)
 
 add_executable(Mo ${SOURCES} ${HEADERS})

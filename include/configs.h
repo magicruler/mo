@@ -1,6 +1,10 @@
 #pragma once
+#include "common.h"
 
 namespace Configuration
 {
-	constexpr float FPS = 60.0f;
+	float GetFPS();
+	void SetFPS(float newFps);
+	std::string GetEntryScene();
+	void SetEntryScene(const std::string& name);
 }
