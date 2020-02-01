@@ -22,6 +22,13 @@
 #include <cstdio>
 #include "time_manager.h"
 
+#include "string_utils.h"
+
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include<unistd.h>  
+#endif
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -32,6 +39,30 @@ GLFWwindow *window = nullptr;
 
 int main(int, char **args)
 {
+    auto path = args[0];
+	std::string environmentPath = "";
+
+	#ifdef _WIN32
+	auto tokens = StringUtils::Split(path, "\\");
+	
+
+	for (int i = 0; i < tokens.size() - 1; i++)
+	{
+		environmentPath += (tokens[i] + "\\");
+	}
+	_chdir(environmentPath.c_str());
+	#else
+	auto tokens = StringUtils::Split(path, "/");
+	for (int i = 0; i < tokens.size() - 1; i++)
+	{
+		environmentPath += (tokens[i] + "/");
+	}
+
+	chdir(environmentPath.c_str());
+	#endif
+
+	spdlog::info("Environment Path Is {}", environmentPath);
+    
     glfwSetErrorCallback(glfw_error_callback);
 
     if (!glfwInit())

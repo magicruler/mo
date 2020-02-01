@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(Mo VERSION 0.1.0)
 
+# Set Output Directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/bin>)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG $<1:${CMAKE_SOURCE_DIR}/bin>)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
+     DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
 include_directories(
     include/
     thirdparty/spdlog/include/
