@@ -7,13 +7,6 @@
 #include "editor_window_system.h"
 
 #include "shader.h"
-#include "gameobject.h"
-#include "gameobject_system.h"
-
-#include "component_system.h"
-#include "scene_system.h"
-#include "resource_system.h"
-
 #include "editor_scene_view.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
