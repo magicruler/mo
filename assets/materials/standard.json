@@ -7,12 +7,12 @@
         {
             "name": "albedoTex",
             "type": "sampler2D",
-            "path": "tjciddjqx_4K_Albedo.jpg"
+            "value": "tjciddjqx_4K_Albedo.jpg"
         },
         {
             "name": "normalTex",
             "type": "sampler2D",
-            "path": "tjciddjqx_4K_Normal_LOD0.jpg"
+            "value": "tjciddjqx_4K_Normal_LOD0.jpg"
         }
     ]
 }

@@ -5,7 +5,7 @@
         {
             "name": "bread",
             "type": "actor",
-            "material": "standard",
+            "material": "standard.json",
             "mesh": "tjciddjqx_LOD0.fbx",
             "transform":
             {
