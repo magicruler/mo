@@ -39,6 +39,20 @@ void RenderTarget::Resize(unsigned int width, unsigned int height)
     this->height = height;
 
     glDeleteFramebuffers(1, &ID);
+    
+    for (int i = colorAttachments.size() - 1; i >= 0; i--)
+    {
+        delete colorAttachments[i];
+    }
+
+    colorAttachments.clear();
+
+    if (depthAttachment != nullptr)
+    {
+        delete depthAttachment;
+        depthAttachment = nullptr;
+    }
+
     Init();
 }
 

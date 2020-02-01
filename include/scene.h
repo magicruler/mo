@@ -9,4 +9,6 @@ public:
     Scene();
     ~Scene();
     Actor* rootNode = nullptr;
+    
+    void Tick();
 };

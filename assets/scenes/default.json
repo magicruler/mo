@@ -4,6 +4,7 @@
     [
         {
             "name": "bread",
+            "type": "actor",
             "material": "standard",
             "mesh": "tjciddjqx_LOD0.fbx",
             "transform":
@@ -17,10 +18,27 @@
             ]
         },
         {
-            "name": "directionalLight",
+            "name": "light",
+            "type": "pointLight",
             "light": "directional",
             "lightIntensity": 1.0,
             "lightColor":[0.5, 0.6, 0.3],
+            "transform":
+            {
+                "position":[0.0, 0.0, 0.0],
+                "scale":[1.0, 1.0, 1.0],
+                "rotation":[0.0, 0.0, 0.0]
+            },
+            "children":
+            [
+            ]
+        },
+        {
+            "name": "mainCamera",
+            "type": "camera",
+            "fov": 45.0,
+            "nearPlane": 0.1,
+            "farPlane": 100.0,
             "transform":
             {
                 "position":[0.0, 0.0, 0.0],

@@ -38,7 +38,7 @@ private:
     unsigned int height;
     bool hasDepth;
     unsigned int attachmentCount;
-    Texture *depthAttachment;
+    Texture *depthAttachment = nullptr;
     std::vector<Texture *> colorAttachments;
     unsigned int ID;
 };

@@ -5,8 +5,9 @@
 class Mesh;
 class Material;
 
-class Actor
+class Actor : Object
 {
+	MO_OBJECT("Actor")
 public:
 	
 	Actor()
@@ -94,6 +95,10 @@ public:
 		dirty = true;
 	}
 
+	/*
+	target, world position
+	*/
+	void LookAt(glm::vec3 worldPosition, glm::vec3 worldUp);
 
 	glm::mat4 GetTransform()
 	{
@@ -120,6 +125,8 @@ private:
 	glm::vec3 localPosition;
 	glm::vec3 localRotation;
 	glm::vec3 localScale;
+
+	bool tickable = false;
 
 public:
 	AABB aabb;

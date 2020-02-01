@@ -5,6 +5,7 @@
 #include "render_target.h"
 
 #include "editor_scene_view.h"
+#include "camera.h"
 
 namespace Game
 {
@@ -15,6 +16,9 @@ namespace Game
     void InitDefaultScene()
     {
         activeScene = new Scene();
+
+        auto camera = new Camera();
+        activeScene->rootNode->AddChild(camera);
     }
 
     void Init()
@@ -29,8 +33,14 @@ namespace Game
         editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
     }
 
+    glm::vec2 MainRenderTargetGetSize()
+    {
+        return mainRenderTarget->GetSize();
+    }
+
     void Update()
     {
+        activeScene->Tick();
         EditorWindowSystem::GetInstance()->Update();
     }
 

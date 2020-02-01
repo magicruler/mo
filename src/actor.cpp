@@ -1,6 +1,31 @@
 #include "actor.h"
 #include "mesh.h"
 #include "material.h"
+#include <glm/gtx/matrix_decompose.hpp>
+
+void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
+{
+	auto parentWorldTransform = parent->GetTransform();
+
+	glm::vec3 worldOriginPosition = GetTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	auto newSelfWorldTransform = glm::inverse(glm::lookAt(worldOriginPosition, worldPosition, worldUp));
+	
+	// newSelfWorldTransform = parentWorldTransform * localTransform 
+	auto localTransform = glm::inverse(parentWorldTransform) * newSelfWorldTransform;
+
+	glm::vec3 localScale;
+	glm::quat localRotation;
+	glm::vec3 localTranslation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(localTransform, localScale, localRotation, localTranslation, skew, perspective);
+
+	SetLocalPosition(localTranslation);
+	SetLocalScale(localScale);
+	SetLocalRotation(glm::eulerAngles(localRotation));
+
+	dirty = true;
+}
 
 void Actor::UpdateTransform()
 {
