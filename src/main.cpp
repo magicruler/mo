@@ -20,9 +20,8 @@
 #include "input.h"
 
 #include <cstdio>
+#include "time_manager.h"
 
-float deltaTime = 0.0f; // time between current frame and last frame
-float lastFrame = 0.0f;
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -108,10 +107,8 @@ int main(int, char **args)
     editorSceneView->SetSceneViewRenderTarget(renderTarget);
 
     while (!glfwWindowShouldClose(window))
-    {
-        float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+    {  
+        Time::Update();
 
         glfwPollEvents();
 
@@ -130,7 +127,7 @@ int main(int, char **args)
 
         ImGui::ShowDemoWindow(&p_open);
 
-        Game::Update(deltaTime);
+        Game::Update();
 
         ImGui::Render();
 
@@ -151,6 +148,8 @@ int main(int, char **args)
         }
 
         glfwSwapBuffers(window);
+        
+        Time::LimitFPS();
     }
 
     delete renderTarget;

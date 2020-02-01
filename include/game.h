@@ -3,5 +3,5 @@
 namespace Game
 {
 void Init();
-void Update(float dt);
+void Update();
 } // namespace Game

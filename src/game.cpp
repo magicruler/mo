@@ -9,7 +9,7 @@ void Init()
     EditorWindowSystem::Init();
 }
 
-void Update(float dt)
+void Update()
 {
     EditorWindowSystem::GetInstance()->Update();
 }
