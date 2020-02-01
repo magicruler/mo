@@ -1,5 +1,6 @@
 #include "actor.h"
 #include "mesh.h"
+#include "material.h"
 
 void Actor::UpdateTransform()
 {

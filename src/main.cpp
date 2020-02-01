@@ -98,13 +98,8 @@ int main(int, char **args)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     static bool p_open = true;
 
-    auto renderTarget = new RenderTarget(300, 300);
-
     Input::Init(window);
     Game::Init();
-
-    auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
-    editorSceneView->SetSceneViewRenderTarget(renderTarget);
 
     while (!glfwWindowShouldClose(window))
     {  
@@ -112,13 +107,7 @@ int main(int, char **args)
 
         glfwPollEvents();
 
-        // Test Frame Buffer Rendering
-        renderTarget->Bind();
-        glm::vec2 renderTargetSize = renderTarget->GetSize();
-        glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
-        glClearColor(1.0f, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        renderTarget->Unbind();
+        Game::Render();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -152,11 +141,11 @@ int main(int, char **args)
         Time::LimitFPS();
     }
 
-    delete renderTarget;
-
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    Game::End();
 
     glfwDestroyWindow(window);
     glfwTerminate();

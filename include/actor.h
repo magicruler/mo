@@ -3,6 +3,7 @@
 #include "aabb.h"
 
 class Mesh;
+class Material;
 
 class Actor
 {
@@ -12,6 +13,7 @@ public:
 	{
 		parent = nullptr;
 		mesh = nullptr;
+        material = nullptr;
 
 		transform = glm::mat4(1.0f);
 		
@@ -64,6 +66,16 @@ public:
 		return mesh;
 	}
 
+    void SetMaterial(Material* material)
+	{
+		this->material = material;
+	}
+
+	Material* GetMaterial()
+	{
+		return material;
+	}
+
 	inline void SetLocalPosition(glm::vec3 pos)
 	{
 		localPosition = pos;
@@ -97,7 +109,8 @@ public:
 
 private:
 	Mesh* mesh;
-	
+	Material* material;
+
 	Actor* parent;
 	std::vector<Actor*> children;
 	glm::mat4 transform;
