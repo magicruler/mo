@@ -24,17 +24,21 @@ void Material::SetFloat(const std::string& propName, float value)
 
 void Material::Use()
 {
-	/*
-	Bind Textures
-	*/
 	int unitIndex = 0;
 	for (auto& item : textureProperties)
 	{
 		shader->SetInt(item.first, unitIndex);
-
-		item.second->Bind(unitIndex);
 		unitIndex += 1;
 	}
 
 	shader->Use();
+	/*
+	Bind Textures
+	*/
+	unitIndex = 0;
+	for (auto& item : textureProperties)
+	{
+		item.second->Bind(unitIndex);
+		unitIndex += 1;
+	}
 }

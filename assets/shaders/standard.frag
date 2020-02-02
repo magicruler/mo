@@ -1,14 +1,14 @@
 #version 330 core
 
-uniform sampler2D albedoTex;
-uniform sampler2D normalTex;
+out vec4 outColor;
 
 in vec2 fragUV;
 in vec2 fragTime;
 
-out vec4 outColor;
+uniform sampler2D albedoTex;
+uniform sampler2D normalTex;
 
 void main() 
 {
-    outColor = vec4(fragUV, 0.0, 1.0); //texture(albedoTex, fragUV);
+    outColor = texture(albedoTex, fragUV);
 }

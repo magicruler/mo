@@ -44,10 +44,7 @@ void Texture::SetData2D(unsigned int width, unsigned int height, int internalFor
 
 void Texture::Bind(int texUnit)
 {
-    if (texUnit > 0)
-    {
-        glActiveTexture(GL_TEXTURE0 + texUnit);
-    }
+    glActiveTexture(GL_TEXTURE0 + texUnit);
     glBindTexture(target, ID);
 }
 

@@ -156,9 +156,8 @@ namespace Serialization
 			int textureWidth, textureHeight, textureChannels;
 			stbi_uc* pixels = stbi_load(path.c_str(), &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
 
-			texture->SetData2D(textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-			delete pixels;
+			texture->SetData2D(textureWidth, textureHeight, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+			stbi_image_free(pixels);
 		}
 
 		return texture;
