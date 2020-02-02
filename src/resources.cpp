@@ -3,6 +3,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "material.h"
+#include "mesh.h"
 
 #include "string_utils.h"
 #include "serialization.h"
@@ -21,6 +22,10 @@ namespace Resources
 	Store All Loaded Shaders
 	*/
 	std::map<std::string, Shader*> shaders;
+	/*
+	Store All Loaded Meshes
+	*/
+	std::map<std::string, Mesh*> meshes;
 
 	/*
 	Try Get Texture, If Not Exist, Load It
@@ -98,5 +103,30 @@ namespace Resources
 		materials[path] = material;
 
 		return material;
+	}
+
+	Mesh* GetMesh(const std::string& path)
+	{
+		auto it = meshes.find(path);
+		// Don't Find, Load
+		if (it == meshes.cend())
+		{
+			return LoadMesh(path);
+		}
+		// Find, Return
+		else
+		{
+			return it->second;
+		}
+	}
+
+	Mesh* LoadMesh(const std::string& path)
+	{
+		auto metaContent = StringUtils::ReadFile("meshes/" + path);
+		Mesh* mesh = Serialization::DeserializeMesh(metaContent);
+
+		meshes[path] = mesh;
+
+		return mesh;
 	}
 };

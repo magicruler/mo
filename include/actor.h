@@ -83,6 +83,12 @@ public:
 		dirty = true;
 	}
 
+	// TODO, USE CACHED POSITION
+	glm::vec3 GetWorldPosition()
+	{
+		return GetTransform() * glm::vec4(localPosition.x, localPosition.y, localPosition.z, 1.0f);
+	}
+
 	inline void SetLocalScale(glm::vec3 scale)
 	{
 		localScale = scale;

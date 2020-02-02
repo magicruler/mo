@@ -12,8 +12,13 @@
 
 #include "shader.h"
 #include "material.h"
+#include "mesh.h"
 
 #include "resources.h"
+
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 
 using json = nlohmann::json;
 
@@ -72,6 +77,12 @@ namespace Serialization
 			/*
 			mesh, optional property
 			*/
+			if (node.contains("mesh"))
+			{
+				auto meshPath = node["mesh"].get<std::string>();
+				Mesh* mesh = Resources::GetMesh(meshPath);
+				newActor->SetMesh(mesh);
+			}
 
 			auto transformObject = node["transform"];
 			ProcessTransformation(transformObject, newActor);
@@ -146,6 +157,8 @@ namespace Serialization
 			stbi_uc* pixels = stbi_load(path.c_str(), &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
 
 			texture->SetData2D(textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+			delete pixels;
 		}
 
 		return texture;
@@ -212,5 +225,73 @@ namespace Serialization
 		shader->Init(name, vertCode, fragCode);
 
 		return shader;
+	}
+
+	Mesh* DeserializeMesh(const std::string& content)
+	{
+		auto meshJsonObject = json::parse(content);
+		std::string path = meshJsonObject["path"].get<std::string>();
+		std::string type = meshJsonObject["type"].get<std::string>();
+
+		if (type == "mesh")
+		{
+			Assimp::Importer importer;
+
+			const aiScene* scene = importer.ReadFile("meshes/" + path,
+				aiProcess_CalcTangentSpace
+				| aiProcess_Triangulate
+				| aiProcess_JoinIdenticalVertices
+				| aiProcess_SortByPType
+				| aiProcess_GenBoundingBoxes
+				| aiProcess_GenNormals
+				| aiProcess_OptimizeMeshes
+				| aiProcess_GenUVCoords
+				| aiProcess_OptimizeGraph
+				// | aiProcess_MakeLeftHanded
+			);
+
+			if (!scene)
+			{
+				spdlog::info("assimp: {}", importer.GetErrorString());
+				return nullptr;
+			}
+
+			assert(scene->mNumMeshes == 1);
+
+			Mesh* mesh = new Mesh();
+			
+			// Process Mesh
+			aiMesh* aiMesh = scene->mMeshes[0];
+			
+			mesh->AABBMin = glm::vec3(aiMesh->mAABB.mMin.x, aiMesh->mAABB.mMin.y, aiMesh->mAABB.mMin.z);
+			mesh->AABBMax = glm::vec3(aiMesh->mAABB.mMax.x, aiMesh->mAABB.mMax.y, aiMesh->mAABB.mMax.z);
+
+			// Indices
+			mesh->indices.resize(aiMesh->mNumFaces * 3);
+			for (size_t f = 0; f < aiMesh->mNumFaces; ++f)
+			{
+				for (size_t i = 0; i < 3; ++i)
+				{
+					mesh->indices[f * 3 + i] = aiMesh->mFaces[f].mIndices[i];
+				}
+			}
+
+			// Vertex
+			mesh->vertices.resize(aiMesh->mNumVertices);
+			for (size_t i = 0; i < aiMesh->mNumVertices; ++i)
+			{
+				mesh->vertices[i].position = glm::vec3(aiMesh->mVertices[i].x, aiMesh->mVertices[i].y, aiMesh->mVertices[i].z);
+				mesh->vertices[i].normal = glm::vec3(aiMesh->mNormals[i].x, aiMesh->mNormals[i].y, aiMesh->mNormals[i].z);
+				mesh->vertices[i].uv = glm::vec2(aiMesh->mTextureCoords[0][i].x, 1.0f - aiMesh->mTextureCoords[0][i].y);
+				mesh->vertices[i].tangent = glm::vec3(aiMesh->mTangents[i].x, aiMesh->mTangents[i].y, aiMesh->mTangents[i].z);
+				mesh->vertices[i].bitangent = glm::vec3(aiMesh->mBitangents[i].x, aiMesh->mBitangents[i].y, aiMesh->mBitangents[i].z);
+			}
+
+			mesh->CreateGPUResource();
+
+			return mesh;
+		}
+
+		return nullptr;
 	}
 };

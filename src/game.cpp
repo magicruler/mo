@@ -34,17 +34,7 @@ namespace Game
         auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
         editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
     }
-
-    RenderTarget* MainRenderTargetGetPointer()
-    {
-        return mainRenderTarget;
-    }
-
-    glm::vec2 MainRenderTargetGetSize()
-    {
-        return mainRenderTarget->GetSize();
-    }
-
+   
     void Update()
     {
         activeScene->Tick();
@@ -77,5 +67,23 @@ namespace Game
         }
 
         delete mainRenderTarget;
+    }
+
+    /*
+   API
+   */
+    RenderTarget* MainRenderTargetGetPointer()
+    {
+        return mainRenderTarget;
+    }
+
+    glm::vec2 MainRenderTargetGetSize()
+    {
+        return mainRenderTarget->GetSize();
+    }
+
+    Scene* ActiveSceneGetPointer()
+    {
+        return activeScene;
     }
 } // namespace Game

@@ -6,7 +6,7 @@
             "name": "bread",
             "type": "actor",
             "material": "standard.json",
-            "mesh": "tjciddjqx_LOD0.fbx",
+            "mesh": "tjciddjqx_LOD0.json",
             "transform":
             {
                 "position":[0.0, 0.0, 0.0],
@@ -42,7 +42,7 @@
             "clearColor": [0.31, 0.53, 0.36, 1.0],
             "transform":
             {
-                "position":[0.0, 0.0, 0.0],
+                "position":[0.0, 0.0, 10.0],
                 "scale":[1.0, 1.0, 1.0],
                 "rotation":[0.0, 0.0, 0.0]
             },

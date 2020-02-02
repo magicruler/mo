@@ -4,6 +4,7 @@
 class Texture;
 class Shader;
 class Material;
+class Mesh;
 
 /*
 Lazy Initialization, Lazy Management XD
@@ -18,4 +19,7 @@ namespace Resources
 
 	Material* GetMaterial(const std::string& path);
 	Material* LoadMaterial(const std::string& path);
+
+	Mesh* GetMesh(const std::string& path);
+	Mesh* LoadMesh(const std::string& path);
 };

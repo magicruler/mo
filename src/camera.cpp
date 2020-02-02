@@ -1,6 +1,13 @@
 #include "camera.h"
 #include "game.h"
 #include "render_target.h"
+#include "scene.h"
+
+#include "material.h"
+#include "mesh.h"
+#include "vertex_array.h"
+
+#include "time_manager.h"
 
 Camera::Camera()
 	:Actor()
@@ -28,13 +35,55 @@ TODO, USE CACHED INVERSE MATRIX
 */
 glm::mat4 Camera::GetViewMatrix()
 {
-	return glm::inverse(GetTransform());
+	glm::mat4 modelMatrix = GetTransform();
+	
+	glm::mat3x3 rotationScaleMatrix = glm::mat3x3(glm::transpose(modelMatrix));
+	glm::vec3 worldUp = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 worldForward = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
+	
+	glm::vec3 worldPos = GetWorldPosition();
+	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + worldForward, worldUp);
+	
+	return lookAtMatrix;
+}
+
+// TODO: TEMP POSITION FOR RENDERING CODE
+void RenderMesh(Camera* camera, Actor* renderableActor)
+{
+	Material* material = renderableActor->GetMaterial();
+	assert(material != nullptr);
+
+	Mesh* mesh = renderableActor->GetMesh();
+	assert(mesh != nullptr);
+
+	material->Use();
+	std::vector<MaterialExtension> extensions = material->GetExtensions();
+	for (auto extension : extensions)
+	{
+		if (extension == MaterialExtension::MODEL_VIEW_PROJECTION)
+		{
+			material->SetMatrix4("model", renderableActor->GetTransform());
+			material->SetMatrix4("view", camera->GetViewMatrix());
+			material->SetMatrix4("projection", camera->GetProjection());
+		}
+		else if (extension == MaterialExtension::TIME)
+		{
+			material->SetFloat("time", Time::GetTime());
+		}
+	}
+	
+	material->Use();
+
+	mesh->vertexArray->Bind();
+	glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
+	mesh->vertexArray->UnBind();
 }
 
 void Camera::Render()
 {
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
-	
+	std::vector<Actor*> renderables = Game::ActiveSceneGetPointer()->GetRenderables();
+
 	renderTarget->Bind();
 	if (renderTarget->HasDepth())
 	{
@@ -45,6 +94,11 @@ void Camera::Render()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	// Render Stuff
+	for (auto renderableActor : renderables)
+	{
+		RenderMesh(this, renderableActor);
+	}
 
 	renderTarget->Unbind();
 }
+

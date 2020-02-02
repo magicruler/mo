@@ -17,6 +17,11 @@ void Material::SetMatrix4(const std::string& propName, glm::mat4& matrix)
 	shader->SetMat4(propName, matrix);
 }
 
+void Material::SetFloat(const std::string& propName, float value)
+{
+	shader->SetFloat(propName, value);
+}
+
 void Material::Use()
 {
 	/*

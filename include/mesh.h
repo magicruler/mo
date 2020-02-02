@@ -19,13 +19,21 @@ struct MeshVertex
 	glm::vec3 bitangent;
 };
 
+class VertexArray;
+class GPUBuffer;
+
 class Mesh
 {
 public:
 	std::string name;
 	std::vector<MeshVertex> vertices;
-	std::vector<uint16_t> indices;
+	std::vector<unsigned int> indices;
 
 	glm::vec3 AABBMin;
 	glm::vec3 AABBMax;
+
+	void CreateGPUResource();
+	VertexArray* vertexArray = nullptr;
+	GPUBuffer* elementBuffer = nullptr;
+	GPUBuffer* arrayBuffer = nullptr;
 };

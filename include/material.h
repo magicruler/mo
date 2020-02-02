@@ -17,6 +17,8 @@ public:
 
 	void SetTextureProperty(const std::string& propName, Texture* texValue);
 	void SetMatrix4(const std::string& propName, glm::mat4& matrix);
+	void SetFloat(const std::string& propName, float value);
+
 	void Use();
 
 	void AddExtension(MaterialExtension extension)
