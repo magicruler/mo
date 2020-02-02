@@ -21,8 +21,6 @@ void Camera::Tick()
 {
 	auto targetSize = renderTarget->GetSize();
 	ratio = targetSize.x / targetSize.y;
-
-	spdlog::info("hello");
 }
 
 glm::mat4 Camera::GetProjection()
