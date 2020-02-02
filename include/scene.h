@@ -2,6 +2,7 @@
 #include "common.h"
 
 class Actor;
+class Camera;
 
 class Scene
 {
@@ -11,6 +12,9 @@ public:
     Actor* rootNode = nullptr;
     
     void Tick();
+
+    std::vector<Camera*> GetCameras();
+    std::vector<Actor*> GetRenderables();
 
     std::string GetName()
     {

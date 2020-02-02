@@ -9,6 +9,7 @@
 public:                                                  \
     virtual std::string GetType() const { return NAME; } \
     static std::string GetTypeStatic() { return NAME; }  \
+    virtual size_t GetHashID() { return std::hash<std::string>{}(NAME); }\
     static size_t GetHashIDStatic() { return std::hash<std::string>{}(NAME); }
 
 class Event;

@@ -26,10 +26,8 @@ namespace Game
     void Init()
     {
         Serialization::LoadProject();
-
-        InitEntryScene();
-
         mainRenderTarget = new RenderTarget(300, 300);
+        InitEntryScene();
 
         EditorWindowSystem::Init();
 
@@ -55,13 +53,18 @@ namespace Game
 
     void Render()
     {
-        // for loop camera render
-        mainRenderTarget->Bind();
-        glm::vec2 renderTargetSize = mainRenderTarget->GetSize();
-        glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
-        glClearColor(1.0f, clearColor.y, clearColor.z, clearColor.w);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        mainRenderTarget->Unbind();
+        auto cameras = activeScene->GetCameras();
+        for (auto camera:cameras)
+        {
+            camera->Render();
+        }
+        //// for loop camera render
+        //mainRenderTarget->Bind();
+        //glm::vec2 renderTargetSize = mainRenderTarget->GetSize();
+        //glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
+        //glClearColor(1.0f, clearColor.y, clearColor.z, clearColor.w);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //mainRenderTarget->Unbind();
     }
 
     void End()

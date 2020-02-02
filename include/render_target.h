@@ -30,6 +30,11 @@ public:
 
     glm::vec2 GetSize() const;
 
+    bool HasDepth()
+    {
+        return hasDepth;
+    }
+
 private:
     void Init();
 
