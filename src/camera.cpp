@@ -12,8 +12,8 @@ Camera::Camera()
 
 void Camera::Tick()
 {
-	auto mainTargetSize = Game::MainRenderTargetGetSize();
-	ratio = mainTargetSize.x / mainTargetSize.y;
+	auto targetSize = renderTarget->GetSize();
+	ratio = targetSize.x / targetSize.y;
 
 	spdlog::info("hello");
 }
@@ -23,6 +23,9 @@ glm::mat4 Camera::GetProjection()
 	return glm::perspective(fov, ratio, nearPlane, farPlane);
 }
 
+/*
+TODO, USE CACHED INVERSE MATRIX
+*/
 glm::mat4 Camera::GetViewMatrix()
 {
 	return glm::inverse(GetTransform());
