@@ -2,16 +2,25 @@
 
 #include "render_target.h"
 #include "texture.h"
+#include "camera.h"
+#include "game.h"
+#include "scene.h"
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
-    sceneViewRenderTarget = nullptr;
+    sceneViewRenderTarget = new RenderTarget(initialWidth, initialHeight);
+    
+    sceneCamera = new Camera();
+    sceneCamera->renderTarget = sceneViewRenderTarget;
+    sceneCamera->SetLocalPosition(glm::vec3(0.0f, 2.0f, 6.0f));
+
+    Game::ActiveSceneGetPointer()->rootNode->AddChild(sceneCamera);
 }
 
-void EditorSceneView::SetSceneViewRenderTarget(RenderTarget* renderTarget)
-{
-    sceneViewRenderTarget = renderTarget;
-}
+//void EditorSceneView::SetSceneViewRenderTarget(RenderTarget* renderTarget)
+//{
+//    sceneViewRenderTarget = renderTarget;
+//}
 
 void EditorSceneView::OnIMGUI() 
 {

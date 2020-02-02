@@ -3,6 +3,7 @@
 #include "editor_window.h"
 
 class RenderTarget;
+class Camera;
 
 class EditorSceneView : public EditorWindow
 {
@@ -10,12 +11,14 @@ class EditorSceneView : public EditorWindow
 public:
     EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title);
 
-    void SetSceneViewRenderTarget(RenderTarget* renderTarget);
+    //void SetSceneViewRenderTarget(RenderTarget* renderTarget);
 
 private:
     virtual void OnIMGUI();
 
     virtual void OnResize();
+
+    Camera* sceneCamera = nullptr;
 
     RenderTarget* sceneViewRenderTarget;
     bool initialized = false;

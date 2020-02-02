@@ -9,6 +9,10 @@
 
 #include "time_manager.h"
 
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
+
 Camera::Camera()
 	:Actor()
 {

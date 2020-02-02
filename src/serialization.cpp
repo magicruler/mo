@@ -20,6 +20,10 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
+
 using json = nlohmann::json;
 
 namespace Serialization

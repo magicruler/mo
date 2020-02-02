@@ -1,5 +1,7 @@
 #include "gpu_buffer.h"
+#ifndef __glad_h_
 #include <glad/glad.h>
+#endif
 
 GPUBuffer::GPUBuffer()
 {

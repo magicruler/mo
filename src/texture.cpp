@@ -1,9 +1,24 @@
 #pragma once
 #include "texture.h"
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
 
 Texture::Texture()
 {
     ID = 0;
+    target = GL_TEXTURE_2D;
+
+    internalFormat = GL_RGBA;
+    format = GL_RGBA;
+    dataType = GL_UNSIGNED_BYTE;
+
+    filterMin = GL_LINEAR_MIPMAP_LINEAR;
+    filterMag = GL_LINEAR;
+
+    wrapR = GL_REPEAT;
+    wrapS = GL_REPEAT;
+    wrapT = GL_REPEAT;
 }
 
 Texture::~Texture()

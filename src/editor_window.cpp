@@ -1,4 +1,5 @@
 #include "editor_window.h"
+#include "imgui.h"
 
 EditorWindow::EditorWindow(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : initialWidth(initialWidth),
                                                                                                                          initialHeight(initialHeight),
@@ -58,9 +59,9 @@ void EditorWindow::OnFrame()
         }
 
         OnIMGUI();
-
-        ImGui::End();
     }
+
+    ImGui::End();
 }
 
 void EditorWindow::Init()

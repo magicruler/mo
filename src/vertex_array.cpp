@@ -1,5 +1,7 @@
 #include "vertex_array.h"
+#ifndef __glad_h_
 #include <glad/glad.h>
+#endif
 #include "gpu_buffer.h"
 
 VertexArray::VertexArray(GPUBuffer* arrayBuffer, GPUBuffer* elementBuffer)

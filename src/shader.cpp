@@ -1,5 +1,7 @@
 #include "shader.h"
-#include "glad/glad.h"
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
 
 void Shader::Init(std::string name, std::string vertCode, std::string fragmentCode)
 {

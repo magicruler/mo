@@ -1,6 +1,5 @@
 #pragma once
 #include "common.h"
-#include "glad/glad.h"
 
 class Texture
 {
@@ -17,18 +16,18 @@ public:
 
     unsigned int AsID() const;
 
-    int target = GL_TEXTURE_2D;
+    int target;
 
-    int internalFormat = GL_RGBA;
-    int format = GL_RGBA;
-    int dataType = GL_UNSIGNED_BYTE;
+    int internalFormat;
+    int format;
+    int dataType;
 
-    int filterMin = GL_LINEAR_MIPMAP_LINEAR;
-    int filterMag = GL_LINEAR;
+    int filterMin;
+    int filterMag;
 
-    int wrapR = GL_REPEAT;
-    int wrapS = GL_REPEAT;
-    int wrapT = GL_REPEAT;
+    int wrapR;
+    int wrapS;
+    int wrapT;
 
     bool isMipmapped = true;
     bool created = false;

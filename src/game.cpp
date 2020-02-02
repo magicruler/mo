@@ -31,8 +31,8 @@ namespace Game
 
         EditorWindowSystem::Init();
 
-        auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
-        editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
+        // auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
+        // editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
     }
    
     void Update()

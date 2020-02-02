@@ -1,4 +1,7 @@
 #include "render_target.h"
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
 #include "texture.h"
 
 RenderTarget::~RenderTarget()

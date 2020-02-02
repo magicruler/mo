@@ -1,3 +1,5 @@
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+
 #include "game.h"
 
 #include "texture.h"
@@ -9,8 +11,9 @@
 #include "shader.h"
 #include "editor_scene_view.h"
 
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include "glad/glad.h"
+#ifndef __glad_h_
+#include <glad/glad.h>
+#endif
 #include "GLFW/glfw3.h"
 
 #include "imgui.h"
@@ -148,7 +151,7 @@ int main(int, char **args)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow(&p_open);
+        // ImGui::ShowDemoWindow(&p_open);
 
         Game::Update();
 
