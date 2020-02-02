@@ -5,7 +5,7 @@
 void Mesh::CreateGPUResource()
 {
 	elementBuffer = new GPUBuffer();
-	elementBuffer->SetDataElementBuffer(indices.data(), indices.size(), BUFFER_DRAW_TYPE::STATIC_DRAW);
+	elementBuffer->SetDataElementBuffer(indices.data(), indices.size() * sizeof(unsigned int), BUFFER_DRAW_TYPE::STATIC_DRAW);
 
 	arrayBuffer = new GPUBuffer();
 	arrayBuffer->SetDataArrayBuffer(vertices.data(), sizeof(MeshVertex) * vertices.size(), BUFFER_DRAW_TYPE::STATIC_DRAW);

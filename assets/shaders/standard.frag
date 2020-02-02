@@ -10,5 +10,5 @@ out vec4 outColor;
 
 void main() 
 {
-    outColor = texture(albedoTex, fragUV);
+    outColor = vec4(fragUV, 0.0, 1.0); //texture(albedoTex, fragUV);
 }

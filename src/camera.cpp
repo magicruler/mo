@@ -89,8 +89,12 @@ void Camera::Render()
 	{
 		glEnable(GL_DEPTH_TEST);
 	}
+
 	glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
+	
+	glClearDepth(1.0f);
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+	
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	// Render Stuff

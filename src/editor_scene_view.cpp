@@ -23,7 +23,7 @@ void EditorSceneView::OnIMGUI()
     else
     {
         auto textureId = sceneViewRenderTarget->GetAttachmentTexture(0)->AsID();
-        ImGui::Image((ImTextureID)textureId, sceneViewRenderTarget->GetSize());
+        ImGui::Image((ImTextureID)textureId, sceneViewRenderTarget->GetSize(), ImVec2(0, 1), ImVec2(1, 0));
     }
 }
 
