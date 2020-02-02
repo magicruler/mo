@@ -29,8 +29,18 @@ public:
 
     int GetUniform(std::string name);
 
+    std::string GetName()
+    {
+        return name;
+    }
+
+    void SetName(const std::string newName)
+    {
+        name = newName;
+    }
+
 private:
     unsigned int ID;
-    std::string name;
+    std::string name = "";
     std::map<std::string, UniformInfo> uniforms;
 };

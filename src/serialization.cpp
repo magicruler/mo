@@ -5,6 +5,15 @@
 #include "scene.h"
 #include "actor.h"
 #include "camera.h"
+#include "texture.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include "shader.h"
+#include "material.h"
+
+#include "resources.h"
 
 using json = nlohmann::json;
 
@@ -50,6 +59,20 @@ namespace Serialization
 			auto name = node["name"].get<std::string>();
 			newActor->SetName(name);
 			
+			/* 
+			material, optional property 
+			*/
+			if (node.contains("material"))
+			{
+				auto materialPath = node["material"].get<std::string>();
+				Material* material = Resources::GetMaterial(materialPath);
+				newActor->SetMaterial(material);
+			}
+
+			/*
+			mesh, optional property
+			*/
+
 			auto transformObject = node["transform"];
 			ProcessTransformation(transformObject, newActor);
 			
@@ -103,5 +126,91 @@ namespace Serialization
 		}
 
 		return scene;
+	}
+
+	Texture* DeserializeTexture(const std::string& content)
+	{
+		auto textureJsonObject = json::parse(content);
+		Texture* texture = new Texture();
+
+		std::string textureType = textureJsonObject["type"].get<std::string>();
+		
+		if (textureType == "texture2d")
+		{
+			std::string path = "textures/" + textureJsonObject["path"].get<std::string>();
+
+			bool mipmapped = textureJsonObject["mipmap"].get<bool>();
+			texture->isMipmapped = mipmapped;
+
+			int textureWidth, textureHeight, textureChannels;
+			stbi_uc* pixels = stbi_load(path.c_str(), &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
+
+			texture->SetData2D(textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+		}
+
+		return texture;
+	}
+
+	/* 
+	Materials Own References Of Shaders, So This Function Will Try To Get Shaders From Resources 
+	*/
+	Material* DeserializeMaterial(const std::string& content)
+	{
+		auto materialJsonObject = json::parse(content);
+		
+		auto name = materialJsonObject["name"].get<std::string>();
+		auto shaderPath = materialJsonObject["shader"].get<std::string>();
+		Shader* shader = Resources::GetShader(shaderPath);
+		Material* material = new Material(shader);
+
+		material->SetName(name);
+
+		auto properties = materialJsonObject["properties"];
+		assert(properties.is_array());
+		for (auto& prop : properties)
+		{
+			assert(prop.is_object());
+			auto propName = prop["name"].get<std::string>();
+			auto propType = prop["type"].get<std::string>();
+			if (propType == "sampler2D")
+			{
+				auto texturePath = prop["value"].get<std::string>();
+				Texture* texture = Resources::LoadTexture(texturePath);
+				material->SetTextureProperty(propName, texture);
+			}
+		}
+
+		auto extensions = materialJsonObject["extensions"];
+		assert(extensions.is_array());
+		for (auto& extension : extensions)
+		{
+			assert(extension.is_string());
+			auto extensionName = extension.get<std::string>();
+			if (extensionName == "mvp")
+			{
+				material->AddExtension(MaterialExtension::MODEL_VIEW_PROJECTION);
+			}
+			else if (extensionName == "time")
+			{
+				material->AddExtension(MaterialExtension::TIME);
+			}
+		}
+
+		return material;
+	}
+
+	Shader* DeserializeShader(const std::string& content)
+	{
+		auto shaderJsonObject = json::parse(content);
+		
+		Shader* shader = new Shader();
+		std::string name = shaderJsonObject["name"].get<std::string>();
+		std::string vertPath = shaderJsonObject["vert"].get<std::string>();
+		std::string vertCode = StringUtils::ReadFile("shaders/" + vertPath);
+		std::string fragPath = shaderJsonObject["frag"].get<std::string>();
+		std::string fragCode = StringUtils::ReadFile("shaders/" + fragPath);
+		shader->Init(name, vertCode, fragCode);
+
+		return shader;
 	}
 };

@@ -1,0 +1,5 @@
+{
+    "name":"standard",
+    "vert":"standard.vert",
+    "frag":"standard.frag"
+}
