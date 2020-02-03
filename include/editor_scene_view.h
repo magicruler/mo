@@ -25,6 +25,4 @@ private:
 
     RenderTarget* sceneViewRenderTarget;
     bool initialized = false;
-
-    std::vector<Actor*> selection;
 };

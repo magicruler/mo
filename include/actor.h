@@ -17,11 +17,13 @@ enum PROPERTY_MASK
 	NON_SERIALIZED = 1 << 1,
 };
 
+
 class Actor : Object
 {
 	MO_OBJECT("Actor")
 public:
-	
+	friend class EditorInspector;
+
 	Actor()
 	{
 		parent = nullptr;
@@ -102,7 +104,7 @@ public:
 	inline void SetLocalPosition(glm::vec3 pos)
 	{
 		localPosition = pos;
-		dirty = true;
+		SetDirty();
 	}
 
 	inline glm::vec3 GetLocalPosition()
@@ -119,13 +121,13 @@ public:
 	inline void SetLocalScale(glm::vec3 scale)
 	{
 		localScale = scale;
-		dirty = true;
+		SetDirty();
 	}
 
 	inline void SetLocalRotation(glm::vec3 rotation)
 	{
 		localRotation = rotation;
-		dirty = true;
+		SetDirty();
 	}
 
 	/*
@@ -186,6 +188,17 @@ public:
 	{
 		aabb = value;
 	}
+
+	void SetDirty()
+	{
+		if (!dirty)
+		{
+			dirty = true;
+			MarkChildrenDirty();
+		}
+	}
+
+	void MarkChildrenDirty();
 
 private:
 

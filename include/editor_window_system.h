@@ -2,6 +2,7 @@
 #include "common.h"
 
 class EditorWindow;
+class Actor;
 
 class EditorWindowSystem
 {
@@ -30,6 +31,13 @@ public:
 
     std::vector<EditorWindow*> editorWindows;
 
+    std::vector<Actor*> GetActorSelection()
+    {
+        return actorSelection;
+    }
+
+    void SetActorSelection(Actor* actor);
+
 private:
     EditorWindowSystem();
 
@@ -38,4 +46,6 @@ private:
     void InitWindows();
 
     static EditorWindowSystem *instance;
+
+    std::vector<Actor*> actorSelection;
 };

@@ -7,6 +7,7 @@
 #include "scene.h"
 #include "time_manager.h"
 #include "ray_cast.h"
+#include "editor_window_system.h"
 
 constexpr float CAMERA_ROTATE_SPEED = 1.5f;
 constexpr float CAMERA_FORWARD_SPEED = 5.0f;
@@ -55,90 +56,82 @@ void EditorSceneView::OnIMGUI()
         ImGui::Image((ImTextureID)textureId, sceneViewRenderTarget->GetSize(), ImVec2(0, 1), ImVec2(1, 0));
     }
 
-    // Draw AABB
-    {
-        auto projection = sceneCamera->GetProjection();
-        auto view = sceneCamera->GetViewMatrix();
+    //// Draw AABB
+    //{
+    //    auto projection = sceneCamera->GetProjection();
+    //    auto view = sceneCamera->GetViewMatrix();
 
-        auto renderables = Game::ActiveSceneGetPointer()->GetRenderables();
-        for (auto renderable : renderables)
-        {
-            auto aabb = renderable->GetAABB();
-            // Face 1
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            // Face 2
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
+    //    auto renderables = Game::ActiveSceneGetPointer()->GetRenderables();
+    //    for (auto renderable : renderables)
+    //    {
+    //        auto aabb = renderable->GetAABB();
+    //        // Face 1
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        // Face 2
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
+    //                          p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
+    //                          ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
+    //                          p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
+    //                          ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
+    //                          p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
+    //                          ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
+    //                          p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
+    //                          ImColor(1.0f, 0.0f, 0.0f));
 
-            drawList->AddLine(
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[1].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
 
-            drawList->AddLine(
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
-            drawList->AddLine(
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
-                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
-                ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[0].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
+    //        drawList->AddLine(
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
+    //            p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
+    //            ImColor(1.0f, 0.0f, 0.0f));
 
-        }
+    //    }
 
         auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
-        auto cameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
-        auto endScreen = WorldToScreen(projection, view, contentSize, cameraRay.origin + cameraRay.direction * (12.0f));
-        drawList->AddCircle(p + endScreen,
-            20.0f,
-            ImColor(1.0f, 0.0f, 0.0f));
-
+   
         if (ImGui::IsWindowHovered())
         {
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
             {
                 // another
-                auto otherCameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
-                spdlog::info("Current Click {}, {}", windowPos.x, windowPos.y);
+                auto cameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
 
                 RayCastInteraction interaction;
-                Physics::RayCast(otherCameraRay, LAYER_MASK::GENERAL, interaction);
+                Physics::RayCast(cameraRay, LAYER_MASK::GENERAL, interaction);
 
                 if (interaction.target != nullptr)
                 {
-                    selection.clear();
-                    selection.push_back(interaction.target);
-
+                    EditorWindowSystem::GetInstance()->SetActorSelection(interaction.target);
                     spdlog::info("Actor {} Casted By Ray", interaction.target->GetName());
                 }
             }
         }
-    }
+    // }
 }
 
 void EditorSceneView::OnResize() 

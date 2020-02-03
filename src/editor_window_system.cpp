@@ -7,6 +7,7 @@
 #include "editor_console.h"
 #include "editor_resources.h"
 #include "imgui.h"
+#include "actor.h"
 
 EditorWindowSystem *EditorWindowSystem::instance = nullptr;
 
@@ -136,5 +137,11 @@ void EditorWindowSystem::InitWindows()
     editorWindows.push_back(new EditorSceneView(200, 200, true, "Scene View"));
 
     editorWindows.push_back(new EditorHierarchy(200, 400, true, "Hierarchy"));
-    editorWindows.push_back(new EditorHierarchy(200, 400, true, "Inspector"));
+    editorWindows.push_back(new EditorInspector(200, 400, true, "Inspector"));
+}
+
+void EditorWindowSystem::SetActorSelection(Actor* actor)
+{
+    actorSelection.clear();
+    actorSelection.push_back(actor);
 }

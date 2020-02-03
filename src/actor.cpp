@@ -2,6 +2,8 @@
 #include "mesh.h"
 #include "material.h"
 #include <glm/gtx/matrix_decompose.hpp>
+#include "game.h"
+#include "scene.h"
 
 void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
 {
@@ -24,33 +26,7 @@ void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
 	SetLocalScale(localScale);
 	SetLocalRotation(glm::eulerAngles(localRotation));
 
-	dirty = true;
-}
-
-void Actor::UpdateTransform()
-{
-	if (dirty)
-	{
-		transform = glm::translate(glm::mat4(1.0f) ,localPosition);
-		transform = glm::scale(transform, localScale);
-		transform = glm::eulerAngleXYZ(localRotation.x, localRotation.y, localRotation.z) * transform;
-
-		if (parent != nullptr)
-		{
-			transform = parent->transform * transform;
-		}
-	}
-
-	for (int i = 0; i < children.size(); ++i)
-	{
-		if (dirty)
-		{
-			children[i]->dirty = true;
-		}
-		children[i]->UpdateTransform();
-	}
-
-	dirty = false;
+	SetDirty();
 }
 
 AABB ComputeMeshAABBWithTransformation(Mesh* mesh, glm::mat4 transformation)
@@ -68,21 +44,34 @@ void ComputeAABB(Actor* actor)
 	auto mesh = actor->GetMesh();
 	if (mesh != nullptr)
 	{
-		auto newAABB = AABB(); 
+		auto newAABB = AABB();
 		newAABB.Append(ComputeMeshAABBWithTransformation(mesh, actor->GetTransform()));
 
 		actor->SetAABB(newAABB);
 	}
 }
 
-AABB Actor::GetAABB()
+void Actor::UpdateTransform()
 {
 	if (dirty)
 	{
-		UpdateTransform();
-		ComputeAABB(this);
+		transform = glm::translate(glm::mat4(1.0f) ,localPosition);
+		transform = glm::scale(transform, localScale);
+		transform = glm::eulerAngleXYZ(localRotation.x, localRotation.y, localRotation.z) * transform;
+
+		if (parent != nullptr)
+		{
+			transform = parent->GetTransform() * transform;
+		}
 	}
 
+	dirty = false;
+	// Now We Have New World Transform
+	ComputeAABB(this);
+}
+
+AABB Actor::GetAABB()
+{
 	return aabb;
 }
 
@@ -91,10 +80,26 @@ void Actor::AddChild(Actor* child)
 	child->parent = this;
 	children.push_back(child);
 
-	dirty = true;
-	UpdateTransform();
-
-	ComputeAABB(child);
+	MarkChildrenDirty();
 }
 
+void Actor::MarkChildrenDirty()
+{
+	std::vector<Actor*> sceneFrontLayer;
+	std::vector<Actor*> sceneBackLayer;
 
+	sceneFrontLayer = this->GetChildren();
+
+	while (sceneFrontLayer.size() != 0)
+	{
+		sceneBackLayer.clear();
+
+		for (int i = 0; i < sceneFrontLayer.size(); i++)
+		{
+			auto actor = sceneFrontLayer[i];
+			actor->dirty = true;
+		}
+
+		sceneFrontLayer.swap(sceneBackLayer);
+	}
+}
