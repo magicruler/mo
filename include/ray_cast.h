@@ -2,6 +2,12 @@
 #include "common.h"
 #include "actor.h"
 
+struct Ray
+{
+	glm::vec3 origin = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
+};
+
 struct RayCastInteraction
 {
 	Actor* target = nullptr;
@@ -11,5 +17,5 @@ struct RayCastInteraction
 
 namespace Physics
 {
-	void RayCast(glm::vec3 origin, glm::vec3 direction, LAYER_MASK layerMask, RayCastInteraction& interaction);
+	void RayCast(Ray ray, LAYER_MASK layerMask, RayCastInteraction& interaction);
 };

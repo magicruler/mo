@@ -3,6 +3,7 @@
 #include "actor.h"
 
 class RenderTarget;
+struct Ray;
 
 enum CAMERA_RENDER_FLAG
 {
@@ -21,6 +22,8 @@ public:
 	void Render();
 	glm::mat4 GetProjection();
 	glm::mat4 GetViewMatrix();
+
+	Ray CameraRay(float screenX, float screenY);
 
 	float fov = 45.0f;
 	float ratio = 1024.0f / 768.0f;

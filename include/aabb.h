@@ -15,6 +15,18 @@ struct AABB
         maxPos = maxP;
     }
 
+    glm::vec3 operator[](int index)
+    {
+        if (index == 0)
+        {
+            return minPos;
+        }
+        else
+        {
+            return maxPos;
+        }
+    }
+
     void Append(AABB& other)
     {
         minPos = glm::vec3(Math::Min(minPos.x, other.minPos.x), Math::Min(minPos.y, other.minPos.y), Math::Min(minPos.z, other.minPos.z));

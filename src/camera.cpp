@@ -13,12 +13,13 @@
 #include <glad/glad.h>
 #endif
 
+#include "ray_cast.h"
+
 Camera::Camera()
 	:Actor()
 {
 	// default render target
 	renderTarget = Game::MainRenderTargetGetPointer();
-	int a = 1;
 }
 
 void Camera::Tick()
@@ -110,3 +111,32 @@ void Camera::Render()
 	renderTarget->Unbind();
 }
 
+Ray Camera::CameraRay(float screenX, float screenY)
+{
+	Ray result = {};
+
+	glm::vec2 screenPixelSize = renderTarget->GetSize();
+	float halfFox = fov * 0.5f * (Math::PI / 180.0f);
+
+	float screenPhysicalHeight = 1.0f * tanf(halfFox) * 2.0f;
+	float screenPhysicalWidth = ratio * screenPhysicalHeight;
+
+	float pixelPhysicalWidth = screenPhysicalWidth / screenPixelSize.x;
+	float pixelPhysicalHeight = screenPhysicalHeight / screenPixelSize.y;
+
+	// -Z Is Forward, remember!
+	float targetZ = 1.0f;
+	float targetX = -0.5f * pixelPhysicalWidth + screenX * pixelPhysicalWidth + 0.5f * pixelPhysicalWidth;
+	float targetY = 0.5f * pixelPhysicalHeight - screenY * pixelPhysicalHeight - 0.5f * pixelPhysicalHeight;
+
+	glm::mat3 model = glm::mat3(glm::transpose(GetTransform()));
+
+	glm::vec3 worldUp = glm::normalize(model * glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 worldForward = glm::normalize(model * glm::vec3(0.0f, 0.0f, -1.0f));
+	glm::vec3 worldRight = glm::normalize(model * glm::vec3(1.0f, 0.0f, 0.0f));
+
+	result.direction = glm::normalize(targetZ * worldForward + targetY * worldUp + targetX + worldRight);
+	result.origin = this->GetWorldPosition();
+
+	return result;
+}

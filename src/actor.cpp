@@ -68,14 +68,22 @@ void ComputeAABB(Actor* actor)
 	auto mesh = actor->GetMesh();
 	if (mesh != nullptr)
 	{
-		actor->aabb.Append(ComputeMeshAABBWithTransformation(mesh, actor->GetTransform()));
+		auto newAABB = AABB(); 
+		newAABB.Append(ComputeMeshAABBWithTransformation(mesh, actor->GetTransform()));
+
+		actor->SetAABB(newAABB);
+	}
+}
+
+AABB Actor::GetAABB()
+{
+	if (dirty)
+	{
+		UpdateTransform();
+		ComputeAABB(this);
 	}
 
-	for (auto child : actor->GetChildren())
-	{
-		ComputeAABB(child);
-		actor->aabb.Append(child->aabb);
-	}
+	return aabb;
 }
 
 void Actor::AddChild(Actor* child)
@@ -86,8 +94,7 @@ void Actor::AddChild(Actor* child)
 	dirty = true;
 	UpdateTransform();
 
-	// Now all transform valid
-	ComputeAABB(this);
+	ComputeAABB(child);
 }
 
 

@@ -105,10 +105,15 @@ public:
 		dirty = true;
 	}
 
+	inline glm::vec3 GetLocalPosition()
+	{
+		return localPosition;
+	}
+
 	// TODO, USE CACHED POSITION
 	glm::vec3 GetWorldPosition()
 	{
-		return GetTransform() * glm::vec4(localPosition.x, localPosition.y, localPosition.z, 1.0f);
+		return GetTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	inline void SetLocalScale(glm::vec3 scale)
@@ -170,11 +175,21 @@ public:
 		propertyFlag = flag;
 	}
 
-public:
+	AABB GetAABB();
 
-	AABB aabb;
+	AABB GetAABBWithoutPromise()
+	{
+		return aabb;
+	}
+
+	void SetAABB(AABB& value)
+	{
+		aabb = value;
+	}
 
 private:
+
+	AABB aabb;
 	Mesh* mesh;
 	Material* material;
 
