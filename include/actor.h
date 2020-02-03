@@ -82,6 +82,11 @@ public:
 		SetLocalPosition(localPosition + value);
 	}
 
+	inline void Rotate(glm::vec3 value)
+	{
+		SetLocalRotation(localRotation + value);
+	}
+
 	inline void SetLocalPosition(glm::vec3 pos)
 	{
 		localPosition = pos;

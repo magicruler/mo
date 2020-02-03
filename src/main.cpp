@@ -95,7 +95,7 @@ int main(int, char **args)
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-    window = glfwCreateWindow(800, 600, "Mo", nullptr, nullptr);
+    window = glfwCreateWindow(1400, 900, "Mo", nullptr, nullptr);
     if (window == NULL)
     {
         return 0;
