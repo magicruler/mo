@@ -54,7 +54,7 @@
             "fov": 45.0,
             "nearPlane": 0.1,
             "farPlane": 100.0,
-            "clearColor": [0.31, 0.53, 0.36, 1.0],
+            "clearColor": [0.192, 0.302, 0.475, 1.0],
             "transform":
             {
                 "position":[0.0, 0.0, 6.0],
