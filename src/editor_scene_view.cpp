@@ -18,14 +18,12 @@ EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initial
     sceneCamera = new Camera();
     sceneCamera->renderTarget = sceneViewRenderTarget;
     sceneCamera->SetLocalPosition(glm::vec3(0.0f, 2.0f, 6.0f));
+    
+    sceneCamera->SetLayerFlag(LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS);
+    sceneCamera->SetPropertyFlag(PROPERTY_MASK::NON_SERIALIZED);
 
     Game::ActiveSceneGetPointer()->rootNode->AddChild(sceneCamera);
 }
-
-//void EditorSceneView::SetSceneViewRenderTarget(RenderTarget* renderTarget)
-//{
-//    sceneViewRenderTarget = renderTarget;
-//}
 
 void EditorSceneView::OnIMGUI() 
 {

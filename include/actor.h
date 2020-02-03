@@ -5,6 +5,18 @@
 class Mesh;
 class Material;
 
+enum LAYER_MASK
+{
+	GENERAL = 1 << 0,
+	ONLY_FOR_EDITOR_OBJECTS = 1 << 1,
+};
+
+enum PROPERTY_MASK
+{
+	NOTHING = 1 << 0,
+	NON_SERIALIZED = 1 << 1,
+};
+
 class Actor : Object
 {
 	MO_OBJECT("Actor")
@@ -128,6 +140,40 @@ public:
 
 	void UpdateTransform();
 
+	std::string GetName()
+	{
+		return name;
+	}
+
+	void SetName(const std::string newName)
+	{
+		name = newName;
+	}
+
+	unsigned int GetLayerFlag()
+	{
+		return layerFlag;
+	}
+
+	void SetLayerFlag(unsigned int flag)
+	{
+		layerFlag = flag;
+	}
+
+	unsigned int GetPropertyFlag()
+	{
+		return propertyFlag;
+	}
+
+	void SetPropertyFlag(unsigned int flag)
+	{
+		propertyFlag = flag;
+	}
+
+public:
+
+	AABB aabb;
+
 private:
 	Mesh* mesh;
 	Material* material;
@@ -145,16 +191,6 @@ private:
 	bool tickable = false;
 	std::string name = "";
 
-public:
-	std::string GetName()
-	{
-		return name;
-	}
-
-	void SetName(const std::string newName)
-	{
-		name = newName;
-	}
-
-	AABB aabb;
+	unsigned int layerFlag = LAYER_MASK::GENERAL;
+	unsigned int propertyFlag = PROPERTY_MASK::NOTHING;
 };

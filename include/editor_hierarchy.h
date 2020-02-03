@@ -2,8 +2,6 @@
 #include "common.h"
 #include "editor_window.h"
 
-class GameObject;
-
 class EditorHierarchy : public EditorWindow
 {
     MO_OBJECT("EditorHierarchy")
@@ -15,6 +13,4 @@ private:
     
     void WindowMenu();
     void TreeView();
-
-    std::vector<GameObject*> selection;
 };

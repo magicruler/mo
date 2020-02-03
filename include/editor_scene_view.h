@@ -4,6 +4,7 @@
 
 class RenderTarget;
 class Camera;
+class Actor;
 
 class EditorSceneView : public EditorWindow
 {
@@ -24,4 +25,6 @@ private:
 
     RenderTarget* sceneViewRenderTarget;
     bool initialized = false;
+
+    std::vector<Actor*> selection;
 };

@@ -14,4 +14,4 @@
 - Framebuffer Resize Follow Imgui Window
 
 ## Temp Design Decisions
-- Use ID Buffer To Implement Object Picking
+- Use Ray Cast To Implement Object Picking

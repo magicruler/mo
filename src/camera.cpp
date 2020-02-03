@@ -50,21 +50,15 @@ glm::mat4 Camera::GetViewMatrix()
 }
 
 // TODO: TEMP POSITION FOR RENDERING CODE
-void RenderMesh(Camera* camera, Actor* renderableActor)
+void RenderMesh(Camera* camera, Material* material, Mesh* mesh, glm::mat4& transformation)
 {
-	Material* material = renderableActor->GetMaterial();
-	assert(material != nullptr);
-
-	Mesh* mesh = renderableActor->GetMesh();
-	assert(mesh != nullptr);
-
 	material->Use();
 	std::vector<MaterialExtension> extensions = material->GetExtensions();
 	for (auto extension : extensions)
 	{
 		if (extension == MaterialExtension::MODEL_VIEW_PROJECTION)
 		{
-			material->SetMatrix4("model", renderableActor->GetTransform());
+			material->SetMatrix4("model", transformation);
 			material->SetMatrix4("view", camera->GetViewMatrix());
 			material->SetMatrix4("projection", camera->GetProjection());
 		}
@@ -102,7 +96,15 @@ void Camera::Render()
 	// Render Stuff
 	for (auto renderableActor : renderables)
 	{
-		RenderMesh(this, renderableActor);
+		Material* material = renderableActor->GetMaterial();
+		assert(material != nullptr);
+
+		Mesh* mesh = renderableActor->GetMesh();
+		assert(mesh != nullptr);
+
+		glm::mat4 transformation = renderableActor->GetTransform();
+
+		RenderMesh(this, material, mesh, transformation);
 	}
 
 	renderTarget->Unbind();
