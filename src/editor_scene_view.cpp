@@ -112,7 +112,7 @@ void EditorSceneView::OnIMGUI()
         }
 
         auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
-        auto cameraRay = sceneCamera->CameraRay(windowPos.x, windowPos.y);
+        auto cameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
         auto endScreen = WorldToScreen(projection, view, contentSize, cameraRay.origin + cameraRay.direction * (12.0f));
         drawList->AddCircle(p + endScreen,
             20.0f,
@@ -123,7 +123,7 @@ void EditorSceneView::OnIMGUI()
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
             {
                 // another
-                auto otherCameraRay = sceneCamera->CameraRay(windowPos.x, windowPos.y);
+                auto otherCameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
                 spdlog::info("Current Click {}, {}", windowPos.x, windowPos.y);
 
                 RayCastInteraction interaction;
