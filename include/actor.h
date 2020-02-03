@@ -77,6 +77,11 @@ public:
 		return material;
 	}
 
+	inline void Translate(glm::vec3 value)
+	{
+		SetLocalPosition(localPosition + value);
+	}
+
 	inline void SetLocalPosition(glm::vec3 pos)
 	{
 		localPosition = pos;

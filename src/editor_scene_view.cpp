@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "game.h"
 #include "scene.h"
+#include "time_manager.h"
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
@@ -24,6 +25,8 @@ EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initial
 
 void EditorSceneView::OnIMGUI() 
 {
+    OnSceneCameraControl();
+
     if (!initialized)
     {
         initialized = true;
@@ -39,4 +42,19 @@ void EditorSceneView::OnIMGUI()
 void EditorSceneView::OnResize() 
 {
     sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
+}
+
+void EditorSceneView::OnSceneCameraControl()
+{
+    auto io = ImGui::GetIO();
+    float deltaTime = Time::GetDeltaTime();
+
+    if (ImGui::IsWindowHovered())
+    {   
+        float wheelValue = io.MouseWheel;
+        if (wheelValue != 0.0f)
+        {
+            sceneCamera->Translate(wheelValue * 2.0f * deltaTime * glm::vec3(0.0f, 0.0f, -1.0f));
+        }
+    }
 }

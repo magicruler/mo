@@ -16,6 +16,8 @@ public:
 private:
     virtual void OnIMGUI();
 
+    void OnSceneCameraControl();
+;
     virtual void OnResize();
 
     Camera* sceneCamera = nullptr;
