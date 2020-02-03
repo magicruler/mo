@@ -18,7 +18,7 @@ EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initial
     
     sceneCamera = new Camera();
     sceneCamera->renderTarget = sceneViewRenderTarget;
-    sceneCamera->SetLocalPosition(glm::vec3(0.0f, 2.0f, 6.0f));
+    sceneCamera->SetLocalPosition(glm::vec3(0.0f, 0.0f, 12.0f));
     
     sceneCamera->SetLayerFlag(LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS);
     sceneCamera->SetPropertyFlag(PROPERTY_MASK::NON_SERIALIZED);
@@ -43,27 +43,6 @@ void EditorSceneView::OnIMGUI()
     auto io = ImGui::GetIO();
     auto drawList = ImGui::GetWindowDrawList();
     const glm::vec2 p = ImGui::GetCursorScreenPos();
-
-    if (ImGui::IsWindowHovered())
-    {
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
-            spdlog::info("Current Click {}, {}", windowPos.x, windowPos.y);
-
-            auto cameraRay = sceneCamera->CameraRay(windowPos.x, windowPos.y);
-            RayCastInteraction interaction;
-            Physics::RayCast(cameraRay, LAYER_MASK::GENERAL, interaction);
-            
-            if (interaction.target != nullptr)
-            {
-                selection.clear();
-                selection.push_back(interaction.target);
-
-                spdlog::info("Something Casted By Ray");
-            }
-        }
-    }
 
     if (!initialized)
     {
@@ -130,6 +109,34 @@ void EditorSceneView::OnIMGUI()
                 p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[0].y, aabb[1].z)),
                 ImColor(1.0f, 0.0f, 0.0f));
 
+        }
+
+        auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
+        auto cameraRay = sceneCamera->CameraRay(windowPos.x, windowPos.y);
+        auto endScreen = WorldToScreen(projection, view, contentSize, cameraRay.origin + cameraRay.direction * (12.0f));
+        drawList->AddCircle(p + endScreen,
+            20.0f,
+            ImColor(1.0f, 0.0f, 0.0f));
+
+        if (ImGui::IsWindowHovered())
+        {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            {
+                // another
+                auto otherCameraRay = sceneCamera->CameraRay(windowPos.x, windowPos.y);
+                spdlog::info("Current Click {}, {}", windowPos.x, windowPos.y);
+
+                RayCastInteraction interaction;
+                Physics::RayCast(otherCameraRay, LAYER_MASK::GENERAL, interaction);
+
+                if (interaction.target != nullptr)
+                {
+                    selection.clear();
+                    selection.push_back(interaction.target);
+
+                    spdlog::info("Actor {} Casted By Ray", interaction.target->GetName());
+                }
+            }
         }
     }
 }

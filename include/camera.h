@@ -24,6 +24,7 @@ public:
 	glm::mat4 GetViewMatrix();
 
 	Ray CameraRay(float screenX, float screenY);
+	Ray ScreenRay(float screenX, float screenY);
 
 	float fov = 45.0f;
 	float ratio = 1024.0f / 768.0f;

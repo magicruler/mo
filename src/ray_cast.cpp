@@ -11,17 +11,17 @@ namespace Physics
         glm::vec3 pmin = aabb.minPos;
         glm::vec3 pmax = aabb.maxPos;
 
-        if ((pmax.x - pmin.x) >= 0.0f)
+        if ((pmax.x - pmin.x) <= 0.0f)
         {
             return false;
         }
 
-        if ((pmax.y - pmin.y) >= 0.0f)
+        if ((pmax.y - pmin.y) <= 0.0f)
         {
             return false;
         }
 
-        if ((pmax.z - pmin.z) >= 0.0f)
+        if ((pmax.z - pmin.z) <= 0.0f)
         {
             return false;
         }

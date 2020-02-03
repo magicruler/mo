@@ -126,8 +126,48 @@ Ray Camera::CameraRay(float screenX, float screenY)
 
 	// -Z Is Forward, remember!
 	float targetZ = 1.0f;
-	float targetX = -0.5f * pixelPhysicalWidth + screenX * pixelPhysicalWidth + 0.5f * pixelPhysicalWidth;
-	float targetY = 0.5f * pixelPhysicalHeight - screenY * pixelPhysicalHeight - 0.5f * pixelPhysicalHeight;
+	float targetX = -0.5f * screenPhysicalWidth + screenX * pixelPhysicalWidth + 0.5f * pixelPhysicalWidth;
+	float targetY = 0.5f * screenPhysicalHeight - screenY * pixelPhysicalHeight - 0.5f * pixelPhysicalHeight;
+
+	glm::mat3 model = glm::mat3(glm::transpose(GetTransform()));
+
+	glm::vec3 worldUp = glm::normalize( glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 worldForward = glm::normalize(  glm::vec3(0.0f, 0.0f, -1.0f));
+	glm::vec3 worldRight = glm::normalize( glm::vec3(1.0f, 0.0f, 0.0f));
+
+	result.direction = glm::normalize(targetZ * worldForward + targetY * worldUp + targetX * worldRight);
+	result.origin = this->GetWorldPosition();
+
+	return result;
+}
+
+Ray Camera::ScreenRay(float screenX, float screenY)
+{
+	Ray result = {};
+
+	glm::vec2 screenPixelSize = renderTarget->GetSize();
+	float halfFox = fov * 0.5f * (Math::PI / 180.0f);
+
+	float nearScreenPhysicalHeight = 10.0f * tanf(halfFox) * 2.0f;
+	float nearScreenPhysicalWidth = ratio * nearScreenPhysicalHeight;
+
+	float farScreenPhysicalHeight = 1.0f * tanf(halfFox) * 2.0f;
+	float farScreenPhysicalWidth = ratio * farScreenPhysicalHeight;
+
+	float nearPixelPhysicalHeight = nearScreenPhysicalHeight / screenPixelSize.y;
+	float nearPixelPhysicalWidth = nearScreenPhysicalWidth / screenPixelSize.x;
+
+	float farPixelPhysicalHeight = farScreenPhysicalHeight / screenPixelSize.y;
+	float farPixelPhysicalWidth = farScreenPhysicalWidth / screenPixelSize.x;
+
+	// -Z Is Forward, remember!
+	float nearTargetZ = nearPlane;
+	float nearTargetX = -0.5f * nearScreenPhysicalWidth + screenX * nearPixelPhysicalWidth + 0.5f * nearPixelPhysicalWidth;
+	float nearTargetY = 0.5f * nearScreenPhysicalHeight - screenY * nearPixelPhysicalHeight - 0.5f * nearPixelPhysicalHeight;
+
+	float farTargetZ = 10.0f;
+	float farTargetX = -0.5f * farScreenPhysicalWidth + screenX * farPixelPhysicalWidth + 0.5f * farPixelPhysicalWidth;
+	float farTargetY = 0.5f * farScreenPhysicalHeight - screenY * farPixelPhysicalHeight - 0.5f * farPixelPhysicalHeight;
 
 	glm::mat3 model = glm::mat3(glm::transpose(GetTransform()));
 
@@ -135,8 +175,16 @@ Ray Camera::CameraRay(float screenX, float screenY)
 	glm::vec3 worldForward = glm::normalize(model * glm::vec3(0.0f, 0.0f, -1.0f));
 	glm::vec3 worldRight = glm::normalize(model * glm::vec3(1.0f, 0.0f, 0.0f));
 
-	result.direction = glm::normalize(targetZ * worldForward + targetY * worldUp + targetX + worldRight);
-	result.origin = this->GetWorldPosition();
+	glm::vec3 worldPos = GetWorldPosition();
+
+	glm::vec3 nearPosition = worldPos + worldUp * nearTargetY + worldForward * nearTargetZ + worldRight * nearTargetX;
+	glm::vec3 farPosition = worldPos + worldUp * farTargetY + worldForward * farTargetZ + worldRight * farTargetX;
+
+	/*result.origin = nearPosition;
+	result.direction = glm::normalize(farPosition - nearPosition);*/
+
+	result.direction = glm::normalize(nearTargetZ * worldForward + nearTargetY * worldUp + nearTargetX * worldRight);
+	result.origin = worldPos;
 
 	return result;
 }
