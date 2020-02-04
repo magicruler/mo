@@ -120,7 +120,7 @@ void EditorSceneView::OnIMGUI()
    
         if (ImGui::IsWindowHovered())
         {
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver())
             {
                 // another
                 auto cameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);

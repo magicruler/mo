@@ -9,7 +9,7 @@ EditorInspector::EditorInspector(unsigned int initialWidth, unsigned int initial
 
 void EditorInspector::OnIMGUI()
 {
-	/*auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
+	auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
 	if (selection.size() == 1)
 	{
 		auto actor = selection[0];
@@ -33,7 +33,7 @@ void EditorInspector::OnIMGUI()
 		{
 			actor->SetDirty();
 		}
-	}*/
+	}
 }
 
 void EditorInspector::OnResize()
