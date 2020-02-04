@@ -4,6 +4,8 @@
 namespace Math
 {
 	constexpr float PI = 3.1415926535897932384626433f;
+	constexpr float RAD_TO_DEGREE = 180.0f / PI;
+	constexpr float DEGREE_TO_RAD = PI / 180.0f;
 
 	inline float Min(float a, float b)
 	{

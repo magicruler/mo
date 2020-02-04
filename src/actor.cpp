@@ -4,6 +4,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include "game.h"
 #include "scene.h"
+#include "imgui.h"
+#include "ImGuizmo.h"
 
 void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
 {
@@ -55,10 +57,12 @@ void Actor::UpdateTransform()
 {
 	if (dirty)
 	{
-		transform = glm::translate(glm::mat4(1.0f), localPosition);
+	/*	transform = glm::translate(glm::mat4(1.0f), localPosition);
 		transform = glm::eulerAngleXYZ(localRotation.x, localRotation.y, localRotation.z) * transform;
-		transform = glm::scale(transform, localScale);
+		transform = glm::scale(transform, localScale);*/
 		
+		ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(localPosition), glm::value_ptr(localRotation * Math::RAD_TO_DEGREE), glm::value_ptr(localScale), glm::value_ptr(transform));
+
 		if (parent != nullptr)
 		{
 			transform = parent->GetTransform() * transform;
@@ -113,24 +117,16 @@ void Actor::UpdateLocalSpace()
 	// Local To Parent = Inverse(Parent To World) * New Local To World
 
 	auto localToParent = glm::inverse(parentToWorldTransform) * transform;
-
-	glm::vec3 localScale;
-	glm::quat localRot;
+	
+	glm::vec3 localS;
+	glm::vec3 localRot;
 	glm::vec3 localTranslation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-
-	glm::decompose(localToParent, localScale, localRot, localTranslation, skew, perspective);
-
-	spdlog::info("old translation is {} {} {}", localPosition.x, localPosition.y, localPosition.z);
-	spdlog::info("new  translation is {} {} {}", localTranslation.x, localTranslation.y, localTranslation.z);
-
-	spdlog::info("old rotation is {} {} {}", localRotation.x, localRotation.y, localRotation.z);
-	spdlog::info("new  rotation is {} {} {}", glm::eulerAngles(localRot).x, glm::eulerAngles(localRot).y, glm::eulerAngles(localRot).z);
-
+	
+	ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(localToParent), glm::value_ptr(localTranslation), glm::value_ptr(localRot), glm::value_ptr(localS));
+	
 	SetLocalPosition(localTranslation);
-	SetLocalScale(localScale);
-	SetLocalRotation(glm::eulerAngles(localRot));
+	SetLocalScale(localS);
+	SetLocalRotation(localRot * Math::DEGREE_TO_RAD);
 
 	//glm::mat4 oldTransform = transform;
 	//UpdateTransform();
