@@ -38,6 +38,11 @@ public:
 
     void SetActorSelection(Actor* actor);
 
+    void ClearActorSelection()
+    {
+        actorSelection.clear();
+    }
+
 private:
     EditorWindowSystem();
 

@@ -9,10 +9,13 @@
 #include "ray_cast.h"
 #include "editor_window_system.h"
 #include "ImGuizmo.h"
+#include "input.h"
 
 constexpr float CAMERA_ROTATE_SPEED = 1.5f;
 constexpr float CAMERA_FORWARD_SPEED = 5.0f;
 constexpr float CAMERA_XY_PLANE_SPEED = 1.0f;
+
+static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
@@ -130,6 +133,10 @@ void EditorSceneView::OnIMGUI()
                     EditorWindowSystem::GetInstance()->SetActorSelection(interaction.target);
                     spdlog::info("Actor {} Casted By Ray", interaction.target->GetName());
                 }
+                else
+                {
+                    EditorWindowSystem::GetInstance()->ClearActorSelection();
+                }
             }
         }
     // }
@@ -139,8 +146,21 @@ void EditorSceneView::OnIMGUI()
         {
             auto actor = selection[0];
             
+            if (Input::CheckKey(KEYBOARD_KEY::W))
+            {
+                operation = ImGuizmo::OPERATION::TRANSLATE;
+            }
+            else if (Input::CheckKey(KEYBOARD_KEY::E))
+            {
+                operation = ImGuizmo::OPERATION::ROTATE;
+            }
+            else if (Input::CheckKey(KEYBOARD_KEY::R))
+            {
+                operation = ImGuizmo::OPERATION::SCALE;
+            }
+            
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->transform));
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->transform));
             actor->UpdateLocalSpace();
         }
 }

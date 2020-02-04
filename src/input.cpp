@@ -25,6 +25,18 @@ namespace Input
 			{
 				keyPress[GLFW_KEY_ESCAPE] = true;
 			}
+			else if (key == GLFW_KEY_W)
+			{
+				keyPress[GLFW_KEY_W] = true;
+			}
+			else if (key == GLFW_KEY_E)
+			{
+				keyPress[GLFW_KEY_E] = true;
+			}
+			else if (key == GLFW_KEY_R)
+			{
+				keyPress[GLFW_KEY_R] = true;
+			}
 		}
 	}
 

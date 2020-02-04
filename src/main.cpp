@@ -177,6 +177,7 @@ int main(int, char **args)
 
         glfwSwapBuffers(window);
         
+        Input::Update();
         Time::LimitFPS();
     }
 

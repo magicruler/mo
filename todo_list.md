@@ -4,6 +4,7 @@
 - Inspector Editor
 - Normal Mapping
 - Skybox
+- Mapping Keyboard Index In Input.h To Reduce Memory Allocation
 
 ## Done
 - Actor Dirty Getter Setter. Parent Mark Should Change Children. Cached

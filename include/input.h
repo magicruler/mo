@@ -7,6 +7,9 @@ enum class KEYBOARD_KEY
 {
 	ESC = GLFW_KEY_ESCAPE,
 	F6 = GLFW_KEY_F6,
+	W = GLFW_KEY_W,
+	E = GLFW_KEY_E,
+	R = GLFW_KEY_R,
 };
 
 enum class MOUSE_KEY
