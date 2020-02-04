@@ -1,0 +1,16 @@
+{
+    "name": "debug",
+    "shader": "debug.json",
+    "properties":
+    [
+        {
+            "name": "debugType",
+            "type": "int",
+            "value": 1
+        }
+    ],
+    "extensions":
+    [
+        "mvp"
+    ]
+}

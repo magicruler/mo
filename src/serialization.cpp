@@ -5,6 +5,8 @@
 #include "scene.h"
 #include "actor.h"
 #include "camera.h"
+#include "light.h"
+
 #include "texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -122,10 +124,26 @@ namespace Serialization
 				ProcessNode(childNode, newActor);
 			}
 		}
-		// TODO
 		else if (typeName == "pointLight")
 		{
+			Light* light = new Light();
+			auto name = node["name"].get<std::string>();
+			light->SetName(name);
 
+			// Light Properties
+			light->SetLightIntensity(node["lightIntensity"]);
+			light->SetLightColor(DeserilizeVector3(node["lightColor"]));
+
+			auto transformObject = node["transform"];
+			ProcessTransformation(transformObject, light);
+
+			currentActor->AddChild(light);
+
+			auto childrenNode = node["children"];
+			for (auto& childNode : childrenNode)
+			{
+				ProcessNode(childNode, light);
+			}
 		}
 	}
 
@@ -135,10 +153,16 @@ namespace Serialization
 		Scene* scene = new Scene();
 		
 		auto children = sceneJsonObject["children"];
+		assert(children.is_array());
 		for (auto& node : children)
 		{
 			ProcessNode(node, scene->rootNode);
 		}
+
+		auto ambient = sceneJsonObject["amibent"];
+		assert(ambient.is_array());
+		
+		scene->SetAmbient(glm::vec3(ambient[0], ambient[1], ambient[2]));
 
 		return scene;
 	}
@@ -194,6 +218,21 @@ namespace Serialization
 				Texture* texture = Resources::LoadTexture(texturePath);
 				material->SetTextureProperty(propName, texture);
 			}
+			else if (propType == "int")
+			{
+				auto value = prop["value"].get<int>();
+				material->SetInt(propName, value);
+			}
+			else if (propType == "float")
+			{
+				auto value = prop["value"].get<float>();
+				material->SetFloat(propName, value);
+			}
+			else if (propType == "vec3")
+			{
+				auto value = DeserilizeVector3(prop["value"]);
+				material->SetVector3(propName, value);
+			}
 		}
 
 		auto extensions = materialJsonObject["extensions"];
@@ -209,6 +248,18 @@ namespace Serialization
 			else if (extensionName == "time")
 			{
 				material->AddExtension(MaterialExtension::TIME);
+			}
+			else if (extensionName == "nearestLight")
+			{
+				material->AddExtension(MaterialExtension::NEAREST_LIGHT);
+			}
+			else if (extensionName == "ambient")
+			{
+				material->AddExtension(MaterialExtension::AMBIENT);
+			}
+			else if (extensionName == "camera")
+			{
+				material->AddExtension(MaterialExtension::CAMERA);
 			}
 		}
 

@@ -55,10 +55,10 @@ void Actor::UpdateTransform()
 {
 	if (dirty)
 	{
-		transform = glm::translate(glm::mat4(1.0f) ,localPosition);
-		transform = glm::scale(transform, localScale);
+		transform = glm::translate(glm::mat4(1.0f), localPosition);
 		transform = glm::eulerAngleXYZ(localRotation.x, localRotation.y, localRotation.z) * transform;
-
+		transform = glm::scale(transform, localScale);
+		
 		if (parent != nullptr)
 		{
 			transform = parent->GetTransform() * transform;
@@ -102,4 +102,39 @@ void Actor::MarkChildrenDirty()
 
 		sceneFrontLayer.swap(sceneBackLayer);
 	}
+}
+
+void Actor::UpdateLocalSpace()
+{
+	auto parentToWorldTransform = parent->GetTransform();
+	
+	// Parent To World * Local To Parent = New Local To World
+
+	// Local To Parent = Inverse(Parent To World) * New Local To World
+
+	auto localToParent = glm::inverse(parentToWorldTransform) * transform;
+
+	glm::vec3 localScale;
+	glm::quat localRot;
+	glm::vec3 localTranslation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+
+	glm::decompose(localToParent, localScale, localRot, localTranslation, skew, perspective);
+
+	spdlog::info("old translation is {} {} {}", localPosition.x, localPosition.y, localPosition.z);
+	spdlog::info("new  translation is {} {} {}", localTranslation.x, localTranslation.y, localTranslation.z);
+
+	spdlog::info("old rotation is {} {} {}", localRotation.x, localRotation.y, localRotation.z);
+	spdlog::info("new  rotation is {} {} {}", glm::eulerAngles(localRot).x, glm::eulerAngles(localRot).y, glm::eulerAngles(localRot).z);
+
+	SetLocalPosition(localTranslation);
+	SetLocalScale(localScale);
+	SetLocalRotation(glm::eulerAngles(localRot));
+
+	//glm::mat4 oldTransform = transform;
+	//UpdateTransform();
+	//glm::mat4 newTransform = transform;
+
+	//int a = 1;
 }

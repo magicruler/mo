@@ -8,6 +8,7 @@
 #include "time_manager.h"
 #include "ray_cast.h"
 #include "editor_window_system.h"
+#include "ImGuizmo.h"
 
 constexpr float CAMERA_ROTATE_SPEED = 1.5f;
 constexpr float CAMERA_FORWARD_SPEED = 5.0f;
@@ -58,8 +59,8 @@ void EditorSceneView::OnIMGUI()
 
     //// Draw AABB
     //{
-    //    auto projection = sceneCamera->GetProjection();
-    //    auto view = sceneCamera->GetViewMatrix();
+        auto projection = sceneCamera->GetProjection();
+        auto view = sceneCamera->GetViewMatrix();
 
     //    auto renderables = Game::ActiveSceneGetPointer()->GetRenderables();
     //    for (auto renderable : renderables)
@@ -132,6 +133,16 @@ void EditorSceneView::OnIMGUI()
             }
         }
     // }
+
+        auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
+        if (selection.size() == 1)
+        {
+            auto actor = selection[0];
+            
+            ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->transform));
+            actor->UpdateLocalSpace();
+        }
 }
 
 void EditorSceneView::OnResize() 

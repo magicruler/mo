@@ -33,6 +33,8 @@
 #include<unistd.h>  
 #endif
 
+#include "ImGuizmo.h"
+
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -150,7 +152,7 @@ int main(int, char **args)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
+        ImGuizmo::BeginFrame();
         // ImGui::ShowDemoWindow(&p_open);
 
         Game::Update();

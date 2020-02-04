@@ -23,13 +23,12 @@ public:
 	glm::mat4 GetProjection();
 	glm::mat4 GetViewMatrix();
 
-	Ray CameraRay(float screenX, float screenY);
 	Ray ScreenRay(float screenX, float screenY);
 
 	float fov = 45.0f;
 	float ratio = 1024.0f / 768.0f;
 	float nearPlane = 0.3f;
-	float farPlane = 1000.0f;
+	float farPlane = 3000.0f;
 
 	unsigned int renderFlag = CAMERA_RENDER_FLAG::RENDER_NOTHING;
 

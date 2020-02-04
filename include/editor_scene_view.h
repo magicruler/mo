@@ -10,6 +10,7 @@ class EditorSceneView : public EditorWindow
 {
     MO_OBJECT("EditorSceneView")
 public:
+    
     EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title);
 
     //void SetSceneViewRenderTarget(RenderTarget* renderTarget);

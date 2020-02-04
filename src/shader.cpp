@@ -50,13 +50,15 @@ void Shader::Init(std::string name, std::string vertCode, std::string fragmentCo
     glDeleteShader(fShader);
 
     int uniformCount;
+    
     glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-    char nameBuffer[128];
+    char nameBuffer[1024];
     for (int i = 0; i < uniformCount; i++)
     {
         unsigned int glType;
         UniformInfo uniform;
+        
         glGetActiveUniform(ID, i, sizeof(nameBuffer), 0, &uniform.size, &glType, nameBuffer);
         uniform.name = nameBuffer;
         uniform.location = glGetUniformLocation(ID, nameBuffer);

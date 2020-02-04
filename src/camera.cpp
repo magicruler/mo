@@ -15,6 +15,8 @@
 
 #include "ray_cast.h"
 
+#include "light.h"
+
 Camera::Camera()
 	:Actor()
 {
@@ -51,7 +53,7 @@ glm::mat4 Camera::GetViewMatrix()
 }
 
 // TODO: TEMP POSITION FOR RENDERING CODE
-void RenderMesh(Camera* camera, Material* material, Mesh* mesh, glm::mat4& transformation)
+void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, glm::mat4& transformation, std::vector<Light*>& lights)
 {
 	material->Use();
 	std::vector<MaterialExtension> extensions = material->GetExtensions();
@@ -67,6 +69,24 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, glm::mat4& trans
 		{
 			material->SetFloat("time", Time::GetTime());
 		}
+		else if (extension == MaterialExtension::AMBIENT)
+		{
+			material->SetVector3("ambient", scene->GetAmbient());
+		}
+		else if (extension == MaterialExtension::NEAREST_LIGHT)
+		{
+			// TODO Multiple Light, Forward Renderer
+			if (lights.size() > 0)
+			{
+				Light* light = lights[0];
+				material->SetVector3("lightColor", light->GetLightIntensityColor());
+				material->SetVector3("lightPos", light->GetWorldPosition());
+			}
+		}
+		else if (extension == MaterialExtension::CAMERA)
+		{
+			material->SetVector3("cameraPos", camera->GetWorldPosition());
+		}
 	}
 	
 	material->Use();
@@ -79,7 +99,9 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, glm::mat4& trans
 void Camera::Render()
 {
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
-	std::vector<Actor*> renderables = Game::ActiveSceneGetPointer()->GetRenderables();
+	Scene* currentScene = Game::ActiveSceneGetPointer();
+	std::vector<Actor*> renderables = currentScene->GetRenderables();
+	std::vector<Light*> lights = currentScene->GetLights();
 
 	renderTarget->Bind();
 	if (renderTarget->HasDepth())
@@ -105,40 +127,10 @@ void Camera::Render()
 
 		glm::mat4 transformation = renderableActor->GetTransform();
 
-		RenderMesh(this, material, mesh, transformation);
+		RenderMesh(this, material, mesh, currentScene, transformation, lights);
 	}
 
 	renderTarget->Unbind();
-}
-
-Ray Camera::CameraRay(float screenX, float screenY)
-{
-	Ray result = {};
-
-	glm::vec2 screenPixelSize = renderTarget->GetSize();
-	float halfFox = fov * 0.5f * (Math::PI / 180.0f);
-
-	float screenPhysicalHeight = 1.0f * tanf(halfFox) * 2.0f;
-	float screenPhysicalWidth = ratio * screenPhysicalHeight;
-
-	float pixelPhysicalWidth = screenPhysicalWidth / screenPixelSize.x;
-	float pixelPhysicalHeight = screenPhysicalHeight / screenPixelSize.y;
-
-	// -Z Is Forward, remember!
-	float targetZ = 1.0f;
-	float targetX = -0.5f * screenPhysicalWidth + screenX * pixelPhysicalWidth + 0.5f * pixelPhysicalWidth;
-	float targetY = 0.5f * screenPhysicalHeight - screenY * pixelPhysicalHeight - 0.5f * pixelPhysicalHeight;
-
-	glm::mat3 model = glm::mat3(glm::transpose(GetTransform()));
-
-	glm::vec3 worldUp = glm::normalize( glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::vec3 worldForward = glm::normalize(  glm::vec3(0.0f, 0.0f, -1.0f));
-	glm::vec3 worldRight = glm::normalize( glm::vec3(1.0f, 0.0f, 0.0f));
-
-	result.direction = glm::normalize(targetZ * worldForward + targetY * worldUp + targetX * worldRight);
-	result.origin = this->GetWorldPosition();
-
-	return result;
 }
 
 Ray Camera::ScreenRay(float mouseX, float mouseY)

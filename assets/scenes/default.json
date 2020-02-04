@@ -1,51 +1,51 @@
 {
     "name":"default",
+    "amibent":[0.2, 0.2, 0.2],
     "children":
     [
         {
-            "name": "bread",
+            "name": "teapot",
             "type": "actor",
-            "material": "standard.json",
-            "mesh": "tjciddjqx_LOD0.json",
+            "material": "blinn.json",
+            "mesh": "teapot.json",
             "transform":
             {
-                "position":[0.0, 0.0, 0.0],
-                "scale":[1.0, 1.0, 1.0],
-                "rotation":[0.0, 0.0, 0.0]
+                "position":[0.0, 0.0, -10.0],
+                "scale":[0.01, 0.01, 0.01],
+                "rotation":[0, 0.0, 0.0]
+            },
+            "children":
+            [
+            ]
+        },
+        {
+            "name": "cube",
+            "type": "actor",
+            "material": "standardWhite.json",
+            "mesh": "sphere.json",
+            "transform":
+            {
+                "position":[8.0, 0.0, 0.0],
+                "scale":[1, 1, 1],
+                "rotation":[0, 0.0, 0.0]
             },
             "children":
             [
                 {
-                    "name": "box",
-                    "type": "actor",
-                    "material": "standardWhite.json",
-                    "mesh": "cube.json",
+                    "name": "light",
+                    "type": "pointLight",
+                    "lightIntensity": 1.0,
+                    "lightColor":[0.5, 0.6, 0.3],
                     "transform":
                     {
-                        "position":[10.0, 0.0, 0.0],
-                        "scale":[2.0, 2.0, 2.0],
+                        "position":[0.0, 0.0, 0.0],
+                        "scale":[1.0, 1.0, 1.0],
                         "rotation":[0.0, 0.0, 0.0]
                     },
                     "children":
                     [
                     ]
                 }
-            ]
-        },
-        {
-            "name": "light",
-            "type": "pointLight",
-            "light": "directional",
-            "lightIntensity": 1.0,
-            "lightColor":[0.5, 0.6, 0.3],
-            "transform":
-            {
-                "position":[0.0, 0.0, 0.0],
-                "scale":[1.0, 1.0, 1.0],
-                "rotation":[0.0, 0.0, 0.0]
-            },
-            "children":
-            [
             ]
         },
         {

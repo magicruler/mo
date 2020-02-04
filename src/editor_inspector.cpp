@@ -19,17 +19,6 @@ void EditorInspector::OnIMGUI()
 			return;
 		}
 
-		spdlog::info("{} local position is: {}, {}, {}", actor->GetName(), actor->localPosition.x, actor->localPosition.y, actor->localPosition.z);
-		if (actor->children.size() == 1)
-		{
-			spdlog::info("{} local position is: {}, {}, {}", actor->children[0]->GetName(),actor->children[0]->localPosition.x, actor->children[0]->localPosition.y, actor->children[0]->localPosition.z);
-		}
-
-		if (actor->parent != nullptr)
-		{
-			spdlog::info("{} local position is: {}, {}, {}", actor->parent->GetName(), actor->parent->localPosition.x, actor->parent->localPosition.y, actor->parent->localPosition.z);
-		}
-
 		if (ImGui::InputFloat3("Position", &actor->localPosition.x, 3))
 		{
 			actor->SetDirty();

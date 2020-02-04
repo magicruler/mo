@@ -8,6 +8,9 @@ enum class MaterialExtension
 {
 	MODEL_VIEW_PROJECTION,
 	TIME,
+	AMBIENT,
+	NEAREST_LIGHT,
+	CAMERA
 };
 
 class Material
@@ -18,6 +21,8 @@ public:
 	void SetTextureProperty(const std::string& propName, Texture* texValue);
 	void SetMatrix4(const std::string& propName, glm::mat4& matrix);
 	void SetFloat(const std::string& propName, float value);
+	void SetInt(const std::string& propName, int value);
+	void SetVector3(const std::string& propName, glm::vec3& value);
 
 	void Use();
 
@@ -47,6 +52,11 @@ private:
 
 	std::vector<MaterialExtension> extensions;
 	std::map<std::string, Texture*> textureProperties;
+	
+	std::map<std::string, float> floatProperties;
+	std::map<std::string, glm::vec3> vec3Properties;
+	std::map<std::string, int> intProperties;
+
 	Shader* shader;
 };
 

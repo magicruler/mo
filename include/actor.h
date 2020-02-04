@@ -23,6 +23,7 @@ class Actor : Object
 	MO_OBJECT("Actor")
 public:
 	friend class EditorInspector;
+	friend class EditorSceneView;
 
 	Actor()
 	{
@@ -199,6 +200,8 @@ public:
 	}
 
 	void MarkChildrenDirty();
+
+	void UpdateLocalSpace();
 
 private:
 

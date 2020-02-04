@@ -1,7 +1,7 @@
 #include "scene.h"
 #include "actor.h"
 #include "camera.h"
-
+#include "light.h"
 Scene::Scene()
 {
 	rootNode = new Actor();
@@ -24,11 +24,16 @@ std::vector<Actor*> renderableActors;
 This Vector Will Clear Every Frame, Will Be Used In Render Process
 */
 std::vector<Camera*> cameras;
+/*
+This Vector Will Clear Every Frame, Will Be Used In Render Process
+*/
+std::vector<Light*> lights;
 
 void Scene::Tick()
 {	
 	renderableActors.clear();
 	cameras.clear();
+	lights.clear();
 
 	sceneFrontLayer = rootNode->GetChildren();
 
@@ -51,6 +56,11 @@ void Scene::Tick()
 				cameras.push_back((Camera*)actor);
 			}
 
+			if (actor->GetHashID() == Light::GetHashIDStatic())
+			{
+				lights.push_back((Light*)actor);
+			}
+
 			for (int j = 0; j < actor->GetChildren().size(); j++)
 			{
 				sceneBackLayer.push_back(actor->GetChildren()[j]);
@@ -69,4 +79,9 @@ std::vector<Camera*> Scene::GetCameras()
 std::vector<Actor*> Scene::GetRenderables()
 {
 	return renderableActors;
+}
+
+std::vector<Light*> Scene::GetLights()
+{
+	return lights;
 }
