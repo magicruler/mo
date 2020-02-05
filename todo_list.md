@@ -1,14 +1,21 @@
 ## Todo
-- Reachitect, ECS!(Continuous Memory, System Update)
+- Transform Update System
+- Render Target Assets
 - Uniform Buffer For MVP, Camera Position, Light Info And So On. Use Struct Interface And Struct Uniform In Shaders 
+- Camera Culling
+- Command List
+- Deferred Renderer
+- Post Processing Stack
 - Use ID Buffer To Implement Object Picking Instead Of Ray Cast
 - More Camera Operation
 - Inspector Editor
 - Normal Mapping
 - Skybox
 - Mapping Keyboard Index In Input.h To Reduce Memory Allocation
+- Actor Destroy
 
 ## Done
+- Reachitect, ECS!(Continuous Memory, System Update)
 - Actor Dirty Getter Setter. Parent Mark Should Change Children. Cached
 - Point Light
 - Ray Cast(AABB Hit Test)
