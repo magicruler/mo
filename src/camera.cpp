@@ -43,7 +43,7 @@ TODO, USE CACHED INVERSE MATRIX
 glm::mat4 Camera::GetViewMatrix()
 {
 	Actor* actor = this->GetParent();
-	glm::mat4 modelMatrix = actor->GetTransform();
+	glm::mat4 modelMatrix = actor->GetLocalToWorldMatrix();
 	
 	glm::mat3x3 rotationScaleMatrix = glm::mat3x3(glm::transpose(modelMatrix));
 	glm::vec3 worldUp = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 1.0f, 0.0f));
@@ -131,7 +131,7 @@ void Camera::Render()
 		Mesh* mesh = meshComponent->mesh;
 		assert(mesh != nullptr);
 
-		glm::mat4 transformation = meshComponent->GetParent()->GetTransform();
+		glm::mat4 transformation = meshComponent->GetParent()->GetLocalToWorldMatrix();
 
 		RenderMesh(this, material, mesh, currentScene, transformation, lights);
 	}

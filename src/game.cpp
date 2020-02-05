@@ -48,13 +48,6 @@ namespace Game
         {
             camera->Render();
         }
-        //// for loop camera render
-        //mainRenderTarget->Bind();
-        //glm::vec2 renderTargetSize = mainRenderTarget->GetSize();
-        //glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
-        //glClearColor(1.0f, clearColor.y, clearColor.z, clearColor.w);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //mainRenderTarget->Unbind();
     }
 
     void End()

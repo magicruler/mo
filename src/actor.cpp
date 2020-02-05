@@ -11,9 +11,9 @@
 
 void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
 {
-	auto parentWorldTransform = parent->GetTransform();
+	auto parentWorldTransform = parent->GetLocalToWorldMatrix();
 
-	glm::vec3 worldOriginPosition = GetTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec3 worldOriginPosition = GetLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	auto newSelfWorldTransform = glm::inverse(glm::lookAt(worldOriginPosition, worldPosition, worldUp));
 	
 	// newSelfWorldTransform = parentWorldTransform * localTransform 
@@ -50,7 +50,7 @@ void ComputeAABB(Actor* actor)
 	if (meshCom != nullptr)
 	{
 		auto newAABB = AABB();
-		newAABB.Append(ComputeMeshAABBWithTransformation(meshCom->mesh, actor->GetTransform()));
+		newAABB.Append(ComputeMeshAABBWithTransformation(meshCom->mesh, actor->GetLocalToWorldMatrix()));
 
 		actor->SetAABB(newAABB);
 	}
@@ -64,11 +64,11 @@ void Actor::UpdateTransform()
 		transform = glm::eulerAngleXYZ(localRotation.x, localRotation.y, localRotation.z) * transform;
 		transform = glm::scale(transform, localScale);*/
 		
-		ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(localPosition), glm::value_ptr(localRotation * Math::RAD_TO_DEGREE), glm::value_ptr(localScale), glm::value_ptr(transform));
+		ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(localPosition), glm::value_ptr(localRotation * Math::RAD_TO_DEGREE), glm::value_ptr(localScale), glm::value_ptr(localToWorldMatrix));
 
 		if (parent != nullptr)
 		{
-			transform = parent->GetTransform() * transform;
+			localToWorldMatrix = parent->GetLocalToWorldMatrix() * localToWorldMatrix;
 		}
 	}
 
@@ -113,13 +113,13 @@ void Actor::MarkChildrenDirty()
 
 void Actor::UpdateLocalSpace()
 {
-	auto parentToWorldTransform = parent->GetTransform();
+	auto parentToWorldTransform = parent->GetLocalToWorldMatrix();
 	
 	// Parent To World * Local To Parent = New Local To World
 
 	// Local To Parent = Inverse(Parent To World) * New Local To World
 
-	auto localToParent = glm::inverse(parentToWorldTransform) * transform;
+	auto localToParent = glm::inverse(parentToWorldTransform) * localToWorldMatrix;
 	
 	glm::vec3 localS;
 	glm::vec3 localRot;

@@ -8,6 +8,10 @@ enum class KEYBOARD_KEY
 	ESC = GLFW_KEY_ESCAPE,
 	F6 = GLFW_KEY_F6,
 	W = GLFW_KEY_W,
+	A = GLFW_KEY_A,
+	S = GLFW_KEY_S,
+	D = GLFW_KEY_D,
+	Q = GLFW_KEY_Q,
 	E = GLFW_KEY_E,
 	R = GLFW_KEY_R,
 };

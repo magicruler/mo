@@ -5,6 +5,8 @@ namespace Input
 	GLFWwindow* captured_window = nullptr;
 
 	std::vector<bool> keyPress;
+	std::list<int> keyNeedClear;
+
 	bool keyDirty = false;
 	bool mouseDirty = false;
 	glm::vec2 mouseOffset = glm::vec2(0.0f, 0.0f);
@@ -16,27 +18,12 @@ namespace Input
 	{
 		if (action == GLFW_PRESS)
 		{
-			keyDirty = true;
-			if (key == GLFW_KEY_F6)
+			if (key < 512)
 			{
-				keyPress[GLFW_KEY_F6] = true;
-			}
-			else if (key == GLFW_KEY_ESCAPE)
-			{
-				keyPress[GLFW_KEY_ESCAPE] = true;
-			}
-			else if (key == GLFW_KEY_W)
-			{
-				keyPress[GLFW_KEY_W] = true;
-			}
-			else if (key == GLFW_KEY_E)
-			{
-				keyPress[GLFW_KEY_E] = true;
-			}
-			else if (key == GLFW_KEY_R)
-			{
-				keyPress[GLFW_KEY_R] = true;
-			}
+				keyPress[key] = true;
+				keyNeedClear.push_back(key);
+				keyDirty = true;
+			}			
 		}
 	}
 
@@ -71,7 +58,11 @@ namespace Input
 	{
 		if (keyDirty)
 		{
-			keyPress = std::vector<bool>(512, false);
+			for (auto& index : keyNeedClear)
+			{
+				keyPress[index] = false;
+			}
+			keyNeedClear.clear();
 			keyDirty = false;
 		}
 

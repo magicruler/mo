@@ -18,6 +18,11 @@ enum PROPERTY_MASK
 	NON_SERIALIZED = 1 << 1,
 };
 
+enum SPACE
+{
+	LOCAL = 0,
+	WORLD = 1,
+};
 
 class Actor : Object
 {
@@ -32,7 +37,7 @@ public:
 		mesh = nullptr;
         material = nullptr;
 
-		transform = glm::mat4(1.0f);
+		localToWorldMatrix = glm::mat4(1.0f);
 		
 		localPosition = glm::vec3(0.0f);
 		localRotation = glm::vec3(0.0f);
@@ -97,7 +102,7 @@ public:
 	// TODO, USE CACHED POSITION
 	glm::vec3 GetWorldPosition()
 	{
-		return GetTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		return GetLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	inline void SetLocalScale(glm::vec3 scale)
@@ -117,14 +122,14 @@ public:
 	*/
 	void LookAt(glm::vec3 worldPosition, glm::vec3 worldUp);
 
-	glm::mat4 GetTransform()
+	glm::mat4 GetLocalToWorldMatrix()
 	{
 		if (dirty)
 		{
 			UpdateTransform();
 		}
 
-		return transform;
+		return localToWorldMatrix;
 	}
 
 	void UpdateTransform();
@@ -204,13 +209,20 @@ private:
 
 	Actor* parent;
 	std::vector<Actor*> children;
-	glm::mat4 transform;
+	glm::mat4 localToWorldMatrix;
 	
 	bool dirty = false;
 
 	glm::vec3 localPosition;
 	glm::vec3 localRotation;
 	glm::vec3 localScale;
+
+	// world forward
+	glm::vec3 forward;
+	// world up
+	glm::vec3 up;
+	// world right
+	glm::vec3 right;
 
 	std::string name = "";
 

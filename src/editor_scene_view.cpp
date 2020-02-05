@@ -169,7 +169,7 @@ void EditorSceneView::OnIMGUI()
             
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->transform));
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->localToWorldMatrix));
             actor->UpdateLocalSpace();
         }
 }
@@ -203,6 +203,11 @@ void EditorSceneView::OnSceneCameraControl()
         {
             glm::vec2 delta = io.MouseDelta;
             sceneCamera->Rotate(deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * 0.0174f * delta.y, CAMERA_ROTATE_SPEED * 0.0174f * delta.x, 0.0f));
+            
+            if (Input::GetKeyState(KEYBOARD_KEY::W) == KEY_STATE::PRESS)
+            {
+                sceneCamera->Translate(glm::vec3(0.0f, 0.0f, -1.0f) * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+            }
         }
     }
 }
