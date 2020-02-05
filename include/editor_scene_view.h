@@ -3,7 +3,6 @@
 #include "editor_window.h"
 
 class RenderTarget;
-class Camera;
 class Actor;
 
 class EditorSceneView : public EditorWindow
@@ -22,7 +21,7 @@ private:
 ;
     virtual void OnResize();
 
-    Camera* sceneCamera = nullptr;
+    Actor* sceneCamera = nullptr;
 
     RenderTarget* sceneViewRenderTarget;
     bool initialized = false;

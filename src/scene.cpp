@@ -19,15 +19,10 @@ std::vector<Actor*> sceneBackLayer;
 /*
 This Vector Will Clear Every Frame, Will Be Used In Render Process
 */
-std::vector<Camera*> cameras;
-/*
-This Vector Will Clear Every Frame, Will Be Used In Render Process
-*/
 std::vector<Light*> lights;
 
 void Scene::Tick()
 {	
-	cameras.clear();
 	lights.clear();
 
 	sceneFrontLayer = rootNode->GetChildren();
@@ -40,11 +35,6 @@ void Scene::Tick()
 		{
 			auto actor = sceneFrontLayer[i];
 			actor->Tick();
-			
-			if (actor->GetHashID() == Camera::GetHashIDStatic())
-			{
-				cameras.push_back((Camera*)actor);
-			}
 
 			if (actor->GetHashID() == Light::GetHashIDStatic())
 			{
@@ -59,11 +49,6 @@ void Scene::Tick()
 
 		sceneFrontLayer.swap(sceneBackLayer);
 	}
-}
-
-std::vector<Camera*> Scene::GetCameras()
-{
-	return cameras;
 }
 
 std::vector<Light*> Scene::GetLights()

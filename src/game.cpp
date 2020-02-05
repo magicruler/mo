@@ -26,10 +26,10 @@ namespace Game
 
     void Init()
     {
-        ComponentManager::Init();
-
-        Serialization::LoadProject();
         mainRenderTarget = new RenderTarget(300, 300);
+        
+        ComponentManager::Init();
+        Serialization::LoadProject();
         InitEntryScene();
 
         EditorWindowSystem::Init();
@@ -43,7 +43,7 @@ namespace Game
 
     void Render()
     {
-        auto cameras = activeScene->GetCameras();
+        auto cameras = ComponentManager::GetInstance()->GetCameraComponents();
         for (auto camera:cameras)
         {
             camera->Render();

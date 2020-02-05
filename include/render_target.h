@@ -34,6 +34,11 @@ public:
         return hasDepth;
     }
 
+    unsigned int GetGPUHandle()
+    {
+        return ID;
+    }
+
 private:
     void Init();
 

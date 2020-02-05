@@ -18,18 +18,19 @@
 #include "light.h"
 #include "mesh_component.h"
 #include "component_manager.h"
+#include "actor.h"
+
+void Camera::Clear()
+{
+	ComponentManager::GetInstance()->AddToAvaliableCameraComponentsList(this);
+}
+
 
 Camera::Camera()
-	:Actor()
+	:Component()
 {
 	// default render target
 	renderTarget = Game::MainRenderTargetGetPointer();
-}
-
-void Camera::Tick()
-{
-	auto targetSize = renderTarget->GetSize();
-	ratio = targetSize.x / targetSize.y;
 }
 
 glm::mat4 Camera::GetProjection()
@@ -42,13 +43,14 @@ TODO, USE CACHED INVERSE MATRIX
 */
 glm::mat4 Camera::GetViewMatrix()
 {
-	glm::mat4 modelMatrix = GetTransform();
+	Actor* actor = this->GetParent();
+	glm::mat4 modelMatrix = actor->GetTransform();
 	
 	glm::mat3x3 rotationScaleMatrix = glm::mat3x3(glm::transpose(modelMatrix));
 	glm::vec3 worldUp = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec3 worldForward = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
 	
-	glm::vec3 worldPos = GetWorldPosition();
+	glm::vec3 worldPos = actor->GetWorldPosition();
 	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + worldForward, worldUp);
 	
 	return lookAtMatrix;
@@ -87,7 +89,7 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, gl
 		}
 		else if (extension == MaterialExtension::CAMERA)
 		{
-			material->SetVector3("cameraPos", camera->GetWorldPosition());
+			material->SetVector3("cameraPos", camera->GetParent()->GetWorldPosition());
 		}
 	}
 	
@@ -102,6 +104,7 @@ void Camera::Render()
 {
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 	Scene* currentScene = Game::ActiveSceneGetPointer();
+	ratio = renderTargetSize.x / renderTargetSize.y;
 
 	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
 
@@ -140,7 +143,7 @@ void Camera::Render()
 Ray Camera::ScreenRay(float mouseX, float mouseY)
 {
 	Ray result = {};
-	result.origin = GetWorldPosition();
+	result.origin = GetParent()->GetWorldPosition();
 
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 

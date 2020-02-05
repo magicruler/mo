@@ -1,6 +1,6 @@
 #pragma once
 #include "common.h"
-#include "actor.h"
+#include "component.h"
 
 class RenderTarget;
 struct Ray;
@@ -13,12 +13,13 @@ enum CAMERA_RENDER_FLAG
 	RENDER_WIRE_FRAMES = 1 <<2
 };
 
-class Camera: public Actor
+class Camera: public Component
 {
 	MO_OBJECT("Camera")
 public:
 	Camera();
-	virtual void Tick();
+
+	virtual void Clear();
 	void Render();
 	glm::mat4 GetProjection();
 	glm::mat4 GetViewMatrix();

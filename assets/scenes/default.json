@@ -62,17 +62,23 @@
         },
         {
             "name": "mainCamera",
-            "type": "camera",
-            "fov": 45.0,
-            "nearPlane": 0.1,
-            "farPlane": 100.0,
-            "clearColor": [0.192, 0.302, 0.475, 1.0],
+            "type": "actor",
             "transform":
             {
                 "position":[0.0, 0.0, 12.0],
                 "scale":[1.0, 1.0, 1.0],
                 "rotation":[0.0, 0.0, 0.0]
             },
+            "components":
+            [
+                {
+                    "type":"camera",
+                    "fov": 45.0,
+                    "nearPlane": 0.1,
+                    "farPlane": 100.0,
+                    "clearColor": [0.192, 0.302, 0.475, 1.0]
+                }
+            ],
             "children":
             [
             ]

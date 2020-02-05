@@ -1,5 +1,6 @@
 #include "component_manager.h"
 #include "mesh_component.h"
+#include "camera.h"
 
 ComponentManager* ComponentManager::instance = nullptr;
 
@@ -21,6 +22,24 @@ MeshComponent* ComponentManager::CreateMeshComponent(Mesh* mesh, Material* mater
 	result->material = material;
 	result->mesh = mesh;
 	
+	return result;
+}
+
+Camera* ComponentManager::CreateCameraComponent()
+{
+	Camera* result = nullptr;
+
+	if (cameraComponentsAvaliable.size() != 0)
+	{
+		result = cameraComponentsAvaliable.back();
+		cameraComponentsAvaliable.pop_back();
+	}
+	else
+	{
+		result = new Camera();
+		cameraComponents.push_back(result);
+	}
+
 	return result;
 }
 

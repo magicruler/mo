@@ -25,5 +25,6 @@ void EditorGame::OnIMGUI()
 
 void EditorGame::OnResize()
 {
+    spdlog::info("Game Render Target Is {}", gameViewRenderTarget->GetGPUHandle());
     gameViewRenderTarget->Resize(contentSize.x, contentSize.y);
 }

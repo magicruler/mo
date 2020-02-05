@@ -92,35 +92,23 @@ namespace Serialization
 						MeshComponent* meshCom = ComponentManager::GetInstance()->CreateMeshComponent(mesh, material);
 						newActor->AddComponent(meshCom);
 					}
+					else if (typeName == "camera")
+					{
+						Camera* cameraCom = ComponentManager::GetInstance()->CreateCameraComponent();
+	
+						newActor->AddComponent(cameraCom);
+
+						cameraCom->fov = comObject["fov"];
+						cameraCom->nearPlane = comObject["nearPlane"];
+						cameraCom->farPlane = comObject["farPlane"];
+						cameraCom->clearColor = DeserilizeVector4(comObject["clearColor"]);
+					}
 				}
 			}
 
 			auto transformObject = node["transform"];
 			ProcessTransformation(transformObject, newActor);
 			
-			currentActor->AddChild(newActor);
-
-			auto childrenNode = node["children"];
-			for (auto& childNode : childrenNode)
-			{
-				ProcessNode(childNode, newActor);
-			}
-		}
-		else if (typeName == "camera")
-		{
-			Camera* newActor = new Camera();
-			auto name = node["name"].get<std::string>();
-			newActor->SetName(name);
-
-			// Camera Properties
-			newActor->fov = node["fov"];
-			newActor->nearPlane = node["nearPlane"];
-			newActor->farPlane = node["farPlane"];
-			newActor->clearColor = DeserilizeVector4(node["clearColor"]);
-
-			auto transformObject = node["transform"];
-			ProcessTransformation(transformObject, newActor);
-
 			currentActor->AddChild(newActor);
 
 			auto childrenNode = node["children"];

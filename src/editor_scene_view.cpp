@@ -10,19 +10,27 @@
 #include "editor_window_system.h"
 #include "ImGuizmo.h"
 #include "input.h"
+#include "component_manager.h"
+#include "actor.h"
 
 constexpr float CAMERA_ROTATE_SPEED = 1.5f;
 constexpr float CAMERA_FORWARD_SPEED = 5.0f;
 constexpr float CAMERA_XY_PLANE_SPEED = 1.0f;
 
 static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
+static Camera* cameraCom = nullptr;
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
     sceneViewRenderTarget = new RenderTarget(initialWidth, initialHeight);
     
-    sceneCamera = new Camera();
-    sceneCamera->renderTarget = sceneViewRenderTarget;
+    sceneCamera = new Actor();
+
+    cameraCom = ComponentManager::GetInstance()->CreateCameraComponent();
+    cameraCom->renderTarget = sceneViewRenderTarget;
+
+    sceneCamera->AddComponent(cameraCom);
+
     sceneCamera->SetLocalPosition(glm::vec3(0.0f, 0.0f, 12.0f));
     
     sceneCamera->SetLayerFlag(LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS);
@@ -62,8 +70,8 @@ void EditorSceneView::OnIMGUI()
 
     //// Draw AABB
     //{
-        auto projection = sceneCamera->GetProjection();
-        auto view = sceneCamera->GetViewMatrix();
+        auto projection = cameraCom->GetProjection();
+        auto view = cameraCom->GetViewMatrix();
 
     //    auto renderables = Game::ActiveSceneGetPointer()->GetRenderables();
     //    for (auto renderable : renderables)
@@ -123,7 +131,7 @@ void EditorSceneView::OnIMGUI()
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver())
             {
                 // another
-                auto cameraRay = sceneCamera->ScreenRay(windowPos.x, windowPos.y);
+                auto cameraRay = cameraCom->ScreenRay(windowPos.x, windowPos.y);
 
                 RayCastInteraction interaction;
                 Physics::RayCast(cameraRay, LAYER_MASK::GENERAL, interaction);
@@ -159,6 +167,7 @@ void EditorSceneView::OnIMGUI()
                 operation = ImGuizmo::OPERATION::SCALE;
             }
             
+            ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
             ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->transform));
             actor->UpdateLocalSpace();
@@ -167,6 +176,7 @@ void EditorSceneView::OnIMGUI()
 
 void EditorSceneView::OnResize() 
 {
+    spdlog::info("Scene Render Target Is {}", sceneViewRenderTarget->GetGPUHandle());
     sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
 }
 

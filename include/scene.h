@@ -2,7 +2,6 @@
 #include "common.h"
 
 class Actor;
-class Camera;
 class Light;
 
 class Scene
@@ -14,7 +13,6 @@ public:
     
     void Tick();
 
-    std::vector<Camera*> GetCameras();
     std::vector<Light*> GetLights();
 
     std::string GetName()
