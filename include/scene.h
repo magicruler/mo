@@ -2,7 +2,6 @@
 #include "common.h"
 
 class Actor;
-class Light;
 
 class Scene
 {
@@ -12,8 +11,6 @@ public:
     Actor* rootNode = nullptr;
     
     void Tick();
-
-    std::vector<Light*> GetLights();
 
     std::string GetName()
     {

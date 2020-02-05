@@ -25,7 +25,6 @@ void Camera::Clear()
 	ComponentManager::GetInstance()->AddToAvaliableCameraComponentsList(this);
 }
 
-
 Camera::Camera()
 	:Component()
 {
@@ -57,7 +56,7 @@ glm::mat4 Camera::GetViewMatrix()
 }
 
 // TODO: TEMP POSITION FOR RENDERING CODE
-void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, glm::mat4& transformation, std::vector<Light*>& lights)
+void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, glm::mat4& transformation, std::list<Light*>& lights)
 {
 	material->Use();
 	std::vector<MaterialExtension> extensions = material->GetExtensions();
@@ -82,9 +81,9 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, gl
 			// TODO Multiple Light, Forward Renderer
 			if (lights.size() > 0)
 			{
-				Light* light = lights[0];
+				Light* light = lights.front();
 				material->SetVector3("lightColor", light->GetLightIntensityColor());
-				material->SetVector3("lightPos", light->GetWorldPosition());
+				material->SetVector3("lightPos", light->GetParent()->GetWorldPosition());
 			}
 		}
 		else if (extension == MaterialExtension::CAMERA)
@@ -108,7 +107,7 @@ void Camera::Render()
 
 	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
 
-	std::vector<Light*> lights = currentScene->GetLights();
+	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
 
 	renderTarget->Bind();
 	if (renderTarget->HasDepth())

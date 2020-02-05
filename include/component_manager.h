@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 
+class Light;
 class Camera;
 class MeshComponent;
 class Mesh;
@@ -44,6 +45,21 @@ public:
 	{
 		return cameraComponents;
 	}
+	/*
+	Light
+	*/
+	Light* CreateLightComponent();
+
+	inline void AddToAvaliableLightComponentsList(Light* lightCom)
+	{
+		lightComponents.remove(lightCom);
+		lightComponentsAvaliable.push_back(lightCom);
+	}
+
+	inline std::list<Light*> GetLightComponents()
+	{
+		return lightComponents;
+	}
 
 private:
 	std::list<MeshComponent*> meshComponents;
@@ -51,6 +67,9 @@ private:
 
 	std::list<Camera*> cameraComponents;
 	std::list<Camera*> cameraComponentsAvaliable;
+
+	std::list<Light*> lightComponents;
+	std::list<Light*> lightComponentsAvaliable;
 
 private:
 	ComponentManager();

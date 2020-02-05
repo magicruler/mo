@@ -1,6 +1,7 @@
 #include "component_manager.h"
 #include "mesh_component.h"
 #include "camera.h"
+#include "light.h"
 
 ComponentManager* ComponentManager::instance = nullptr;
 
@@ -38,6 +39,24 @@ Camera* ComponentManager::CreateCameraComponent()
 	{
 		result = new Camera();
 		cameraComponents.push_back(result);
+	}
+
+	return result;
+}
+
+Light* ComponentManager::CreateLightComponent()
+{
+	Light* result = nullptr;
+
+	if (lightComponentsAvaliable.size() != 0)
+	{
+		result = lightComponentsAvaliable.back();
+		lightComponentsAvaliable.pop_back();
+	}
+	else
+	{
+		result = new Light();
+		lightComponents.push_back(result);
 	}
 
 	return result;

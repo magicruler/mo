@@ -103,6 +103,15 @@ namespace Serialization
 						cameraCom->farPlane = comObject["farPlane"];
 						cameraCom->clearColor = DeserilizeVector4(comObject["clearColor"]);
 					}
+					else if (typeName == "light")
+					{
+						Light* lightCom = ComponentManager::GetInstance()->CreateLightComponent();
+
+						newActor->AddComponent(lightCom);
+						// Light Properties
+						lightCom->SetLightIntensity(comObject["lightIntensity"]);
+						lightCom->SetLightColor(DeserilizeVector3(comObject["lightColor"]));
+					}
 				}
 			}
 
@@ -115,27 +124,6 @@ namespace Serialization
 			for (auto& childNode : childrenNode)
 			{
 				ProcessNode(childNode, newActor);
-			}
-		}
-		else if (typeName == "pointLight")
-		{
-			Light* light = new Light();
-			auto name = node["name"].get<std::string>();
-			light->SetName(name);
-
-			// Light Properties
-			light->SetLightIntensity(node["lightIntensity"]);
-			light->SetLightColor(DeserilizeVector3(node["lightColor"]));
-
-			auto transformObject = node["transform"];
-			ProcessTransformation(transformObject, light);
-
-			currentActor->AddChild(light);
-
-			auto childrenNode = node["children"];
-			for (auto& childNode : childrenNode)
-			{
-				ProcessNode(childNode, light);
 			}
 		}
 	}

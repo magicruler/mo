@@ -1,8 +1,8 @@
 #pragma once
 #include "common.h"
-#include "actor.h"
+#include "component.h"
 
-class Light: public Actor
+class Light: public Component
 {
     MO_OBJECT("Light")
 public:
@@ -20,6 +20,8 @@ public:
     {
         return lightIntensity * lightColor;
     }
+
+    virtual void Clear();
 
 private:
     float lightIntensity = 1.0f;
