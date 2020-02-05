@@ -4,6 +4,7 @@
 
 class Mesh;
 class Material;
+class Component;
 
 enum LAYER_MASK
 {
@@ -70,26 +71,6 @@ public:
 		std::vector<Actor*> result;
 		CollectSubTreeInternal(result, this);
 		return result;
-	}
-
-	void SetMesh(Mesh* mesh)
-	{
-		this->mesh = mesh;
-	}
-
-	Mesh* GetMesh()
-	{
-		return mesh;
-	}
-
-    void SetMaterial(Material* material)
-	{
-		this->material = material;
-	}
-
-	Material* GetMaterial()
-	{
-		return material;
 	}
 
 	inline void Translate(glm::vec3 value)
@@ -203,6 +184,18 @@ public:
 
 	void UpdateLocalSpace();
 
+	void AddComponent(Component* com);
+	void RemoveComponent(Component* com);
+
+	template<typename T>
+	T* GetComponent()
+	{
+		size_t hashId = T::GetHashIDStatic();
+		return (T*)GetComponent(hashId);
+	}
+
+	Component* GetComponent(size_t hashId);
+
 private:
 
 	AABB aabb;
@@ -219,9 +212,10 @@ private:
 	glm::vec3 localRotation;
 	glm::vec3 localScale;
 
-	bool tickable = false;
 	std::string name = "";
 
 	unsigned int layerFlag = LAYER_MASK::GENERAL;
 	unsigned int propertyFlag = PROPERTY_MASK::NOTHING;
+
+	std::vector<Component*> components;
 };

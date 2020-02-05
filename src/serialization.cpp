@@ -26,6 +26,9 @@
 #include <glad/glad.h>
 #endif
 
+#include "component_manager.h"
+#include "mesh_component.h"
+
 using json = nlohmann::json;
 
 namespace Serialization
@@ -70,24 +73,26 @@ namespace Serialization
 			auto name = node["name"].get<std::string>();
 			newActor->SetName(name);
 			
-			/* 
-			material, optional property 
-			*/
-			if (node.contains("material"))
+			if (node.contains("components"))
 			{
-				auto materialPath = node["material"].get<std::string>();
-				Material* material = Resources::GetMaterial(materialPath);
-				newActor->SetMaterial(material);
-			}
+				auto componentsObject = node["components"];
+				assert(componentsObject.is_array());
 
-			/*
-			mesh, optional property
-			*/
-			if (node.contains("mesh"))
-			{
-				auto meshPath = node["mesh"].get<std::string>();
-				Mesh* mesh = Resources::GetMesh(meshPath);
-				newActor->SetMesh(mesh);
+				for (auto& comObject : componentsObject)
+				{
+					std::string typeName = comObject["type"].get<std::string>();
+					if (typeName == "meshComponent")
+					{
+						auto materialPath = comObject["material"].get<std::string>();
+						Material* material = Resources::GetMaterial(materialPath);						
+
+						auto meshPath = comObject["mesh"].get<std::string>();
+						Mesh* mesh = Resources::GetMesh(meshPath);
+
+						MeshComponent* meshCom = ComponentManager::GetInstance()->CreateMeshComponent(mesh, material);
+						newActor->AddComponent(meshCom);
+					}
+				}
 			}
 
 			auto transformObject = node["transform"];

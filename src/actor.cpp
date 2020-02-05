@@ -6,6 +6,8 @@
 #include "scene.h"
 #include "imgui.h"
 #include "ImGuizmo.h"
+#include "component.h"
+#include "mesh_component.h"
 
 void Actor::LookAt(glm::vec3 worldPosition, glm::vec3 worldUp)
 {
@@ -43,11 +45,12 @@ AABB ComputeMeshAABBWithTransformation(Mesh* mesh, glm::mat4 transformation)
 
 void ComputeAABB(Actor* actor)
 {
-	auto mesh = actor->GetMesh();
-	if (mesh != nullptr)
+	auto meshCom = actor->GetComponent<MeshComponent>();
+
+	if (meshCom != nullptr)
 	{
 		auto newAABB = AABB();
-		newAABB.Append(ComputeMeshAABBWithTransformation(mesh, actor->GetTransform()));
+		newAABB.Append(ComputeMeshAABBWithTransformation(meshCom->mesh, actor->GetTransform()));
 
 		actor->SetAABB(newAABB);
 	}
@@ -133,4 +136,49 @@ void Actor::UpdateLocalSpace()
 	//glm::mat4 newTransform = transform;
 
 	//int a = 1;
+}
+
+void Actor::AddComponent(Component* com)
+{
+	assert(com != nullptr);
+	assert(com->GetParent() != this);
+
+	if (com->GetParent() != nullptr)
+	{
+		com->GetParent()->RemoveComponent(com);
+	}
+
+	components.push_back(com);
+	com->SetParent(this);
+}
+
+void Actor::RemoveComponent(Component* com)
+{
+	assert(com->GetParent() == this);
+
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (components[i] == com)
+		{
+			com->SetParent(nullptr);
+			com->Clear();
+
+			components.erase(components.begin() + i);
+			return;
+		}
+	}
+	assert(false);
+}
+
+Component* Actor::GetComponent(size_t hashId)
+{
+	for (auto com : components)
+	{
+		if (com->GetHashID() == hashId)
+		{
+			return com;
+		}
+	}
+
+	return nullptr;
 }

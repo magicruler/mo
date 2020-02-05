@@ -15,7 +15,6 @@ public:
     void Tick();
 
     std::vector<Camera*> GetCameras();
-    std::vector<Actor*> GetRenderables();
     std::vector<Light*> GetLights();
 
     std::string GetName()

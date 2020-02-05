@@ -6,8 +6,6 @@
         {
             "name": "teapot",
             "type": "actor",
-            "material": "blinn.json",
-            "mesh": "teapot.json",
             "transform":
             {
                 "position":[0.0, -6.0, -16.0],
@@ -17,7 +15,7 @@
             "components":
             [
                 {
-                    "type": "meshRenderData",
+                    "type": "meshComponent",
                     "material": "blinn.json",
                     "mesh": "teapot.json"
                 }
@@ -29,8 +27,14 @@
         {
             "name": "sphere",
             "type": "actor",
-            "material": "standardWhite.json",
-            "mesh": "sphere.json",
+            "components":
+            [
+                {
+                    "type": "meshComponent",
+                    "material": "standardWhite.json",
+                    "mesh": "sphere.json"
+                }
+            ],
             "transform":
             {
                 "position":[5.667, 4.19, 0.0],

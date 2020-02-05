@@ -9,6 +9,7 @@
 #include "serialization.h"
 #include "string_utils.h"
 #include "configs.h"
+#include "component_manager.h"
 
 namespace Game
 {
@@ -25,14 +26,13 @@ namespace Game
 
     void Init()
     {
+        ComponentManager::Init();
+
         Serialization::LoadProject();
         mainRenderTarget = new RenderTarget(300, 300);
         InitEntryScene();
 
         EditorWindowSystem::Init();
-
-        // auto editorSceneView = EditorWindowSystem::GetInstance()->GetEditor<EditorSceneView>();
-        // editorSceneView->SetSceneViewRenderTarget(mainRenderTarget);
     }
    
     void Update()

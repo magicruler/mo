@@ -16,6 +16,8 @@
 #include "ray_cast.h"
 
 #include "light.h"
+#include "mesh_component.h"
+#include "component_manager.h"
 
 Camera::Camera()
 	:Actor()
@@ -100,7 +102,9 @@ void Camera::Render()
 {
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 	Scene* currentScene = Game::ActiveSceneGetPointer();
-	std::vector<Actor*> renderables = currentScene->GetRenderables();
+
+	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
+
 	std::vector<Light*> lights = currentScene->GetLights();
 
 	renderTarget->Bind();
@@ -117,15 +121,15 @@ void Camera::Render()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	// Render Stuff
-	for (auto renderableActor : renderables)
+	for (auto meshComponent : meshComponents)
 	{
-		Material* material = renderableActor->GetMaterial();
+		Material* material = meshComponent->material;
 		assert(material != nullptr);
 
-		Mesh* mesh = renderableActor->GetMesh();
+		Mesh* mesh = meshComponent->mesh;
 		assert(mesh != nullptr);
 
-		glm::mat4 transformation = renderableActor->GetTransform();
+		glm::mat4 transformation = meshComponent->GetParent()->GetTransform();
 
 		RenderMesh(this, material, mesh, currentScene, transformation, lights);
 	}

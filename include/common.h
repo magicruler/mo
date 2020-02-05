@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <cstdio>
+#include <list>
 
 #include "spdlog/spdlog.h"
 #include "glm/vec2.hpp"
