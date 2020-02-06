@@ -27,6 +27,13 @@ public:
 
     }
 
+    /*
+    Called When Attached To Actor
+    */
+    virtual void Attach()
+    {
+    }
+
 private:
     Actor* parent = nullptr;
 };

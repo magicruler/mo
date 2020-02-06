@@ -43,7 +43,7 @@ AABB ComputeMeshAABBWithTransformation(Mesh* mesh, glm::mat4 transformation)
 	return taabb.bounding;
 }
 
-void ComputeAABB(Actor* actor)
+void ComputeAABBHelper(Actor* actor)
 {
 	auto meshCom = actor->GetComponent<MeshComponent>();
 
@@ -74,7 +74,12 @@ void Actor::UpdateTransform()
 
 	dirty = false;
 	// Now We Have New World Transform
-	ComputeAABB(this);
+	ComputeAABB();
+}
+
+void Actor::ComputeAABB()
+{
+	ComputeAABBHelper(this);
 }
 
 AABB Actor::GetAABB()
@@ -150,6 +155,7 @@ void Actor::AddComponent(Component* com)
 
 	components.push_back(com);
 	com->SetParent(this);
+	com->Attach();
 }
 
 void Actor::RemoveComponent(Component* com)

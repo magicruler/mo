@@ -99,6 +99,8 @@ public:
 		return localPosition;
 	}
 
+	void ComputeAABB();
+
 	// TODO, USE CACHED POSITION
 	glm::vec3 GetWorldPosition()
 	{

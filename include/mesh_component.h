@@ -12,4 +12,5 @@ public:
 	Mesh* mesh = nullptr;
 	Material* material = nullptr;
 	virtual void Clear();
+	virtual void Attach();
 };
