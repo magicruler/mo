@@ -19,20 +19,17 @@ void EditorInspector::OnIMGUI()
 			return;
 		}
 
-		if (ImGui::InputFloat3("Position", &actor->localPosition.x, 3))
-		{
-			actor->SetDirty();
-		}
+		glm::vec3 localPos = actor->GetPositionLocal();
+		glm::vec3 rotation = actor->GetRotationEulerLocal();
+		glm::vec3 scale = actor->GetScaleLocal();
 
-		if (ImGui::InputFloat3("Rotation", &actor->localRotation.x, 3))
-		{
-			actor->SetDirty();
-		}
+		ImGui::InputFloat3("Position", glm::value_ptr(localPos), 3);
+		ImGui::InputFloat3("Rotation", glm::value_ptr(rotation), 3);
+		ImGui::InputFloat3("Scale", glm::value_ptr(scale), 3);
 
-		if (ImGui::InputFloat3("Scale", &actor->localScale.x, 3))
-		{
-			actor->SetDirty();
-		}
+		actor->SetPositionLocal(localPos);
+		actor->SetRotationEulerLocal(rotation);
+		actor->SetScaleLocal(scale);
 	}
 }
 

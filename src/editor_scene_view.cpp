@@ -31,7 +31,7 @@ EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initial
 
     sceneCamera->AddComponent(cameraCom);
 
-    sceneCamera->SetLocalPosition(glm::vec3(0.0f, 0.0f, 12.0f));
+    sceneCamera->SetPositionLocal(glm::vec3(0.0f, 0.0f, 12.0f));
     
     sceneCamera->SetLayerFlag(LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS);
     sceneCamera->SetPropertyFlag(PROPERTY_MASK::NON_SERIALIZED);
@@ -169,9 +169,17 @@ void EditorSceneView::OnIMGUI()
             
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(actor->localToWorldMatrix));
-            actor->UpdateLocalSpace();
-        }
+            glm::mat4 matrix = actor->GetLocalToWorldMatrix();
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(matrix));
+            
+            glm::vec3 worldPosition;
+            glm::vec3 worldRotation;
+            glm::vec3 worldScale;
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
+            actor->SetPosition(worldPosition);
+            actor->SetRotationEuler(worldRotation);
+            actor->SetScale(worldScale);
+        }  
 }
 
 void EditorSceneView::OnResize() 
@@ -202,8 +210,11 @@ void EditorSceneView::OnSceneCameraControl()
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
             glm::vec2 delta = io.MouseDelta;
-            sceneCamera->Rotate(deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * 0.0174f * delta.y, CAMERA_ROTATE_SPEED * 0.0174f * delta.x, 0.0f));
+            sceneCamera->SetRotationEulerLocal(sceneCamera->GetRotationEulerLocal() + deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * delta.y, CAMERA_ROTATE_SPEED * delta.x, 0.0f));
             
+            auto localRotation = sceneCamera->GetRotationEulerLocal();
+            spdlog::info("Rotation Is {} {} {}", localRotation.x, localRotation.y, localRotation.z);
+
             if (Input::GetKeyState(KEYBOARD_KEY::W) == KEY_STATE::PRESS)
             {
                 sceneCamera->Translate(glm::vec3(0.0f, 0.0f, -1.0f) * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);

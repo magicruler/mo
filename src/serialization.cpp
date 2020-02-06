@@ -58,9 +58,9 @@ namespace Serialization
 
 	void ProcessTransformation(json& transformObject, Actor* actor)
 	{
-		actor->SetLocalPosition(DeserilizeVector3(transformObject["position"]));
-		actor->SetLocalScale(DeserilizeVector3(transformObject["scale"]));
-		actor->SetLocalRotation(DeserilizeVector3(transformObject["rotation"]));
+		actor->SetPositionLocal(DeserilizeVector3(transformObject["position"]));
+		actor->SetScaleLocal(DeserilizeVector3(transformObject["scale"]));
+		actor->SetRotationEulerLocal(DeserilizeVector3(transformObject["rotation"]));
 	}
 
 	void ProcessNode(json& node, Actor* currentActor)

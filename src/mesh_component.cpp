@@ -12,5 +12,4 @@ void MeshComponent::Clear()
 
 void MeshComponent::Attach()
 {
-	GetParent()->ComputeAABB();
 }

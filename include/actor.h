@@ -34,22 +34,69 @@ public:
 	Actor()
 	{
 		parent = nullptr;
-		mesh = nullptr;
-        material = nullptr;
 
-		localToWorldMatrix = glm::mat4(1.0f);
-		
-		localPosition = glm::vec3(0.0f);
-		localRotation = glm::vec3(0.0f);
-		localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+		m_localPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_localRotation = glm::quat();
+		m_localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		m_localToParentMatrix = glm::mat4(1.0f);
+		m_localToWorldMatrix = glm::mat4(1.0f);
+	}
+	//Matrix==============================================================================
+	const glm::mat4& GetLocalToWorldMatrix() const
+	{
+		return m_localToWorldMatrix;
 	}
 
+	const glm::mat4& GetLocalToParentMatrix() const
+	{
+		return m_localToParentMatrix;
+	}
+
+	void UpdateTransform();
+	// Position==============================================================================
+	glm::vec3 GetPosition() { return Math::DecomposeTranslation(m_localToWorldMatrix); }
+	const glm::vec3& GetPositionLocal() { return m_localPosition; }
+	void SetPosition(const glm::vec3& position);
+	void SetPositionLocal(const glm::vec3& position);
+	// Rotation==============================================================================
+	glm::quat GetRotation() const { return Math::DecomposeRotation(m_localToWorldMatrix); }
+	// In Degree
+	glm::vec3 GetRotationEuler() const { return Math::RAD_TO_DEGREE * glm::eulerAngles(Math::DecomposeRotation(m_localToWorldMatrix)); }
+	const glm::quat& GetRotationLocal() const { return m_localRotation; }
+	// In Degree
+	glm::vec3 GetRotationEulerLocal() const { return Math::RAD_TO_DEGREE * glm::eulerAngles(m_localRotation); }
+	void SetRotation(const glm::quat& rotation);
+	// In Degree
+	void SetRotationEuler(const glm::vec3& rotation);
+	void SetRotationLocal(const glm::quat& rotation);
+	// In Degree
+	void SetRotationEulerLocal(const glm::vec3& rotation);
+	// Scale=================================================================================
+	glm::vec3 GetScale() { return Math::DecomposeScale(m_localToWorldMatrix); }
+	const glm::vec3& GetScaleLocal() const { return m_localScale; }
+	void SetScale(const glm::vec3& scale);
+	void SetScaleLocal(const glm::vec3& scale);
+	// Translation And Rotation==============================================================
+	void Translate(const glm::vec3& delta);
+	void Rotate(const glm::vec3& delta);
+	void Rotate(const glm::quat& delta);
+	// Directions============================================================================
+	glm::vec3 GetUp() const;
+	glm::vec3 GetForward() const;
+	glm::vec3 GetRight() const;
+	//=======================================================================================
 	virtual void Tick()
 	{
 
 	}
 
-	inline Actor* GetParent()
+	inline Actor* HasParent() const
+	{
+		return parent;
+	}
+
+	inline Actor* GetParent() const
 	{
 		return parent;
 	}
@@ -60,81 +107,7 @@ public:
 	}
 
 	void AddChild(Actor* child);
-
-	void CollectSubTreeInternal(std::vector<Actor*>& vec, Actor* actor)
-	{
-		vec.push_back(actor);
-
-		for (auto child : actor->children)
-		{
-			CollectSubTreeInternal(vec, child);
-		}
-	}
-
-	std::vector<Actor*> CollectSubTree()
-	{
-		std::vector<Actor*> result;
-		CollectSubTreeInternal(result, this);
-		return result;
-	}
-
-	inline void Translate(glm::vec3 value)
-	{
-		SetLocalPosition(localPosition + value);
-	}
-
-	inline void Rotate(glm::vec3 value)
-	{
-		SetLocalRotation(localRotation + value);
-	}
-
-	inline void SetLocalPosition(glm::vec3 pos)
-	{
-		localPosition = pos;
-		SetDirty();
-	}
-
-	inline glm::vec3 GetLocalPosition()
-	{
-		return localPosition;
-	}
-
-	void ComputeAABB();
-
-	// TODO, USE CACHED POSITION
-	glm::vec3 GetWorldPosition()
-	{
-		return GetLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	}
-
-	inline void SetLocalScale(glm::vec3 scale)
-	{
-		localScale = scale;
-		SetDirty();
-	}
-
-	inline void SetLocalRotation(glm::vec3 rotation)
-	{
-		localRotation = rotation;
-		SetDirty();
-	}
-
-	/*
-	target, world position
-	*/
-	void LookAt(glm::vec3 worldPosition, glm::vec3 worldUp);
-
-	glm::mat4 GetLocalToWorldMatrix()
-	{
-		if (dirty)
-		{
-			UpdateTransform();
-		}
-
-		return localToWorldMatrix;
-	}
-
-	void UpdateTransform();
+	void SetParent(Actor* newParent);
 
 	std::string GetName()
 	{
@@ -168,29 +141,6 @@ public:
 
 	AABB GetAABB();
 
-	AABB GetAABBWithoutPromise()
-	{
-		return aabb;
-	}
-
-	void SetAABB(AABB& value)
-	{
-		aabb = value;
-	}
-
-	void SetDirty()
-	{
-		if (!dirty)
-		{
-			dirty = true;
-			MarkChildrenDirty();
-		}
-	}
-
-	void MarkChildrenDirty();
-
-	void UpdateLocalSpace();
-
 	void AddComponent(Component* com);
 	void RemoveComponent(Component* com);
 
@@ -205,26 +155,17 @@ public:
 
 private:
 
-	AABB aabb;
-	Mesh* mesh;
-	Material* material;
+	glm::mat4 GetParentTransformMatrix() const;
+
+	glm::quat m_localRotation;
+	glm::vec3 m_localPosition;
+	glm::vec3 m_localScale;
+
+	glm::mat4 m_localToWorldMatrix;
+	glm::mat4 m_localToParentMatrix;
 
 	Actor* parent;
 	std::vector<Actor*> children;
-	glm::mat4 localToWorldMatrix;
-	
-	bool dirty = false;
-
-	glm::vec3 localPosition;
-	glm::vec3 localRotation;
-	glm::vec3 localScale;
-
-	// world forward
-	glm::vec3 forward;
-	// world up
-	glm::vec3 up;
-	// world right
-	glm::vec3 right;
 
 	std::string name = "";
 

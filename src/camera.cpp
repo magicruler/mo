@@ -46,10 +46,10 @@ glm::mat4 Camera::GetViewMatrix()
 	glm::mat4 modelMatrix = actor->GetLocalToWorldMatrix();
 	
 	glm::mat3x3 rotationScaleMatrix = glm::mat3x3(glm::transpose(modelMatrix));
-	glm::vec3 worldUp = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 worldForward = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
 	
-	glm::vec3 worldPos = actor->GetWorldPosition();
+	glm::vec3 worldPos = actor->GetPosition();
 	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + worldForward, worldUp);
 	
 	return lookAtMatrix;
@@ -83,12 +83,12 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, gl
 			{
 				Light* light = lights.front();
 				material->SetVector3("lightColor", light->GetLightIntensityColor());
-				material->SetVector3("lightPos", light->GetParent()->GetWorldPosition());
+				material->SetVector3("lightPos", light->GetParent()->GetPosition());
 			}
 		}
 		else if (extension == MaterialExtension::CAMERA)
 		{
-			material->SetVector3("cameraPos", camera->GetParent()->GetWorldPosition());
+			material->SetVector3("cameraPos", camera->GetParent()->GetPosition());
 		}
 	}
 	
@@ -142,7 +142,7 @@ void Camera::Render()
 Ray Camera::ScreenRay(float mouseX, float mouseY)
 {
 	Ray result = {};
-	result.origin = GetParent()->GetWorldPosition();
+	result.origin = GetParent()->GetPosition();
 
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 
