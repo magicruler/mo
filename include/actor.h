@@ -69,6 +69,7 @@ public:
 	void SetScaleLocal(const glm::vec3& scale);
 	// Translation And Rotation==============================================================
 	void Translate(const glm::vec3& delta);
+	void TranslateLocal(const glm::vec3& delta);
 	void Rotate(const glm::vec3& delta);
 	// Directions============================================================================
 	glm::vec3 GetUp() const;

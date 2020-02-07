@@ -8,8 +8,8 @@
             "type": "actor",
             "transform":
             {
-                "position":[0.0, -6.0, -16.0],
-                "scale":[0.01, 0.01, 0.01],
+                "position":[0.0, 0, 0],
+                "scale":[1, 1, 1],
                 "rotation":[0.0, 0.0, 0.0]
             },
             "components":
@@ -17,7 +17,7 @@
                 {
                     "type": "meshComponent",
                     "material": "blinn.json",
-                    "mesh": "teapot.json"
+                    "mesh": "cube.json"
                 }
             ],
             "children":

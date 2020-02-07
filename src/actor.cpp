@@ -140,6 +140,12 @@ void Actor::Translate(const glm::vec3& delta)
 		SetPositionLocal(m_localPosition + glm::vec3(glm::inverse(GetParent()->GetLocalToWorldMatrix()) * glm::vec4(delta, 1.0f)));
 	}
 }
+
+void Actor::TranslateLocal(const glm::vec3& delta)
+{
+	SetPositionLocal(m_localPosition + delta);
+}
+
 void Actor::Rotate(const glm::vec3& delta)
 {
 	if (!HasParent())

@@ -13,12 +13,14 @@
 #include "component_manager.h"
 #include "actor.h"
 
-constexpr float CAMERA_ROTATE_SPEED = 3.0f;
-constexpr float CAMERA_FORWARD_SPEED = 15.0f;
-constexpr float CAMERA_XY_PLANE_SPEED = 1.0f;
+constexpr float CAMERA_ROTATE_SPEED = 9.0f;
+constexpr float CAMERA_FORWARD_SPEED = 40.0f;
+constexpr float CAMERA_XY_PLANE_SPEED = 15.0f;
 
 static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 static Camera* cameraCom = nullptr;
+//static float yaw = 0.0f;
+//static float pitch = 0.0f;
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
@@ -169,16 +171,16 @@ void EditorSceneView::OnIMGUI()
             
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
-            glm::mat4 matrix = actor->GetLocalToWorldMatrix();
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::WORLD, glm::value_ptr(matrix));
+            glm::mat4 matrix = actor->GetLocalToParentMatrix();
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::LOCAL, glm::value_ptr(matrix));
             
             glm::vec3 worldPosition;
             glm::vec3 worldRotation;
             glm::vec3 worldScale;
             ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
-            actor->SetPosition(worldPosition);
-            actor->SetRotation(worldRotation);
-            actor->SetScale(worldScale);
+            actor->SetPositionLocal(worldPosition);
+            actor->SetRotationLocal(worldRotation);
+            actor->SetScaleLocal(worldScale);
         }  
 }
 
@@ -195,45 +197,64 @@ void EditorSceneView::OnSceneCameraControl()
 
     if (ImGui::IsWindowHovered())
     {   
+        auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
+        if (selection.size() <= 0)
+        {
+            return;
+        }
+        
+        auto actor = selection[0];
+        auto target = actor;
+        // auto target = sceneCamera;
         float wheelValue = io.MouseWheel;
         if (wheelValue != 0.0f)
         {
-            sceneCamera->Translate(wheelValue * CAMERA_FORWARD_SPEED * deltaTime * glm::vec3(0.0f, 0.0f, -1.0f));
+            target->Translate(wheelValue * CAMERA_FORWARD_SPEED * deltaTime * glm::vec3(0.0f, 0.0f, -1.0f));
         }
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle))
         {
             glm::vec2 delta = io.MouseDelta;
-            sceneCamera->Translate(deltaTime * glm::vec3(-CAMERA_XY_PLANE_SPEED * delta.x, CAMERA_XY_PLANE_SPEED * delta.y, 0.0f));
+            target->Translate(deltaTime * glm::vec3(-CAMERA_XY_PLANE_SPEED * delta.x, CAMERA_XY_PLANE_SPEED * delta.y, 0.0f));
         }
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
             glm::vec2 delta = io.MouseDelta;
-            sceneCamera->SetRotationLocal(sceneCamera->GetRotationLocal() + deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * delta.y, CAMERA_ROTATE_SPEED * delta.x, 0.0f));
-            
-            auto localRotation = sceneCamera->GetRotationLocal();
-            spdlog::info("Rotation Is {} {} {}", localRotation.x, localRotation.y, localRotation.z);
-            
+            target->SetRotation(target->GetRotation() + deltaTime * glm::vec3(
+                -CAMERA_ROTATE_SPEED * delta.y,
+                -CAMERA_ROTATE_SPEED * delta.x,
+                0.0f
+                ));
         }
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
         {
+            glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
+            
             if (Input::GetKeyState(KEYBOARD_KEY::W) == KEY_STATE::PRESS)
             {
-                sceneCamera->Translate(sceneCamera->GetForward() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+                direction += glm::vec3(0.0f, 0.0f, -1.0f);
             }
-            else if (Input::GetKeyState(KEYBOARD_KEY::S) == KEY_STATE::PRESS)
+            if (Input::GetKeyState(KEYBOARD_KEY::S) == KEY_STATE::PRESS)
             {
-                sceneCamera->Translate(-1.0f * sceneCamera->GetForward() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+                direction += glm::vec3(0.0f, 0.0f, 1.0f);
             }
             if (Input::GetKeyState(KEYBOARD_KEY::D) == KEY_STATE::PRESS)
             {
-                sceneCamera->Translate(1.0f * sceneCamera->GetRight() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+                direction += glm::vec3(1.0f, 0.0f, 0.0f);
             }
-            else if (Input::GetKeyState(KEYBOARD_KEY::A) == KEY_STATE::PRESS)
+            if (Input::GetKeyState(KEYBOARD_KEY::A) == KEY_STATE::PRESS)
             {
-                sceneCamera->Translate(-1.0f * sceneCamera->GetRight() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+                direction += glm::vec3(-1.0f, 0.0f, 0.0f);
+            }
+
+            if(Math::Abs(direction.x) + Math::Abs(direction.y) + Math::Abs(direction.z) > 0)
+            {
+                glm::vec3 rotation = target->GetRotation();
+                glm::vec3 delta = glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(direction, 1.0f);
+                spdlog::info("Movement is {} {} {}", delta.x, delta.y, delta.z);
+                target->Translate(delta * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
             }
         }
     }

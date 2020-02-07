@@ -10,6 +10,16 @@ namespace Math
 	constexpr float DEGREE_TO_RAD = PI / 180.0f;
 	constexpr float EPSILON = 0.00000000000000000001f;
 
+	inline float Abs(float a)
+	{
+		if (a < 0.0f)
+		{
+			return -a;
+		}
+
+		return a;
+	}
+
 	inline float Min(float a, float b)
 	{
 		if (a <= b)

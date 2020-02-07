@@ -46,6 +46,7 @@ glm::mat4 Camera::GetViewMatrix()
 
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 worldPos = actor->GetPosition();
+	// spdlog::info("Up Length Is {} ", glm::length(actor->GetUp()));
 	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + actor->GetForward(), worldUp);
 	
 	return lookAtMatrix;
