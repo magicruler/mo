@@ -20,7 +20,7 @@ void EditorInspector::OnIMGUI()
 		}
 
 		glm::vec3 localPos = actor->GetPositionLocal();
-		glm::vec3 rotation = actor->GetRotationEulerLocal();
+		glm::vec3 rotation = actor->GetRotationLocal();
 		glm::vec3 scale = actor->GetScaleLocal();
 
 		ImGui::InputFloat3("Position", glm::value_ptr(localPos), 3);
@@ -28,7 +28,7 @@ void EditorInspector::OnIMGUI()
 		ImGui::InputFloat3("Scale", glm::value_ptr(scale), 3);
 
 		actor->SetPositionLocal(localPos);
-		actor->SetRotationEulerLocal(rotation);
+		actor->SetRotationLocal(rotation);
 		actor->SetScaleLocal(scale);
 	}
 }

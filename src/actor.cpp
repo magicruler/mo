@@ -8,6 +8,7 @@
 #include "ImGuizmo.h"
 #include "component.h"
 #include "mesh_component.h"
+#include "ImGuizmo.h"
 
 AABB ComputeMeshAABBWithTransformation(Mesh* mesh, glm::mat4 transformation)
 {
@@ -26,8 +27,7 @@ glm::mat4 Actor::GetParentTransformMatrix() const
 
 void Actor::UpdateTransform()
 {
-	glm::vec3 eulerAngles = glm::eulerAngles(m_localRotation) * Math::RAD_TO_DEGREE;
-	ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(m_localPosition), glm::value_ptr(eulerAngles), glm::value_ptr(m_localScale), glm::value_ptr(m_localToParentMatrix));
+	ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(m_localPosition), glm::value_ptr(m_localRotation), glm::value_ptr(m_localScale), glm::value_ptr(m_localToParentMatrix));
 	
 	if (!HasParent())
 	{
@@ -64,23 +64,36 @@ void Actor::SetPositionLocal(const glm::vec3& position)
 	UpdateTransform();
 }
 //Rotation===========================================================================
-void Actor::SetRotation(const glm::quat& rotation)
+glm::vec3 Actor::GetRotation() const
+{
+	glm::vec3 rotation;
+	ImGuizmo::DecomposeRotation(glm::value_ptr(m_localToWorldMatrix), glm::value_ptr(rotation));
+	return rotation;
+}
+
+void Actor::SetRotation(const glm::vec3& rotation)
 {
 	if (GetRotation() == rotation)
 	{
 		return;
 	}
 
-	SetRotationLocal(!HasParent() ? rotation : rotation * glm::inverse(GetParent()->GetRotation()));
+	auto parentRotation = GetParent()->GetRotation() * Math::DEGREE_TO_RAD;
+	auto parentRotationMatrix = glm::eulerAngleXYZ(parentRotation.x, parentRotation.y, parentRotation.z);
+
+	auto newRotation = rotation * Math::DEGREE_TO_RAD;
+	auto newRotationMatrix = glm::eulerAngleXYZ(newRotation.x, newRotation.y, newRotation.z);
+
+	float newLocalRotationX; 
+	float newLocalRotationY; 
+	float newLocalRotationZ;
+	
+	glm::extractEulerAngleXYZ((newRotationMatrix) * glm::inverse(parentRotationMatrix), newLocalRotationX, newLocalRotationY, newLocalRotationZ);
+
+	SetRotationLocal(!HasParent() ? rotation : glm::vec3(newLocalRotationX, newLocalRotationY, newLocalRotationZ) *Math::RAD_TO_DEGREE);
 }
 
-// In Degree
-void Actor::SetRotationEuler(const glm::vec3& rotation)
-{
-	SetRotation(glm::quat_cast(glm::orientate3(rotation * Math::DEGREE_TO_RAD)));
-}
-
-void Actor::SetRotationLocal(const glm::quat& rotation)
+void Actor::SetRotationLocal(const glm::vec3& rotation)
 {
 	if (m_localRotation == rotation)
 	{
@@ -89,11 +102,6 @@ void Actor::SetRotationLocal(const glm::quat& rotation)
 
 	m_localRotation = rotation;
 	UpdateTransform();
-}
-// In Degree
-void Actor::SetRotationEulerLocal(const glm::vec3& rotation)
-{
-	SetRotationLocal(glm::quat_cast(glm::orientate3(rotation * Math::DEGREE_TO_RAD)));
 }
 //Scale==============================================================================
 void Actor::SetScale(const glm::vec3& scale)
@@ -134,31 +142,47 @@ void Actor::Translate(const glm::vec3& delta)
 }
 void Actor::Rotate(const glm::vec3& delta)
 {
-	Rotate(glm::quat_cast(glm::orientate3(delta * Math::DEGREE_TO_RAD)));
-}
-void Actor::Rotate(const glm::quat& delta)
-{
 	if (!HasParent())
 	{
-		SetRotationLocal(delta);
+		SetRotationLocal(m_localRotation + delta);
 	}
 	else
 	{
-		SetRotationLocal(m_localRotation * glm::inverse(GetRotation()) * delta * GetRotation());
+		SetRotation(GetRotation() + delta);
 	}
 }
+
 // Directions============================================================================
+glm::vec3 Actor::GetUpLocal() const
+{
+	auto rotation = GetRotationLocal() * Math::DEGREE_TO_RAD;
+	return  glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+}
 glm::vec3 Actor::GetUp() const
 {
-	return GetRotationLocal() * glm::vec3(0.0f, 1.0f, 0.0f);
+	auto rotation = GetRotation() * Math::DEGREE_TO_RAD;
+	return  glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 }
+glm::vec3 Actor::GetForwardLocal() const
+{
+	auto rotation = GetRotationLocal() * Math::DEGREE_TO_RAD;
+	return glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+}
+
 glm::vec3 Actor::GetForward() const
 {
-	return GetRotationLocal() * glm::vec3(0.0f, 0.0f, -1.0f);
+	auto rotation = GetRotation() * Math::DEGREE_TO_RAD;
+	return glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+}
+glm::vec3 Actor::GetRightLocal() const
+{
+	auto rotation = GetRotationLocal() * Math::DEGREE_TO_RAD;
+	return glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 glm::vec3 Actor::GetRight() const
 {
-	return GetRotationLocal() * glm::vec3(1.0f, 0.0f, 0.0f);
+	auto rotation = GetRotation() * Math::DEGREE_TO_RAD;
+	return glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z) * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 //===================================================================================
 AABB Actor::GetAABB()

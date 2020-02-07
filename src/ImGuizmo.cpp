@@ -1908,6 +1908,16 @@ namespace ImGuizmo
       }
    }
 
+   void DecomposeRotation(const float* matrix, float* rotation)
+   {
+       matrix_t mat = *(matrix_t*)matrix;
+       mat.OrthoNormalize();
+
+       rotation[0] = RAD2DEG * atan2f(mat.m[1][2], mat.m[2][2]);
+       rotation[1] = RAD2DEG * atan2f(-mat.m[0][2], sqrtf(mat.m[1][2] * mat.m[1][2] + mat.m[2][2] * mat.m[2][2]));
+       rotation[2] = RAD2DEG * atan2f(mat.m[0][1], mat.m[0][0]);
+   }
+
    void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale)
    {
       matrix_t mat = *(matrix_t*)matrix;

@@ -43,14 +43,10 @@ TODO, USE CACHED INVERSE MATRIX
 glm::mat4 Camera::GetViewMatrix()
 {
 	Actor* actor = this->GetParent();
-	glm::mat4 modelMatrix = actor->GetLocalToWorldMatrix();
-	
-	glm::mat3x3 rotationScaleMatrix = glm::mat3x3(glm::transpose(modelMatrix));
+
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 worldForward = glm::normalize(rotationScaleMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
-	
 	glm::vec3 worldPos = actor->GetPosition();
-	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + worldForward, worldUp);
+	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + actor->GetForward(), worldUp);
 	
 	return lookAtMatrix;
 }

@@ -2,8 +2,6 @@
 #include "common.h"
 #include "aabb.h"
 
-class Mesh;
-class Material;
 class Component;
 
 enum LAYER_MASK
@@ -36,7 +34,7 @@ public:
 		parent = nullptr;
 
 		m_localPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-		m_localRotation = glm::quat();
+		m_localRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 		m_localScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		m_localToParentMatrix = glm::mat4(1.0f);
@@ -60,18 +58,10 @@ public:
 	void SetPosition(const glm::vec3& position);
 	void SetPositionLocal(const glm::vec3& position);
 	// Rotation==============================================================================
-	glm::quat GetRotation() const { return Math::DecomposeRotation(m_localToWorldMatrix); }
-	// In Degree
-	glm::vec3 GetRotationEuler() const { return Math::RAD_TO_DEGREE * glm::eulerAngles(Math::DecomposeRotation(m_localToWorldMatrix)); }
-	const glm::quat& GetRotationLocal() const { return m_localRotation; }
-	// In Degree
-	glm::vec3 GetRotationEulerLocal() const { return Math::RAD_TO_DEGREE * glm::eulerAngles(m_localRotation); }
-	void SetRotation(const glm::quat& rotation);
-	// In Degree
-	void SetRotationEuler(const glm::vec3& rotation);
-	void SetRotationLocal(const glm::quat& rotation);
-	// In Degree
-	void SetRotationEulerLocal(const glm::vec3& rotation);
+	glm::vec3 GetRotation() const;
+	const glm::vec3& GetRotationLocal() const { return m_localRotation; }
+	void SetRotation(const glm::vec3& rotation);
+	void SetRotationLocal(const glm::vec3& rotation);
 	// Scale=================================================================================
 	glm::vec3 GetScale() { return Math::DecomposeScale(m_localToWorldMatrix); }
 	const glm::vec3& GetScaleLocal() const { return m_localScale; }
@@ -80,11 +70,13 @@ public:
 	// Translation And Rotation==============================================================
 	void Translate(const glm::vec3& delta);
 	void Rotate(const glm::vec3& delta);
-	void Rotate(const glm::quat& delta);
 	// Directions============================================================================
 	glm::vec3 GetUp() const;
+	glm::vec3 GetUpLocal() const;
 	glm::vec3 GetForward() const;
+	glm::vec3 GetForwardLocal() const;
 	glm::vec3 GetRight() const;
+	glm::vec3 GetRightLocal() const;
 	//=======================================================================================
 	virtual void Tick()
 	{
@@ -157,7 +149,7 @@ private:
 
 	glm::mat4 GetParentTransformMatrix() const;
 
-	glm::quat m_localRotation;
+	glm::vec3 m_localRotation;
 	glm::vec3 m_localPosition;
 	glm::vec3 m_localScale;
 

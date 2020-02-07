@@ -141,6 +141,7 @@ namespace ImGuizmo
 	// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
 	//
 	// These functions have some numerical stability issues for now. Use with caution.
+	void DecomposeRotation(const float* matrix, float* rotation);
 	IMGUI_API void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
 	IMGUI_API void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
 

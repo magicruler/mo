@@ -13,8 +13,8 @@
 #include "component_manager.h"
 #include "actor.h"
 
-constexpr float CAMERA_ROTATE_SPEED = 1.5f;
-constexpr float CAMERA_FORWARD_SPEED = 5.0f;
+constexpr float CAMERA_ROTATE_SPEED = 3.0f;
+constexpr float CAMERA_FORWARD_SPEED = 15.0f;
 constexpr float CAMERA_XY_PLANE_SPEED = 1.0f;
 
 static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
@@ -177,7 +177,7 @@ void EditorSceneView::OnIMGUI()
             glm::vec3 worldScale;
             ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
             actor->SetPosition(worldPosition);
-            actor->SetRotationEuler(worldRotation);
+            actor->SetRotation(worldRotation);
             actor->SetScale(worldScale);
         }  
 }
@@ -210,14 +210,30 @@ void EditorSceneView::OnSceneCameraControl()
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
             glm::vec2 delta = io.MouseDelta;
-            sceneCamera->SetRotationEulerLocal(sceneCamera->GetRotationEulerLocal() + deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * delta.y, CAMERA_ROTATE_SPEED * delta.x, 0.0f));
+            sceneCamera->SetRotationLocal(sceneCamera->GetRotationLocal() + deltaTime * glm::vec3(CAMERA_ROTATE_SPEED * delta.y, CAMERA_ROTATE_SPEED * delta.x, 0.0f));
             
-            auto localRotation = sceneCamera->GetRotationEulerLocal();
+            auto localRotation = sceneCamera->GetRotationLocal();
             spdlog::info("Rotation Is {} {} {}", localRotation.x, localRotation.y, localRotation.z);
+            
+        }
 
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+        {
             if (Input::GetKeyState(KEYBOARD_KEY::W) == KEY_STATE::PRESS)
             {
-                sceneCamera->Translate(glm::vec3(0.0f, 0.0f, -1.0f) * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+                sceneCamera->Translate(sceneCamera->GetForward() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+            }
+            else if (Input::GetKeyState(KEYBOARD_KEY::S) == KEY_STATE::PRESS)
+            {
+                sceneCamera->Translate(-1.0f * sceneCamera->GetForward() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+            }
+            if (Input::GetKeyState(KEYBOARD_KEY::D) == KEY_STATE::PRESS)
+            {
+                sceneCamera->Translate(1.0f * sceneCamera->GetRight() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
+            }
+            else if (Input::GetKeyState(KEYBOARD_KEY::A) == KEY_STATE::PRESS)
+            {
+                sceneCamera->Translate(-1.0f * sceneCamera->GetRight() * Time::GetDeltaTime() * CAMERA_FORWARD_SPEED);
             }
         }
     }

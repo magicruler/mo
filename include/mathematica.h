@@ -95,24 +95,4 @@ namespace Math
 			zs* sqrtf(matrix[2][0] * matrix[2][0] + matrix[2][1] * matrix[2][1] + matrix[2][2] * matrix[2][2])
 		);
 	}
-
-	inline glm::quat DecomposeRotation(const glm::mat4& matrix)
-	{
-		const glm::vec3 scale = DecomposeScale(matrix);
-
-		// Avoid division by zero (we'll divide to remove scaling)
-		if (scale.x == 0.0f || scale.y == 0.0f || scale.z == 0.0f) 
-		{ 
-			return glm::quat(0.0f, 0.0f, 0.0f, 1.0f); 
-		}
-
-		// Extract rotation and remove scaling
-		glm::mat4 normalized;
-		normalized[0][0] = matrix[0][0] / scale.x; normalized[0][1] = matrix[0][1] / scale.x; normalized[0][2] = matrix[0][2] / scale.x; normalized[0][3] = 0.0f;
-		normalized[1][0] = matrix[1][0] / scale.y; normalized[1][1] = matrix[1][1] / scale.y; normalized[1][2] = matrix[1][2] / scale.y; normalized[1][3] = 0.0f;
-		normalized[2][0] = matrix[2][0] / scale.z; normalized[2][1] = matrix[2][1] / scale.z; normalized[2][2] = matrix[2][2] / scale.z; normalized[2][3] = 0.0f;
-		normalized[3][0] = 0; normalized[3][1] = 0; normalized[3][2] = 0; normalized[3][3] = 1.0f;
-
-		return glm::quat_cast(normalized);
-	}
 }
