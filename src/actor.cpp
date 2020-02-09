@@ -28,7 +28,7 @@ glm::mat4 Actor::GetParentTransformMatrix() const
 void Actor::UpdateTransform()
 {
 	ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(m_localPosition), glm::value_ptr(m_localRotation), glm::value_ptr(m_localScale), glm::value_ptr(m_localToParentMatrix));
-	
+
 	if (!HasParent())
 	{
 		m_localToWorldMatrix = m_localToParentMatrix;
@@ -68,6 +68,7 @@ glm::vec3 Actor::GetRotation() const
 {
 	glm::vec3 rotation;
 	ImGuizmo::DecomposeRotation(glm::value_ptr(m_localToWorldMatrix), glm::value_ptr(rotation));
+	
 	return rotation;
 }
 
@@ -77,20 +78,19 @@ void Actor::SetRotation(const glm::vec3& rotation)
 	{
 		return;
 	}
-
-	auto parentRotation = GetParent()->GetRotation() * Math::DEGREE_TO_RAD;
-	auto parentRotationMatrix = glm::eulerAngleXYZ(parentRotation.x, parentRotation.y, parentRotation.z);
-
-	auto newRotation = rotation * Math::DEGREE_TO_RAD;
-	auto newRotationMatrix = glm::eulerAngleXYZ(newRotation.x, newRotation.y, newRotation.z);
-
-	float newLocalRotationX; 
-	float newLocalRotationY; 
-	float newLocalRotationZ;
 	
-	glm::extractEulerAngleXYZ((newRotationMatrix) * glm::inverse(parentRotationMatrix), newLocalRotationX, newLocalRotationY, newLocalRotationZ);
+	auto parentRotation = GetParent()->GetRotation();
+	glm::mat4 parentRotationMatrix;
+	ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)), glm::value_ptr(parentRotation), glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)), glm::value_ptr(parentRotationMatrix));
 
-	SetRotationLocal(!HasParent() ? rotation : glm::vec3(newLocalRotationX, newLocalRotationY, newLocalRotationZ) *Math::RAD_TO_DEGREE);
+	glm::mat4 newRotationMatrix;
+	ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)), glm::value_ptr(rotation), glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)), glm::value_ptr(newRotationMatrix));
+
+	// local *  parent rotation =  new rotation mat
+	glm::vec3 newLocalRotation;
+	ImGuizmo::DecomposeRotation(glm::value_ptr(newRotationMatrix * glm::inverse(parentRotationMatrix)), glm::value_ptr(newLocalRotation));
+
+	SetRotationLocal(!HasParent() ? rotation : newLocalRotation);
 }
 
 void Actor::SetRotationLocal(const glm::vec3& rotation)
@@ -223,11 +223,11 @@ void Actor::AddChild(Actor* child)
 void Actor::AddComponent(Component* com)
 {
 	assert(com != nullptr);
-	assert(com->GetParent() != this);
+	assert(com->GetOwner() != this);
 
-	if (com->GetParent() != nullptr)
+	if (com->GetOwner() != nullptr)
 	{
-		com->GetParent()->RemoveComponent(com);
+		com->GetOwner()->RemoveComponent(com);
 	}
 
 	components.push_back(com);
@@ -237,7 +237,7 @@ void Actor::AddComponent(Component* com)
 
 void Actor::RemoveComponent(Component* com)
 {
-	assert(com->GetParent() == this);
+	assert(com->GetOwner() == this);
 
 	for (int i = 0; i < components.size(); i++)
 	{

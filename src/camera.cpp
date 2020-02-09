@@ -42,14 +42,9 @@ TODO, USE CACHED INVERSE MATRIX
 */
 glm::mat4 Camera::GetViewMatrix()
 {
-	Actor* actor = this->GetParent();
-
-	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	Actor* actor = this->GetOwner();
 	glm::vec3 worldPos = actor->GetPosition();
-	// spdlog::info("Up Length Is {} ", glm::length(actor->GetUp()));
-	glm::mat4 lookAtMatrix = glm::lookAt(worldPos, worldPos + actor->GetForward(), worldUp);
-	
-	return lookAtMatrix;
+	return glm::lookAt(worldPos, worldPos + cameraFront, cameraUp);
 }
 
 // TODO: TEMP POSITION FOR RENDERING CODE
@@ -80,12 +75,12 @@ void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, gl
 			{
 				Light* light = lights.front();
 				material->SetVector3("lightColor", light->GetLightIntensityColor());
-				material->SetVector3("lightPos", light->GetParent()->GetPosition());
+				material->SetVector3("lightPos", light->GetOwner()->GetPosition());
 			}
 		}
 		else if (extension == MaterialExtension::CAMERA)
 		{
-			material->SetVector3("cameraPos", camera->GetParent()->GetPosition());
+			material->SetVector3("cameraPos", camera->GetOwner()->GetPosition());
 		}
 	}
 	
@@ -128,7 +123,7 @@ void Camera::Render()
 		Mesh* mesh = meshComponent->mesh;
 		assert(mesh != nullptr);
 
-		glm::mat4 transformation = meshComponent->GetParent()->GetLocalToWorldMatrix();
+		glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
 
 		RenderMesh(this, material, mesh, currentScene, transformation, lights);
 	}
@@ -139,7 +134,7 @@ void Camera::Render()
 Ray Camera::ScreenRay(float mouseX, float mouseY)
 {
 	Ray result = {};
-	result.origin = GetParent()->GetPosition();
+	result.origin = GetOwner()->GetPosition();
 
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 

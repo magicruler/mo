@@ -1,7 +1,14 @@
 #pragma once
 #include <assert.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+//#include "glm/vec2.hpp"
+//#include "glm/vec3.hpp"
+//#include "glm/vec4.hpp"
+//#include "glm/mat2x2.hpp"
+//#include "glm/mat3x3.hpp"
+//#include "glm/mat4x4.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/euler_angles.hpp"
 
 namespace Math
 {
@@ -9,6 +16,8 @@ namespace Math
 	constexpr float RAD_TO_DEGREE = 180.0f / PI;
 	constexpr float DEGREE_TO_RAD = PI / 180.0f;
 	constexpr float EPSILON = 0.00000000000000000001f;
+
+	glm::vec3 EulerRotate(const glm::vec3& p, const glm::vec3& euler);
 
 	inline float Abs(float a)
 	{

@@ -17,7 +17,7 @@ public:
         this->parent = parent;
     }
 
-    Actor* GetParent() const
+    Actor* GetOwner() const
     {
         return parent;
     }

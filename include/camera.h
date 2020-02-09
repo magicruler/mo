@@ -31,6 +31,9 @@ public:
 	float nearPlane = 0.3f;
 	float farPlane = 3000.0f;
 
+	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 	unsigned int renderFlag = CAMERA_RENDER_FLAG::RENDER_NOTHING;
 
     glm::vec4 clearColor = glm::vec4(49.0f/255.0f, 77.0f/255.0f, 121.0f/255.0f, 1.0f);
