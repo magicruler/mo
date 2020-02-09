@@ -10,7 +10,7 @@ class MeshComponent: public Component
 	MO_OBJECT("MeshComponent")
 public:
 	Mesh* mesh = nullptr;
-	Material* material = nullptr;
+	std::vector<Material*> materials;
 	virtual void Clear();
 	virtual void Attach();
 };

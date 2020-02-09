@@ -18,7 +18,7 @@ public:
 	/*
 	Mesh Component
 	*/
-	MeshComponent* CreateMeshComponent(Mesh* mesh, Material* material);
+	MeshComponent* CreateMeshComponent(Mesh* mesh, std::vector<Material*>& materials);
 	
 	inline void AddToAvaliableMeshComponentsList(MeshComponent* meshCom)
 	{

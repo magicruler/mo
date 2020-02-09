@@ -48,7 +48,7 @@ glm::mat4 Camera::GetViewMatrix()
 }
 
 // TODO: TEMP POSITION FOR RENDERING CODE
-void RenderMesh(Camera* camera, Material* material, Mesh* mesh, Scene* scene, glm::mat4& transformation, std::list<Light*>& lights)
+void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, Scene* scene, glm::mat4& transformation, std::list<Light*>& lights)
 {
 	material->Use();
 	std::vector<MaterialExtension> extensions = material->GetExtensions();
@@ -117,15 +117,24 @@ void Camera::Render()
 	// Render Stuff
 	for (auto meshComponent : meshComponents)
 	{
-		Material* material = meshComponent->material;
-		assert(material != nullptr);
-
+		auto materials = meshComponent->materials;
+		
 		Mesh* mesh = meshComponent->mesh;
 		assert(mesh != nullptr);
 
 		glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
 
-		RenderMesh(this, material, mesh, currentScene, transformation, lights);
+		for (int i = 0; i < mesh->children.size(); i++)
+		{
+			if (i >= materials.size())
+			{
+				RenderMesh(this, materials[0], mesh->children[i], currentScene, transformation, lights);
+			}
+			else
+			{
+				RenderMesh(this, materials[i], mesh->children[i], currentScene, transformation, lights);
+			}
+		}
 	}
 
 	renderTarget->Unbind();

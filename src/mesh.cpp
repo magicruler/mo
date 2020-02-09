@@ -2,7 +2,7 @@
 #include "vertex_array.h"
 #include "gpu_buffer.h"
 
-void Mesh::CreateGPUResource()
+void SubMesh::CreateGPUResource()
 {
 	elementBuffer = new GPUBuffer();
 	elementBuffer->SetDataElementBuffer(indices.data(), indices.size() * sizeof(unsigned int), BUFFER_DRAW_TYPE::STATIC_DRAW);
@@ -22,4 +22,12 @@ void Mesh::CreateGPUResource()
 	// Bitangent
 	vertexArray->LayoutAddFloat3();
 	vertexArray->UpdateLayoutToGPU();
+}
+
+void Mesh::CreateGPUResource()
+{
+	for (auto child : children)
+	{
+		child->CreateGPUResource();
+	}
 }

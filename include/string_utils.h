@@ -104,6 +104,11 @@ namespace StringUtils
             }
         }
 
+        if (!start)
+        {
+            return path;
+        }
+
         return result;
     }
 

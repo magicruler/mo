@@ -83,13 +83,20 @@ namespace Serialization
 					std::string typeName = comObject["type"].get<std::string>();
 					if (typeName == "meshComponent")
 					{
-						auto materialPath = comObject["material"].get<std::string>();
-						Material* material = Resources::GetMaterial(materialPath);						
-
+						auto materialPaths = comObject["materials"];
+						assert(materialPaths.is_array());
+						std::vector<Material*> materials;
+						for (const auto& materialPathObj : materialPaths)
+						{
+							auto materialPath = materialPathObj.get<std::string>();
+							Material* material = Resources::GetMaterial(materialPath);
+							materials.push_back(material);
+						}
+								
 						auto meshPath = comObject["mesh"].get<std::string>();
 						Mesh* mesh = Resources::GetMesh(meshPath);
 
-						MeshComponent* meshCom = ComponentManager::GetInstance()->CreateMeshComponent(mesh, material);
+						MeshComponent* meshCom = ComponentManager::GetInstance()->CreateMeshComponent(mesh, materials);
 						newActor->AddComponent(meshCom);
 					}
 					else if (typeName == "camera")
@@ -291,39 +298,55 @@ namespace Serialization
 				return nullptr;
 			}
 
-			assert(scene->mNumMeshes == 1);
-
 			Mesh* mesh = new Mesh();
 			
-			// Process Mesh
-			aiMesh* aiMesh = scene->mMeshes[0];
-			
-			mesh->AABBMin = glm::vec3(aiMesh->mAABB.mMin.x, aiMesh->mAABB.mMin.y, aiMesh->mAABB.mMin.z);
-			mesh->AABBMax = glm::vec3(aiMesh->mAABB.mMax.x, aiMesh->mAABB.mMax.y, aiMesh->mAABB.mMax.z);
-
-			// Indices
-			mesh->indices.resize(aiMesh->mNumFaces * 3);
-			for (size_t f = 0; f < aiMesh->mNumFaces; ++f)
+			for (int i = 0; i < scene->mNumMeshes; i++)
 			{
-				for (size_t i = 0; i < 3; ++i)
+				// Process Mesh
+				aiMesh* aiMesh = scene->mMeshes[i];
+				SubMesh* subMesh = new SubMesh();
+
+				subMesh->AABBMin = glm::vec3(aiMesh->mAABB.mMin.x, aiMesh->mAABB.mMin.y, aiMesh->mAABB.mMin.z);
+				subMesh->AABBMax = glm::vec3(aiMesh->mAABB.mMax.x, aiMesh->mAABB.mMax.y, aiMesh->mAABB.mMax.z);
+
+				// Indices
+				subMesh->indices.resize(aiMesh->mNumFaces * 3);
+				for (size_t f = 0; f < aiMesh->mNumFaces; ++f)
 				{
-					mesh->indices[f * 3 + i] = aiMesh->mFaces[f].mIndices[i];
+					for (size_t i = 0; i < 3; ++i)
+					{
+						subMesh->indices[f * 3 + i] = aiMesh->mFaces[f].mIndices[i];
+					}
 				}
-			}
 
-			// Vertex
-			mesh->vertices.resize(aiMesh->mNumVertices);
-			for (size_t i = 0; i < aiMesh->mNumVertices; ++i)
-			{
-				mesh->vertices[i].position = glm::vec3(aiMesh->mVertices[i].x, aiMesh->mVertices[i].y, aiMesh->mVertices[i].z);
-				mesh->vertices[i].normal = glm::vec3(aiMesh->mNormals[i].x, aiMesh->mNormals[i].y, aiMesh->mNormals[i].z);
-				mesh->vertices[i].uv = glm::vec2(aiMesh->mTextureCoords[0][i].x, 1.0f - aiMesh->mTextureCoords[0][i].y);
-				mesh->vertices[i].tangent = glm::vec3(aiMesh->mTangents[i].x, aiMesh->mTangents[i].y, aiMesh->mTangents[i].z);
-				mesh->vertices[i].bitangent = glm::vec3(aiMesh->mBitangents[i].x, aiMesh->mBitangents[i].y, aiMesh->mBitangents[i].z);
-			}
+				// Vertex
+				subMesh->vertices.resize(aiMesh->mNumVertices);
+				for (size_t i = 0; i < aiMesh->mNumVertices; ++i)
+				{
+					subMesh->vertices[i].position = glm::vec3(aiMesh->mVertices[i].x, aiMesh->mVertices[i].y, aiMesh->mVertices[i].z);
+					subMesh->vertices[i].normal = glm::vec3(aiMesh->mNormals[i].x, aiMesh->mNormals[i].y, aiMesh->mNormals[i].z);
+					subMesh->vertices[i].uv = glm::vec2(aiMesh->mTextureCoords[0][i].x, 1.0f - aiMesh->mTextureCoords[0][i].y);
+					subMesh->vertices[i].tangent = glm::vec3(aiMesh->mTangents[i].x, aiMesh->mTangents[i].y, aiMesh->mTangents[i].z);
+					subMesh->vertices[i].bitangent = glm::vec3(aiMesh->mBitangents[i].x, aiMesh->mBitangents[i].y, aiMesh->mBitangents[i].z);
+				}
 
+				mesh->AABBMin = glm::vec3(
+					Math::Min(mesh->AABBMin.x, subMesh->AABBMin.x),
+					Math::Min(mesh->AABBMin.y, subMesh->AABBMin.y),
+					Math::Min(mesh->AABBMin.z, subMesh->AABBMin.z)
+				);
+
+				mesh->AABBMax = glm::vec3(
+					Math::Min(mesh->AABBMax.x, subMesh->AABBMax.x),
+					Math::Min(mesh->AABBMax.y, subMesh->AABBMax.y),
+					Math::Min(mesh->AABBMax.z, subMesh->AABBMax.z)
+				);
+
+				mesh->children.push_back(subMesh);
+			}
+			
 			mesh->CreateGPUResource();
-
+;
 			return mesh;
 		}
 

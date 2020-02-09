@@ -5,7 +5,7 @@
 
 ComponentManager* ComponentManager::instance = nullptr;
 
-MeshComponent* ComponentManager::CreateMeshComponent(Mesh* mesh, Material* material)
+MeshComponent* ComponentManager::CreateMeshComponent(Mesh* mesh, std::vector<Material*>& materials)
 {
 	MeshComponent* result = nullptr;
 
@@ -20,7 +20,7 @@ MeshComponent* ComponentManager::CreateMeshComponent(Mesh* mesh, Material* mater
 		meshComponents.push_back(result);
 	}
 
-	result->material = material;
+	result->materials = materials;
 	result->mesh = mesh;
 	
 	return result;

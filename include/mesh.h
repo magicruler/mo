@@ -22,7 +22,7 @@ struct MeshVertex
 class VertexArray;
 class GPUBuffer;
 
-class Mesh
+class SubMesh
 {
 public:
 	std::string name;
@@ -36,4 +36,16 @@ public:
 	VertexArray* vertexArray = nullptr;
 	GPUBuffer* elementBuffer = nullptr;
 	GPUBuffer* arrayBuffer = nullptr;
+};
+
+class Mesh
+{
+public:
+	std::string name;
+
+	glm::vec3 AABBMin;
+	glm::vec3 AABBMax;
+
+	void CreateGPUResource();
+	std::vector<SubMesh*> children;
 };

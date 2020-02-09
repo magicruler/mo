@@ -5,7 +5,7 @@
 void MeshComponent::Clear()
 {
 	mesh = nullptr;
-	material = nullptr;
+	materials.clear();
 
 	ComponentManager::GetInstance()->AddToAvaliableMeshComponentsList(this);
 }

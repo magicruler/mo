@@ -1,4 +1,9 @@
 {
     "path":"cube.fbx",
-    "type":"mesh"
+    "type":"mesh",
+    "childCount":1,
+    "children":
+    [
+        "cube"
+    ]
 }

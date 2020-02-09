@@ -16,7 +16,10 @@
             [
                 {
                     "type": "meshComponent",
-                    "material": "blinn.json",
+                    "materials": 
+                    [
+                        "blinn.json"
+                    ],
                     "mesh": "cube.json"
                 }
             ],
@@ -31,7 +34,10 @@
             [
                 {
                     "type": "meshComponent",
-                    "material": "standardWhite.json",
+                    "materials": 
+                    [
+                        "standardWhite.json"
+                    ],
                     "mesh": "sphere.json"
                 },
                 {
