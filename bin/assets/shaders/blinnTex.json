@@ -1,0 +1,5 @@
+{
+    "name":"blinnTex",
+    "vert":"blinn.vert",
+    "frag":"blinnTex.frag"
+}

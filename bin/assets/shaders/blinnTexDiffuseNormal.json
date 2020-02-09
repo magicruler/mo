@@ -1,0 +1,5 @@
+{
+    "name":"blinnTexDiffuseNormal",
+    "vert":"blinn.vert",
+    "frag":"blinnTexDiffuseNormal.frag"
+}

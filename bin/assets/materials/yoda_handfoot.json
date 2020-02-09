@@ -1,27 +1,27 @@
 {
-    "name": "yoda_body",
-    "shader": "blinnTex.json",
+    "name": "yoda_handfoot",
+    "shader": "blinnTexDiffuseNormal.json",
     "properties":
     [
         {
             "name": "diffuseMap",
             "type": "sampler2D",
-            "value": "yoda/yoda-body.json"
+            "value": "yoda/yoda-handfoot.json"
         },
         {
-            "name": "specularMap",
-            "type": "sampler2D",
-            "value": "yoda/yoda-body-specular.json"
+            "name": "specularColor",
+            "type": "vec3",
+            "value": [1.0, 1.0, 1.0]
         },
         {
             "name": "normalMap",
             "type": "sampler2D",
-            "value": "yoda/yoda-body-normal.json"
+            "value": "yoda/yoda-handfoot-normal.json"
         },
         {
             "name": "glossiness",
             "type": "float",
-            "value": 15
+            "value": 70
         }
     ],
     "extensions":

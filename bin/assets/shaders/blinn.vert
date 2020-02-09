@@ -36,18 +36,18 @@ void main()
     mat3 modelRS = mat3(transpose(inverse(model))) ;
     // world space
     position = vec3(model * vec4(inPosition, 1.0));
-    normal = modelRS * inNormal; 
+    normal = normalize(modelRS * inNormal); 
     uv = inUV;
-    tangent = modelRS * inTangent;
-    bitangent = modelRS * inBitangent;
+    tangent = normalize(modelRS * inTangent);
+    bitangent = normalize(modelRS * inBitangent);
     
     // camera space
     positionCameraSpace = vec3(viewModel * vec4(inPosition, 1.0));
 
     mat3 viewModelInv = mat3(transpose(inverse(viewModel)));
-    normalCameraSpace = viewModelInv * inNormal;
-    tangentCameraSpace = viewModelInv * inTangent;
-    bitangentCameraSpace = viewModelInv * inBitangent;
+    normalCameraSpace = normalize(viewModelInv * inNormal);
+    tangentCameraSpace = normalize(viewModelInv * inTangent);
+    bitangentCameraSpace = normalize(viewModelInv * inBitangent);
 
     // screen space
     gl_Position = projection * viewModel * vec4(inPosition, 1.0);

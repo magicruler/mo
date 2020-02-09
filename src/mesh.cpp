@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include "vertex_array.h"
 #include "gpu_buffer.h"
+#include "glad/glad.h"
 
 void SubMesh::CreateGPUResource()
 {
@@ -11,6 +12,11 @@ void SubMesh::CreateGPUResource()
 	arrayBuffer->SetDataArrayBuffer(vertices.data(), sizeof(MeshVertex) * vertices.size(), BUFFER_DRAW_TYPE::STATIC_DRAW);
 
 	vertexArray = new VertexArray(arrayBuffer, elementBuffer);
+
+	/*glMemoryBarrier(GL_ELEMENT_ARRAY_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
+	vertices.clear();
+	indices.clear();*/
+
 	// Position
 	vertexArray->LayoutAddFloat3();
 	// Normal

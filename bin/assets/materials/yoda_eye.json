@@ -1,0 +1,29 @@
+{
+    "name": "yoda_eye",
+    "shader": "blinnTexDiffuse.json",
+    "properties":
+    [
+        {
+            "name": "diffuseMap",
+            "type": "sampler2D",
+            "value": "yoda/yoda-eye.json"
+        },
+        {
+            "name": "specularColor",
+            "type": "vec3",
+            "value": [1.0, 1.0, 1.0]
+        },
+        {
+            "name": "glossiness",
+            "type": "float",
+            "value": 120
+        }
+    ],
+    "extensions":
+    [
+        "nearestLight",
+        "ambient",
+        "mvp",
+        "camera"
+    ]
+}
