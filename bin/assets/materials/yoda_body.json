@@ -1,0 +1,29 @@
+{
+    "name": "yoda_body",
+    "shader": "blinnTex.json",
+    "properties":
+    [
+        {
+            "name": "diffuseMap",
+            "type": "sampler2D",
+            "value": "yoda/yoda-body.json"
+        },
+        {
+            "name": "specularMap",
+            "type": "sampler2D",
+            "value": "yoda/yoda-body.json"
+        },
+        {
+            "name": "glossiness",
+            "type": "float",
+            "value": 20
+        }
+    ],
+    "extensions":
+    [
+        "nearestLight",
+        "ambient",
+        "mvp",
+        "camera"
+    ]
+}
