@@ -306,6 +306,8 @@ namespace Serialization
 				aiMesh* aiMesh = scene->mMeshes[i];
 				SubMesh* subMesh = new SubMesh();
 
+				subMesh->name = aiMesh->mName.C_Str();
+
 				subMesh->AABBMin = glm::vec3(aiMesh->mAABB.mMin.x, aiMesh->mAABB.mMin.y, aiMesh->mAABB.mMin.z);
 				subMesh->AABBMax = glm::vec3(aiMesh->mAABB.mMax.x, aiMesh->mAABB.mMax.y, aiMesh->mAABB.mMax.z);
 
