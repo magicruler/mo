@@ -84,4 +84,42 @@ namespace StringUtils
         ofs.close();
         return;
     }
+
+    static inline std::string ParseDirectory(const std::string& path)
+    {
+        std::string result;
+        auto tokens = StringUtils::Split(path, "/");
+        bool start = false;
+        for (int i = 0; i < tokens.size() - 1; i++)
+        {
+            if (tokens[i] == "assets")
+            {
+                start = true;
+                continue;
+            }
+
+            if (start)
+            {
+                result += (tokens[i] + "/");
+            }
+        }
+
+        return result;
+    }
+
+    static inline void ParseFileName(const std::string& name, std::string& nameWithoutSuffix, std::string& suffix, bool& hasSuffix)
+    {
+
+        auto tokens = StringUtils::Split(name, ".");
+        if (tokens.size() >= 2)
+        {
+            hasSuffix = true;
+            nameWithoutSuffix = tokens[0];
+            suffix = tokens[tokens.size() - 1];
+        }
+        else
+        {
+            hasSuffix = false;
+        }
+    }
 }

@@ -1,5 +1,0 @@
-{
-    "name":"debug",
-    "vert":"debug.vert",
-    "frag":"debug.frag"
-}

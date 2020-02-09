@@ -1,0 +1,29 @@
+{
+    "name": "bilnn",
+    "shader": "blinn.json",
+    "properties":
+    [
+        {
+            "name": "diffuseColor",
+            "type": "vec3",
+            "value": [1.0, 0.0, 0.0]
+        },
+        {
+            "name": "specularColor",
+            "type": "vec3",
+            "value": [1.0, 1.0, 1.0]
+        },
+        {
+            "name": "glossiness",
+            "type": "float",
+            "value": 20
+        }
+    ],
+    "extensions":
+    [
+        "nearestLight",
+        "ambient",
+        "mvp",
+        "camera"
+    ]
+}

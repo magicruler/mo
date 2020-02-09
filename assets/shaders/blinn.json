@@ -1,5 +1,0 @@
-{
-    "name":"blinn",
-    "vert":"blinn.vert",
-    "frag":"blinn.frag"
-}

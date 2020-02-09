@@ -1,0 +1,78 @@
+{
+    "name":"default",
+    "amibent":[0.2, 0.2, 0.2],
+    "children":
+    [
+        {
+            "name": "teapot",
+            "type": "actor",
+            "transform":
+            {
+                "position":[0.0, 0, 0],
+                "scale":[1, 1, 1],
+                "rotation":[0.0, 0.0, 0.0]
+            },
+            "components":
+            [
+                {
+                    "type": "meshComponent",
+                    "material": "blinn.json",
+                    "mesh": "cube.json"
+                }
+            ],
+            "children":
+            [
+            ]
+        },
+        {
+            "name": "sphere",
+            "type": "actor",
+            "components":
+            [
+                {
+                    "type": "meshComponent",
+                    "material": "standardWhite.json",
+                    "mesh": "sphere.json"
+                },
+                {
+                    "type":"light",
+                    "lightType":"point",
+                    "lightIntensity": 1.0,
+                    "lightColor":[0.5, 0.6, 0.3]
+                }
+            ],
+            "transform":
+            {
+                "position":[5.667, 4.19, 0.0],
+                "scale":[1, 1, 1],
+                "rotation":[0, 0.0, 0.0]
+            },
+            "children":
+            [
+            ]
+        },
+        {
+            "name": "mainCamera",
+            "type": "actor",
+            "transform":
+            {
+                "position":[0.0, 0.0, 12.0],
+                "scale":[1.0, 1.0, 1.0],
+                "rotation":[0.0, 0.0, 0.0]
+            },
+            "components":
+            [
+                {
+                    "type":"camera",
+                    "fov": 45.0,
+                    "nearPlane": 0.1,
+                    "farPlane": 100.0,
+                    "clearColor": [0.192, 0.302, 0.475, 1.0]
+                }
+            ],
+            "children":
+            [
+            ]
+        }
+    ]
+}

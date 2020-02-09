@@ -1,0 +1,22 @@
+{
+    "name": "standard",
+    "shader": "standard.json",
+    "properties":
+    [
+        {
+            "name": "albedoTex",
+            "type": "sampler2D",
+            "value": "tjciddjqx_4K_Albedo.json"
+        },
+        {
+            "name": "normalTex",
+            "type": "sampler2D",
+            "value": "tjciddjqx_4K_Normal_LOD0.json"
+        }
+    ],
+    "extensions":
+    [
+        "mvp",
+        "time"
+    ]
+}

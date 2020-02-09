@@ -35,9 +35,34 @@
 
 #include "ImGuizmo.h"
 
+#include "string_utils.h"
+#include <filesystem>
+
+#include "asset_importer.h"
+
+static std::string environmentPath = "";
+
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+void drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+    for (int i = 0; i < count; i++)
+    {
+        std::string pathStr = paths[i];
+        const std::filesystem::path path(pathStr);
+       
+        if (std::filesystem::is_directory(path))
+        {
+            spdlog::info("Folder {} Drop", pathStr);
+        }
+        else if(std::filesystem::is_regular_file(path))
+        {
+            AssetImporter::ImportFile(pathStr);
+        }
+    }
 }
 
 GLFWwindow *window = nullptr;
@@ -45,7 +70,7 @@ GLFWwindow *window = nullptr;
 int main(int, char **args)
 {
     auto path = args[0];
-	std::string environmentPath = "";
+	
 
 	#ifdef _WIN32
 	auto tokens = StringUtils::Split(path, "\\");
@@ -139,6 +164,8 @@ int main(int, char **args)
 
     Input::Init(window);
     Game::Init();
+
+    glfwSetDropCallback(window, drop_callback);
 
     while (!glfwWindowShouldClose(window))
     {  
