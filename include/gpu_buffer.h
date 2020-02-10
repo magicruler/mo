@@ -8,11 +8,22 @@ enum class BUFFER_DRAW_TYPE
     STREAM_DRAW
 };
 
+enum class BUFFER_USAGE
+{
+    ARRAY,
+    ELEMENT,
+    UNIFORM
+};
+
 class GPUBuffer
 {
 public:
     GPUBuffer();
     ~GPUBuffer();
+
+    void BindBuffer(BUFFER_USAGE usage);
+    void UnBindBuffer(BUFFER_USAGE usage);
+    void SetData(BUFFER_USAGE usage, void* data, unsigned int size, BUFFER_DRAW_TYPE drawType);
 
     void BindArrayBuffer();
     void UnBindArrayBuffer();

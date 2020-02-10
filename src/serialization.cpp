@@ -339,9 +339,9 @@ namespace Serialization
 				);
 
 				mesh->AABBMax = glm::vec3(
-					Math::Min(mesh->AABBMax.x, subMesh->AABBMax.x),
-					Math::Min(mesh->AABBMax.y, subMesh->AABBMax.y),
-					Math::Min(mesh->AABBMax.z, subMesh->AABBMax.z)
+					Math::Max(mesh->AABBMax.x, subMesh->AABBMax.x),
+					Math::Max(mesh->AABBMax.y, subMesh->AABBMax.y),
+					Math::Max(mesh->AABBMax.z, subMesh->AABBMax.z)
 				);
 
 				mesh->children.push_back(subMesh);

@@ -1,5 +1,11 @@
 #version 330 core
 
+// layout (std140) uniform CommonBlock
+// {
+//     mat4 projection;
+//     mat4 view;
+// };
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;

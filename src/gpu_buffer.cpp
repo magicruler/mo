@@ -13,52 +13,40 @@ GPUBuffer::~GPUBuffer()
 	glDeleteBuffers(1, &ID);
 }
 
-void GPUBuffer::BindArrayBuffer()
+int MapOpenGLBufferUsage(BUFFER_USAGE& usage)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, ID);
-}
-
-void GPUBuffer::UnBindArrayBuffer()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void GPUBuffer::SetDataArrayBuffer(void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
-{
-	BindArrayBuffer();
-
-	auto openGlDrawType = GL_STATIC_DRAW;
-	switch (drawType)
+	auto openGlUsage = GL_ARRAY_BUFFER;
+	switch (usage)
 	{
-		case BUFFER_DRAW_TYPE::STATIC_DRAW:
-			openGlDrawType = GL_STATIC_DRAW;
-			break;
-		case BUFFER_DRAW_TYPE::DYNAMIC_DRAW:
-			openGlDrawType = GL_DYNAMIC_DRAW;
-			break;
-		case BUFFER_DRAW_TYPE::STREAM_DRAW:
-			openGlDrawType = GL_STREAM_DRAW;
-			break;
+	case BUFFER_USAGE::ARRAY:
+		openGlUsage = GL_ARRAY_BUFFER;
+		break;
+	case BUFFER_USAGE::ELEMENT:
+		openGlUsage = GL_ELEMENT_ARRAY_BUFFER;
+		break;
+	case BUFFER_USAGE::UNIFORM:
+		openGlUsage = GL_UNIFORM_BUFFER;
+		break;
 	}
-		
-	glBufferData(GL_ARRAY_BUFFER, size, data, openGlDrawType);
 
-	UnBindArrayBuffer();
+	return openGlUsage;
 }
 
-void GPUBuffer::BindElementBuffer()
+void GPUBuffer::BindBuffer(BUFFER_USAGE usage)
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
+	auto openGLUsage = MapOpenGLBufferUsage(usage);
+	glBindBuffer(openGLUsage, ID);
 }
-
-void GPUBuffer::UnBindElementBuffer()
+void GPUBuffer::UnBindBuffer(BUFFER_USAGE usage)
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	auto openGLUsage = MapOpenGLBufferUsage(usage);
+	glBindBuffer(openGLUsage, 0);
 }
-
-void GPUBuffer::SetDataElementBuffer(void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
+void GPUBuffer::SetData(BUFFER_USAGE usage, void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
 {
-	BindElementBuffer();
+	auto openGLUsage = MapOpenGLBufferUsage(usage);
+
+	BindBuffer(usage);
 
 	auto openGlDrawType = GL_STATIC_DRAW;
 	switch (drawType)
@@ -74,7 +62,37 @@ void GPUBuffer::SetDataElementBuffer(void* data, unsigned int size, BUFFER_DRAW_
 		break;
 	}
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, openGlDrawType);
+	glBufferData(openGLUsage, size, data, openGlDrawType);
 
-	UnBindElementBuffer();
+	UnBindBuffer(usage);
+}
+
+void GPUBuffer::BindArrayBuffer()
+{
+	BindBuffer(BUFFER_USAGE::ARRAY);
+}
+
+void GPUBuffer::UnBindArrayBuffer()
+{
+	UnBindBuffer(BUFFER_USAGE::ARRAY);
+}
+
+void GPUBuffer::SetDataArrayBuffer(void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
+{
+	SetData(BUFFER_USAGE::ARRAY, data, size, drawType);
+}
+
+void GPUBuffer::BindElementBuffer()
+{
+	BindBuffer(BUFFER_USAGE::ELEMENT);
+}
+
+void GPUBuffer::UnBindElementBuffer()
+{
+	UnBindBuffer(BUFFER_USAGE::ELEMENT);
+}
+
+void GPUBuffer::SetDataElementBuffer(void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
+{
+	SetData(BUFFER_USAGE::ELEMENT, data, size, drawType);
 }
