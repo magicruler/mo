@@ -23,6 +23,7 @@ public:
 	void SetFloat(const std::string& propName, float value);
 	void SetInt(const std::string& propName, int value);
 	void SetVector3(const std::string& propName, glm::vec3& value);
+	void SetUniformBlock(const std::string& location, int index);
 
 	void Use();
 

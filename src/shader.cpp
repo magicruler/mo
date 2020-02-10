@@ -190,3 +190,19 @@ int Shader::GetUniform(std::string name)
 
     return -1;
 }
+
+void Shader::SetUniformBlock(const std::string& location, int index)
+{
+    auto it = uniformBlockIndexMap.find(location);
+    unsigned int uniformBlockIndex = -1;
+    if (it != uniformBlockIndexMap.cend())
+    {
+        uniformBlockIndex = uniformBlockIndexMap[location];
+    }
+    else
+    {
+        uniformBlockIndex = glGetUniformBlockIndex(ID, location.c_str());
+    }
+
+    glUniformBlockBinding(ID, uniformBlockIndex, index);
+}

@@ -9,6 +9,7 @@ namespace Game
 void Init();
 void Render();
 void Update();
+void PreRender();
 void End();
 
 // API

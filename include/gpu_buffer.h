@@ -20,10 +20,12 @@ class GPUBuffer
 public:
     GPUBuffer();
     ~GPUBuffer();
+    void BindBufferBase(BUFFER_USAGE usage, int bindingIndex);
 
     void BindBuffer(BUFFER_USAGE usage);
     void UnBindBuffer(BUFFER_USAGE usage);
     void SetData(BUFFER_USAGE usage, void* data, unsigned int size, BUFFER_DRAW_TYPE drawType);
+    void SetSubData(BUFFER_USAGE usage, void* data, unsigned int size, unsigned int offset);
 
     void BindArrayBuffer();
     void UnBindArrayBuffer();
@@ -32,6 +34,11 @@ public:
     void BindElementBuffer();
     void UnBindElementBuffer();
     void SetDataElementBuffer(void* data, unsigned int size, BUFFER_DRAW_TYPE drawType);
+
+    unsigned int GetID() const
+    {
+        return ID;
+    }
 
 private:
     unsigned int ID;

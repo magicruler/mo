@@ -3,6 +3,7 @@
 #include "component.h"
 
 class RenderTarget;
+class GPUBuffer;
 struct Ray;
 
 enum CAMERA_RENDER_FLAG
@@ -21,8 +22,16 @@ public:
 
 	virtual void Clear();
 	void Render();
+
+	void PreRender();
+
 	glm::mat4 GetProjection();
 	glm::mat4 GetViewMatrix();
+
+	GPUBuffer* GetUniformBlock()
+	{
+		return uniformBlock;
+	}
 
 	Ray ScreenRay(float screenX, float screenY);
 
@@ -38,4 +47,7 @@ public:
 
     glm::vec4 clearColor = glm::vec4(49.0f/255.0f, 77.0f/255.0f, 121.0f/255.0f, 1.0f);
 	RenderTarget* renderTarget = nullptr;
+
+private:
+	GPUBuffer* uniformBlock;
 };

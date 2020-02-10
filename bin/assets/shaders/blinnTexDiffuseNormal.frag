@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 out vec4 outColor;
 
@@ -56,7 +56,7 @@ void main()
     vec3 lightIntensity = NDotL * lightColor;
 
     vec3 diffuseColor = vec3(texture(diffuseMap, uv));
-    
+
     vec3 lambert = (lightIntensity + ambient) * diffuseColor;
     vec3 specular = lightColor * specularColor * pow(HDotN, glossiness); 
 

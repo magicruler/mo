@@ -26,6 +26,7 @@ public:
     void SetMat2(std::string location, glm::mat2 value);
     void SetMat3(std::string location, glm::mat3 value);
     void SetMat4(std::string location, glm::mat4 value);
+    void SetUniformBlock(const std::string& location, int index);
 
     int GetUniform(std::string name);
 
@@ -43,4 +44,5 @@ private:
     unsigned int ID;
     std::string name = "";
     std::map<std::string, UniformInfo> uniforms;
+    std::map<std::string, int> uniformBlockIndexMap;
 };

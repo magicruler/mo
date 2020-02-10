@@ -33,6 +33,11 @@ void Material::SetInt(const std::string& propName, int value)
 	intProperties[propName] = value;
 }
 
+void Material::SetUniformBlock(const std::string& location, int index)
+{
+	shader->SetUniformBlock(location, index);
+}
+
 void Material::Use()
 {
 	int unitIndex = 0;

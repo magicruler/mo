@@ -1,8 +1,13 @@
-#version 330 core
+#version 420 core
+
+layout (std140, binding = 0) uniform CameraBlock
+{
+    mat4 projection;
+    mat4 view;
+};
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+
 uniform float time;
 
 layout(location = 0) in vec3 inPosition;

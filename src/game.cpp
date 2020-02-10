@@ -41,6 +41,15 @@ namespace Game
         EditorWindowSystem::GetInstance()->Update();
     }
 
+    void PreRender()
+    {
+        auto cameras = ComponentManager::GetInstance()->GetCameraComponents();
+        for (auto camera : cameras)
+        {
+            camera->PreRender();
+        }
+    }
+
     void Render()
     {
         auto cameras = ComponentManager::GetInstance()->GetCameraComponents();

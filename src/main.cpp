@@ -69,6 +69,17 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
     }
 }
 
+void APIENTRY glDebugOutput(GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const GLchar* message,
+    void* userParam)
+{
+    spdlog::info("GL DEBUG: {}", message);
+}
+
 GLFWwindow *window = nullptr;
 
 int main(int, char **args)
@@ -142,6 +153,11 @@ int main(int, char **args)
         return 0;
     }
 
+    /*glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback((GLDEBUGPROC)glDebugOutput, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, true);*/
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -187,7 +203,7 @@ int main(int, char **args)
         // ImGui::ShowDemoWindow(&p_open);
 
         Game::Update();
-
+        Game::PreRender();
         ImGui::Render();
 
         int display_w, display_h;

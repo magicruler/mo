@@ -32,6 +32,13 @@ int MapOpenGLBufferUsage(BUFFER_USAGE& usage)
 	return openGlUsage;
 }
 
+void GPUBuffer::BindBufferBase(BUFFER_USAGE usage, int bindingIndex)
+{
+	auto openGLUsage = MapOpenGLBufferUsage(usage);
+	// glBindBufferRange(openGLUsage, bindingIndex, ID, 0, size);
+	glBindBufferBase(openGLUsage, bindingIndex, ID);
+}
+
 void GPUBuffer::BindBuffer(BUFFER_USAGE usage)
 {
 	auto openGLUsage = MapOpenGLBufferUsage(usage);
@@ -44,6 +51,8 @@ void GPUBuffer::UnBindBuffer(BUFFER_USAGE usage)
 }
 void GPUBuffer::SetData(BUFFER_USAGE usage, void* data, unsigned int size, BUFFER_DRAW_TYPE drawType)
 {
+	this->size = size;
+
 	auto openGLUsage = MapOpenGLBufferUsage(usage);
 
 	BindBuffer(usage);
@@ -63,6 +72,17 @@ void GPUBuffer::SetData(BUFFER_USAGE usage, void* data, unsigned int size, BUFFE
 	}
 
 	glBufferData(openGLUsage, size, data, openGlDrawType);
+
+	UnBindBuffer(usage);
+}
+
+void GPUBuffer::SetSubData(BUFFER_USAGE usage, void* data, unsigned int size, unsigned int offset)
+{
+	auto openGLUsage = MapOpenGLBufferUsage(usage);
+
+	BindBuffer(usage);
+
+	glBufferSubData(openGLUsage, offset, size, data);
 
 	UnBindBuffer(usage);
 }

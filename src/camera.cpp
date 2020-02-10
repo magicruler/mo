@@ -19,6 +19,13 @@
 #include "mesh_component.h"
 #include "component_manager.h"
 #include "actor.h"
+#include "gpu_buffer.h"
+
+struct CameraUniformBlock
+{
+	alignas(16) glm::mat4 projection;
+	alignas(16) glm::mat4 view;
+};
 
 void Camera::Clear()
 {
@@ -30,6 +37,10 @@ Camera::Camera()
 {
 	// default render target
 	renderTarget = Game::MainRenderTargetGetPointer();
+
+	uniformBlock = new GPUBuffer();
+	auto size = sizeof(CameraUniformBlock);
+	uniformBlock->SetData(BUFFER_USAGE::UNIFORM, nullptr, size, BUFFER_DRAW_TYPE::STREAM_DRAW);
 }
 
 glm::mat4 Camera::GetProjection()
@@ -56,9 +67,10 @@ void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, Scene* scene,
 	{
 		if (extension == MaterialExtension::MODEL_VIEW_PROJECTION)
 		{
+			material->SetUniformBlock("CameraBlock", 0);
+			camera->GetUniformBlock()->BindBufferBase(BUFFER_USAGE::UNIFORM, 0);
+
 			material->SetMatrix4("model", transformation);
-			material->SetMatrix4("view", camera->GetViewMatrix());
-			material->SetMatrix4("projection", camera->GetProjection());
 		}
 		else if (extension == MaterialExtension::TIME)
 		{
@@ -84,11 +96,20 @@ void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, Scene* scene,
 		}
 	}
 	
-	material->Use();
-
 	mesh->vertexArray->Bind();
+	material->Use();
 	glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
 	mesh->vertexArray->UnBind();
+}
+
+void Camera::PreRender()
+{
+	// Write Uniform Buffer
+	CameraUniformBlock uniformBlockData;
+	uniformBlockData.projection = GetProjection();
+	uniformBlockData.view = GetViewMatrix();
+	
+	uniformBlock->SetSubData(BUFFER_USAGE::UNIFORM, &uniformBlockData, sizeof(CameraUniformBlock), 0);
 }
 
 void Camera::Render()
@@ -113,6 +134,26 @@ void Camera::Render()
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 	
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	//static bool onceCounter = false;
+	//if (!onceCounter)
+	//{
+	//	// Render Stuff
+	//	for (auto meshComponent : meshComponents)
+	//	{
+	//		auto materials = meshComponent->materials;
+
+	//		Mesh* mesh = meshComponent->mesh;
+
+	//		for (int i = 0; i < mesh->children.size(); i++)
+	//		{
+	//			materials[i]->SetUniformBlock("CameraBlock", 0);
+	//		}
+	//	}
+	//	onceCounter = true;
+	//}
+	//
+	//GetUniformBlock()->BindBufferBase(BUFFER_USAGE::UNIFORM, 0);
 
 	// Render Stuff
 	for (auto meshComponent : meshComponents)
