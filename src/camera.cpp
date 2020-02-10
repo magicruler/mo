@@ -20,6 +20,7 @@
 #include "component_manager.h"
 #include "actor.h"
 #include "gpu_buffer.h"
+#include "command_buffer.h"
 
 struct CameraUniformBlock
 {
@@ -58,50 +59,6 @@ glm::mat4 Camera::GetViewMatrix()
 	return glm::lookAt(worldPos, worldPos + cameraFront, cameraUp);
 }
 
-// TODO: TEMP POSITION FOR RENDERING CODE
-void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, Scene* scene, glm::mat4& transformation, std::list<Light*>& lights)
-{
-	material->Use();
-	std::vector<MaterialExtension> extensions = material->GetExtensions();
-	for (auto extension : extensions)
-	{
-		if (extension == MaterialExtension::MODEL_VIEW_PROJECTION)
-		{
-			material->SetUniformBlock("CameraBlock", 0);
-			camera->GetUniformBlock()->BindBufferBase(BUFFER_USAGE::UNIFORM, 0);
-
-			material->SetMatrix4("model", transformation);
-		}
-		else if (extension == MaterialExtension::TIME)
-		{
-			material->SetFloat("time", Time::GetTime());
-		}
-		else if (extension == MaterialExtension::AMBIENT)
-		{
-			material->SetVector3("ambient", scene->GetAmbient());
-		}
-		else if (extension == MaterialExtension::NEAREST_LIGHT)
-		{
-			// TODO Multiple Light, Forward Renderer
-			if (lights.size() > 0)
-			{
-				Light* light = lights.front();
-				material->SetVector3("lightColor", light->GetLightIntensityColor());
-				material->SetVector3("lightPos", light->GetOwner()->GetPosition());
-			}
-		}
-		else if (extension == MaterialExtension::CAMERA)
-		{
-			material->SetVector3("cameraPos", camera->GetOwner()->GetPosition());
-		}
-	}
-	
-	mesh->vertexArray->Bind();
-	material->Use();
-	glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
-	mesh->vertexArray->UnBind();
-}
-
 void Camera::PreRender()
 {
 	// Write Uniform Buffer
@@ -122,38 +79,19 @@ void Camera::Render()
 
 	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
 
-	renderTarget->Bind();
+	auto cb = Game::GetCommandBuffer();
+
+	cb->SetRenderTarget(renderTarget);
+
 	if (renderTarget->HasDepth())
 	{
-		glEnable(GL_DEPTH_TEST);
+		cb->EnableDepth();
 	}
 
-	glViewport(0, 0, (int)renderTargetSize.x, (int)renderTargetSize.y);
-	
-	glClearDepth(1.0f);
-	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-	
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	//static bool onceCounter = false;
-	//if (!onceCounter)
-	//{
-	//	// Render Stuff
-	//	for (auto meshComponent : meshComponents)
-	//	{
-	//		auto materials = meshComponent->materials;
-
-	//		Mesh* mesh = meshComponent->mesh;
-
-	//		for (int i = 0; i < mesh->children.size(); i++)
-	//		{
-	//			materials[i]->SetUniformBlock("CameraBlock", 0);
-	//		}
-	//	}
-	//	onceCounter = true;
-	//}
-	//
-	//GetUniformBlock()->BindBufferBase(BUFFER_USAGE::UNIFORM, 0);
+	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
+	cb->SetClearDepth(1.0f);
+	cb->SetClearColor(clearColor);	
+	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
 
 	// Render Stuff
 	for (auto meshComponent : meshComponents)
@@ -169,16 +107,16 @@ void Camera::Render()
 		{
 			if (i >= materials.size())
 			{
-				RenderMesh(this, materials[0], mesh->children[i], currentScene, transformation, lights);
+				cb->RenderMesh(this, materials[0], mesh->children[i], transformation);
 			}
 			else
 			{
-				RenderMesh(this, materials[i], mesh->children[i], currentScene, transformation, lights);
+				cb->RenderMesh(this, materials[i], mesh->children[i], transformation);
 			}
 		}
 	}
 
-	renderTarget->Unbind();
+	cb->Submit();
 }
 
 Ray Camera::ScreenRay(float mouseX, float mouseY)

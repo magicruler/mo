@@ -3,6 +3,7 @@
 
 class RenderTarget;
 class Scene;
+class CommandBuffer;
 
 namespace Game
 {
@@ -16,4 +17,5 @@ void End();
 glm::vec2 MainRenderTargetGetSize();
 RenderTarget* MainRenderTargetGetPointer();
 Scene* ActiveSceneGetPointer();
+CommandBuffer* GetCommandBuffer();
 } // namespace Game

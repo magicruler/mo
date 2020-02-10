@@ -10,12 +10,14 @@
 #include "string_utils.h"
 #include "configs.h"
 #include "component_manager.h"
+#include "command_buffer.h"
 
 namespace Game
 {
     Scene* activeScene = nullptr;
     RenderTarget* mainRenderTarget = nullptr;
     glm::vec4 clearColor = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
+    CommandBuffer* commandBuffer = nullptr;
 
     void InitEntryScene()
     {
@@ -26,6 +28,8 @@ namespace Game
 
     void Init()
     {
+        commandBuffer = new CommandBuffer();
+
         mainRenderTarget = new RenderTarget(300, 300);
         
         ComponentManager::Init();
@@ -74,6 +78,10 @@ namespace Game
     /*
    API
    */
+    CommandBuffer* GetCommandBuffer()
+    {
+        return commandBuffer;
+    }
     RenderTarget* MainRenderTargetGetPointer()
     {
         return mainRenderTarget;
