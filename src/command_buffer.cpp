@@ -141,12 +141,24 @@ void CommandBuffer::Submit()
 				}
 				else if (extension == MaterialExtension::NEAREST_LIGHT)
 				{
-					// TODO Multiple Light, Forward Renderer
-					if (lights.size() > 0)
+					int index = 0;
+					for (auto light: lights)
 					{
-						Light* light = lights.front();
-						material->SetVector3("lightColor", light->GetLightIntensityColor());
-						material->SetVector3("lightPos", light->GetOwner()->GetPosition());
+						if (index >= 16)
+						{
+							break;
+						}
+
+						material->SetVector3("lights[" + std::to_string(index) + "].Color", light->GetLightIntensityColor());
+						material->SetVector3("lights[" + std::to_string(index) + "].Position", light->GetOwner()->GetPosition());
+
+						index += 1;
+					}
+
+					for (int i = index; i <= 15; i++)
+					{
+						material->SetVector3("lights[" + std::to_string(index) + "].Color", glm::vec3(0.0f));
+						material->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));	
 					}
 				}
 				else if (extension == MaterialExtension::CAMERA)

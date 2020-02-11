@@ -22,9 +22,13 @@ in vec3 tangentCameraSpace;
 // CameraSapce
 in vec3 bitangentCameraSpace;
 
-// world position
-uniform vec3 lightPos;
-uniform vec3 lightColor;
+struct Light
+{
+    vec3 Position;
+    vec3 Color;
+};
+
+uniform Light lights[16];
 
 uniform vec3 cameraPos;
 
@@ -41,25 +45,36 @@ void main()
 {
     vec3 mappedNormal = vec3(texture(normalMap, uv));
     mappedNormal = normalize(mappedNormal * 2.0 - 1.0);
-
-    // world space
-    vec3 N = normalize(normal * mappedNormal.z + tangent * mappedNormal.x + bitangent * mappedNormal.y);
-    vec3 L = normalize(lightPos - position);
-    vec3 V = normalize(cameraPos - position);
-
-    vec3 R = reflect(-L, N);
-    vec3 H = (V + R) * 0.5;
-
-    float HDotN = clamp(dot(H, N), 0.0, 1.0);
-    float NDotL = clamp(dot(N, L), 0.0, 1.0);    
-
-    vec3 lightIntensity = NDotL * lightColor;
-
+    
     vec3 diffuseColor = vec3(texture(diffuseMap, uv));
     vec3 specularColor = vec3(texture(specularMap, uv));
 
-    vec3 lambert = (lightIntensity + ambient) * diffuseColor;
-    vec3 specular = lightColor * specularColor * pow(HDotN, glossiness); 
+    vec3 lambert = ambient * diffuseColor;
+    vec3 specular = vec3(0.0);
 
+    vec3 N = normalize(normal * mappedNormal.z + tangent * mappedNormal.x + bitangent * mappedNormal.y);
+    vec3 V = normalize(cameraPos - position);
+
+    for(int i = 0; i < 16; i++)
+    {
+        vec3 lightPos = lights[i].Position;
+        vec3 lightColor = lights[i].Color;
+
+        if(lightColor.x + lightColor.y + lightColor.z > 0.0)
+        {
+            vec3 L = normalize(lightPos - position);
+            vec3 R = reflect(-L, N);
+            vec3 H = (V + R) * 0.5;
+
+            float HDotN = clamp(dot(H, N), 0.0, 1.0);
+            float NDotL = clamp(dot(N, L), 0.0, 1.0);    
+
+            vec3 lightIntensity = NDotL * lightColor;
+
+            lambert += lightIntensity * diffuseColor;
+            specular += lightColor * specularColor * pow(HDotN, glossiness); 
+        }
+    }
+    
     outColor = vec4(lambert + specular, 1.0);
 }

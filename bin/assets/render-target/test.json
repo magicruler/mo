@@ -1,0 +1,6 @@
+{
+    "name":"test",
+    "format":"rgba",
+    "depth":true,
+    "size":[50, 50]
+}

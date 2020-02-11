@@ -4,11 +4,11 @@
     "children":
     [
         {
-            "name": "teapot",
+            "name": "yoda",
             "type": "actor",
             "transform":
             {
-                "position":[0.0, 0, 0],
+                "position":[0.0, -2.5, 0],
                 "scale":[0.002, 0.002, 0.002],
                 "rotation":[-90.0, 0.0, 0.0]
             },
@@ -34,7 +34,7 @@
             ]
         },
         {
-            "name": "sphere",
+            "name": "light1",
             "type": "actor",
             "components":
             [
@@ -55,7 +55,37 @@
             ],
             "transform":
             {
-                "position":[5.667, 4.19, 0.0],
+                "position":[1.855, 2.682, 4.865],
+                "scale":[1, 1, 1],
+                "rotation":[0, 0.0, 0.0]
+            },
+            "children":
+            [
+            ]
+        },
+        {
+            "name": "light2",
+            "type": "actor",
+            "components":
+            [
+                {
+                    "type": "meshComponent",
+                    "materials": 
+                    [
+                        "standardWhite.json"
+                    ],
+                    "mesh": "sphere.json"
+                },
+                {
+                    "type":"light",
+                    "lightType":"point",
+                    "lightIntensity": 1.0,
+                    "lightColor":[0.2, 0.6, 0.3]
+                }
+            ],
+            "transform":
+            {
+                "position":[-3, 2, -3.0],
                 "scale":[1, 1, 1],
                 "rotation":[0, 0.0, 0.0]
             },
