@@ -175,19 +175,30 @@ void EditorSceneView::OnIMGUI()
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
             glm::mat4 matrix = actor->GetLocalToWorldMatrix();
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::LOCAL, glm::value_ptr(matrix));
+            glm::mat4 delta = glm::mat4(1.0f);
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::LOCAL, glm::value_ptr(matrix), glm::value_ptr(delta));
             
-            glm::vec3 worldPosition;
-            glm::vec3 worldRotation;
-            glm::vec3 worldScale;
+            glm::vec3 deltaPosition;
+            glm::vec3 deltaRotation;
+            glm::vec3 deltaScale;
 
-            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
-            
-            actor->SetScale(worldScale);
-            actor->SetRotation(worldRotation);
-            actor->SetPosition(worldPosition);
-           /* SelectionPropertyChangeEvent e;
-            Dispatch(e);*/
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(delta), glm::value_ptr(deltaPosition), glm::value_ptr(deltaRotation), glm::value_ptr(deltaScale));
+
+            if ((Math::AbsSum(deltaPosition) + Math::AbsSum(deltaRotation)) > 0.0f || Math::AbsSum(deltaScale) != 3.0f)
+            {
+                glm::vec3 worldPosition;
+                glm::vec3 worldRotation;
+                glm::vec3 worldScale;
+
+                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
+
+                actor->SetScale(worldScale);
+                actor->SetRotation(worldRotation);
+                actor->SetPosition(worldPosition);
+
+                SelectionPropertyChangeEvent e;
+                Dispatch(e);
+            }
         }  
 }
 

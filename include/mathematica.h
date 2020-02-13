@@ -29,6 +29,11 @@ namespace Math
 		return a;
 	}
 
+	inline float AbsSum(const glm::vec3& v)
+	{
+		return Abs(v.x) + Abs(v.y) + Abs(v.z);
+	}
+
 	inline float Min(float a, float b)
 	{
 		if (a <= b)
