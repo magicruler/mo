@@ -1,12 +1,12 @@
 #pragma once
 #include "common.h"
 
-class Event : public Object
-{
-    MO_OBJECT("Event")
-};
-
 class UpdateEvent: public Event
 {
-    MO_OBJECT("UpdateEvent")
+    MO_EVENT("UpdateEvent")
+};
+
+class SelectionPropertyChangeEvent : public Event
+{
+    MO_EVENT("SelectionPropertyChangeEvent")
 };

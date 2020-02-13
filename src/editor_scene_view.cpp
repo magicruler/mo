@@ -13,6 +13,7 @@
 #include "component_manager.h"
 #include "actor.h"
 #include "mesh_component.h"
+#include "event.h"
 
 constexpr float CAMERA_SPEED = 12.0f;
 constexpr float CAMERA_SENSITIVITY = 0.2f;
@@ -185,6 +186,8 @@ void EditorSceneView::OnIMGUI()
             actor->SetScale(worldScale);
             actor->SetRotation(worldRotation);
             actor->SetPosition(worldPosition);
+           /* SelectionPropertyChangeEvent e;
+            Dispatch(e);*/
         }  
 }
 

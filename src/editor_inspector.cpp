@@ -3,8 +3,19 @@
 #include "actor.h"
 #include "editor_window_system.h"
 
+#include "event.h"
+
 EditorInspector::EditorInspector(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
+	Register(SelectionPropertyChangeEvent::GetHashIDStatic());
+}
+
+void EditorInspector::OnNotify(const Event& e)
+{
+	if (e.GetHashID() == SelectionPropertyChangeEvent::GetHashIDStatic())
+	{
+		spdlog::info("SelectionProperty Changed");
+	}
 }
 
 void EditorInspector::OnIMGUI()
