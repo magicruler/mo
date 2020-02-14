@@ -90,7 +90,7 @@ public:
 
     }
 
-    void Dispatch(const Event& e)
+    static void Dispatch(const Event& e)
     {
         auto eventName = e.GetHashID();
         auto& eventList = eventMap[eventName];

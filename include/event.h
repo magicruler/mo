@@ -10,3 +10,10 @@ class SelectionPropertyChangeEvent : public Event
 {
     MO_EVENT("SelectionPropertyChangeEvent")
 };
+
+class DebugMessageEvent :public Event
+{
+    MO_EVENT("DebugMessageEvent")
+public:
+    std::string msg;
+};

@@ -14,6 +14,7 @@
 #include "actor.h"
 #include "mesh_component.h"
 #include "event.h"
+#include "debug.h"
 
 constexpr float CAMERA_SPEED = 12.0f;
 constexpr float CAMERA_SENSITIVITY = 0.2f;
@@ -144,7 +145,7 @@ void EditorSceneView::OnIMGUI()
                 if (interaction.target != nullptr)
                 {
                     EditorWindowSystem::GetInstance()->SetActorSelection(interaction.target);
-                    spdlog::info("Actor {} Casted By Ray", interaction.target->GetName());
+                    Debug::Log("Actor %s Casted By Ray", interaction.target->GetName().c_str());
                 }
                 else
                 {
