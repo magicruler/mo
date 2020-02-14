@@ -44,8 +44,6 @@ extern "C" {
     _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 }
 
-static std::string environmentPath = "";
-
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -90,6 +88,7 @@ int main(int, char **args)
 	#ifdef _WIN32
 	auto tokens = StringUtils::Split(path, "\\");
 	
+    std::string environmentPath = "";
 
 	for (int i = 0; i < tokens.size() - 1; i++)
 	{
@@ -183,6 +182,8 @@ int main(int, char **args)
     static bool p_open = true;
 
     Input::Init(window);
+
+    Game::SetEnvironmentPath(environmentPath);
     Game::Init();
 
     glfwSetDropCallback(window, drop_callback);

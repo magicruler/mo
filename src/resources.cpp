@@ -4,12 +4,21 @@
 #include "texture.h"
 #include "material.h"
 #include "mesh.h"
+#include "render_target.h"
 
 #include "string_utils.h"
 #include "serialization.h"
 
+#include <filesystem>
+#include "game.h"
+
 namespace Resources
 {
+	/*
+	Store All Resource Type Render Targets
+	*/
+	std::map<std::string, RenderTarget*> renderTargets;
+
 	/*
 	Store All Loaded Textures
 	*/
@@ -26,6 +35,16 @@ namespace Resources
 	Store All Loaded Meshes
 	*/
 	std::map<std::string, Mesh*> meshes;
+
+	// Initialize All Render Targets In assets/render-targets
+	void InitRenderTargets()
+	{
+		const std::filesystem::path assetPath(Game::GetEnviromentPath());
+		for (auto& p : std::filesystem::recursive_directory_iterator("render-targets"))
+		{
+			spdlog::info("{}", p.path().string());
+		}
+	}
 
 	/*
 	Try Get Texture, If Not Exist, Load It

@@ -11,6 +11,7 @@
 #include "configs.h"
 #include "component_manager.h"
 #include "command_buffer.h"
+#include "resources.h"
 
 namespace Game
 {
@@ -18,6 +19,7 @@ namespace Game
     RenderTarget* mainRenderTarget = nullptr;
     glm::vec4 clearColor = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
     CommandBuffer* commandBuffer = nullptr;
+    std::string environmentPath;
 
     void InitEntryScene()
     {
@@ -29,6 +31,8 @@ namespace Game
     void Init()
     {
         commandBuffer = new CommandBuffer();
+
+        Resources::InitRenderTargets();
 
         mainRenderTarget = new RenderTarget(300, 300);
         
@@ -75,6 +79,10 @@ namespace Game
         delete mainRenderTarget;
     }
 
+    void SetEnvironmentPath(const std::string& path)
+    {
+        environmentPath = path;
+    }
     /*
    API
    */
@@ -95,5 +103,11 @@ namespace Game
     Scene* ActiveSceneGetPointer()
     {
         return activeScene;
+    }
+
+
+    std::string GetEnviromentPath()
+    {
+        return environmentPath;
     }
 } // namespace Game

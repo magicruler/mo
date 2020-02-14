@@ -11,6 +11,8 @@ Lazy Initialization, Lazy Management XD
 */
 namespace Resources
 {
+	void InitRenderTargets();
+
 	Texture* GetTexture(const std::string& path);
 	Texture* LoadTexture(const std::string& path);
 
