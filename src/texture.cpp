@@ -68,6 +68,13 @@ void Texture::Unbind()
     glBindTexture(target, 0);
 }
 
+void Texture::SetAnisotropy(float anisotropy)
+{
+    Bind();
+    glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+    Unbind();
+}
+
 void Texture::Resize(unsigned int width, unsigned int height)
 {
     assert(target == GL_TEXTURE_2D);

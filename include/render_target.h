@@ -12,11 +12,14 @@ public:
         // GL_UNSIGNED_BYTE
         int dataType = 0x1401, 
         unsigned int attachmentCount = 1, 
-        bool hasDepth = true) : dataType(dataType),
-                                                                                                                                                     width(width),
-                                                                                                                                                     height(height),
-                                                                                                                                                     hasDepth(hasDepth),
-                                                                                                                                                     attachmentCount(attachmentCount)
+        bool hasDepth = true,
+        bool isRenderTexture = false) : 
+        dataType(dataType),
+        isRenderTexture(isRenderTexture),
+        width(width),
+        height(height),
+        hasDepth(hasDepth),
+        attachmentCount(attachmentCount)
     {
         Init();
     }
@@ -56,4 +59,5 @@ private:
     Texture *depthAttachment = nullptr;
     std::vector<Texture *> colorAttachments;
     unsigned int ID;
+    bool isRenderTexture = false;
 };

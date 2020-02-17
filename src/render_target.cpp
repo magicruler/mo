@@ -84,10 +84,18 @@ void RenderTarget::Init()
         Texture* texture = new Texture();
         texture->filterMin = GL_LINEAR;
         texture->filterMag = GL_LINEAR;
-        texture->wrapS = GL_CLAMP_TO_EDGE;
-        texture->wrapT = GL_CLAMP_TO_EDGE;
         texture->isMipmapped = false;
 
+        if (isRenderTexture)
+        {
+            texture->filterMin = GL_LINEAR;
+            texture->filterMag = GL_LINEAR;
+            texture->isMipmapped = true;
+        }
+
+        texture->wrapS = GL_CLAMP_TO_EDGE;
+        texture->wrapT = GL_CLAMP_TO_EDGE;
+       
         int internalFormat = GL_RGBA;
         if (dataType == GL_HALF_FLOAT)
         {
@@ -99,7 +107,10 @@ void RenderTarget::Init()
         }
 
         texture->SetData2D(width, height, internalFormat, GL_RGBA, dataType, 0);
-
+        if (isRenderTexture)
+        {
+            texture->SetAnisotropy(4.0f);
+        }
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->AsID(), 0);
         colorAttachments.push_back(texture);
     }

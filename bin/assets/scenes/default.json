@@ -89,7 +89,7 @@
             "children":
             [
                 {
-                    "name": "lightCamera",
+                    "name": "renderTargetTestCamera",
                     "type": "actor",
                     "layer": "General",
                     "transform":

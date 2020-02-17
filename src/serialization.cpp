@@ -446,6 +446,6 @@ namespace Serialization
 		bool hasDepth = jsonObject["depth"];
 		glm::vec2 extent = DeserilizeVector2(jsonObject["size"]);
 
-		return new RenderTarget(extent.x, extent.y, dataType, 1, hasDepth);
+		return new RenderTarget(extent.x, extent.y, dataType, 1, hasDepth, true);
 	}
 };

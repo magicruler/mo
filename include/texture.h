@@ -12,6 +12,8 @@ public:
     void Bind(int texUnit = 0);
     void Unbind();
 
+    void SetAnisotropy(float anisotropy);
+
     void Resize(unsigned int width, unsigned int height);
 
     unsigned int AsID() const;
