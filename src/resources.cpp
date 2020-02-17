@@ -36,14 +36,41 @@ namespace Resources
 	*/
 	std::map<std::string, Mesh*> meshes;
 
-	// Initialize All Render Targets In assets/render-targets
-	void InitRenderTargets()
+	//// Initialize All Render Targets In assets/render-targets
+	//void InitRenderTargets()
+	//{
+	//	const std::filesystem::path assetPath(Game::GetEnviromentPath());
+	//	for (auto& p : std::filesystem::recursive_directory_iterator("render-targets"))
+	//	{
+	//		spdlog::info("{}", p.path().string());
+	//		auto content = StringUtils::ReadFile(p.path().string());
+	//		renderTargets[p.path().string()] = Serialization::DeserializeRenderTarget(content);
+	//	}
+	//}
+
+	RenderTarget* GetRenderTarget(const std::string& path)
 	{
-		const std::filesystem::path assetPath(Game::GetEnviromentPath());
-		for (auto& p : std::filesystem::recursive_directory_iterator("render-targets"))
+		auto it = renderTargets.find(path);
+		// Don't Find, Load
+		if (it == renderTargets.cend())
 		{
-			spdlog::info("{}", p.path().string());
+			return LoadRenderTarget(path);
 		}
+		// Find, Return
+		else
+		{
+			return it->second;
+		}
+	}
+
+	RenderTarget* LoadRenderTarget(const std::string& path)
+	{
+		auto metaContent = StringUtils::ReadFile("render-targets/" + path);
+		RenderTarget* renderTarget = Serialization::DeserializeRenderTarget(metaContent);
+
+		renderTargets[path] = renderTarget;
+
+		return renderTarget;
 	}
 
 	/*

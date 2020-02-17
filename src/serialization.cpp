@@ -29,6 +29,8 @@
 #include "component_manager.h"
 #include "mesh_component.h"
 
+#include "render_target.h"
+
 using json = nlohmann::json;
 
 namespace Serialization
@@ -40,6 +42,13 @@ namespace Serialization
 		
 		Configuration::SetFPS(projectJsonObject["frameRate"].get<float>());
 		Configuration::SetEntryScene(projectJsonObject["entryScene"].get<std::string>());
+	}
+
+	glm::vec2 DeserilizeVector2(json& jObject)
+	{
+		assert(jObject.is_array());
+		assert(jObject.size() == 2);
+		return glm::vec2(jObject[0], jObject[1]);
 	}
 
 	glm::vec4 DeserilizeVector4(json& jObject)
@@ -109,6 +118,10 @@ namespace Serialization
 						cameraCom->nearPlane = comObject["nearPlane"];
 						cameraCom->farPlane = comObject["farPlane"];
 						cameraCom->clearColor = DeserilizeVector4(comObject["clearColor"]);
+						if (comObject["renderTarget"].is_string())
+						{
+							cameraCom->renderTarget = Resources::GetRenderTarget(comObject["renderTarget"]);
+						}
 					}
 					else if (typeName == "light")
 					{
@@ -203,8 +216,14 @@ namespace Serialization
 			if (propType == "sampler2D")
 			{
 				auto texturePath = prop["value"].get<std::string>();
-				Texture* texture = Resources::LoadTexture(texturePath);
+				Texture* texture = Resources::GetTexture(texturePath);
 				material->SetTextureProperty(propName, texture);
+			}
+			else if (propType == "renderTarget")
+			{
+				auto renderTargetPath = prop["value"].get<std::string>();
+				RenderTarget* renderTarget = Resources::GetRenderTarget(renderTargetPath);
+				material->SetTextureProperty(propName, renderTarget->GetAttachmentTexture(0));
 			}
 			else if (propType == "int")
 			{
@@ -353,5 +372,20 @@ namespace Serialization
 		}
 
 		return nullptr;
+	}
+
+	RenderTarget* DeserializeRenderTarget(const std::string& content)
+	{
+		auto jsonObject = json::parse(content);
+		auto dataType = GL_UNSIGNED_BYTE;
+		std::string format = jsonObject["format"].get<std::string>();
+		if (format == "rgba")
+		{
+			dataType = GL_UNSIGNED_BYTE;
+		}
+		bool hasDepth = jsonObject["depth"];
+		glm::vec2 extent = DeserilizeVector2(jsonObject["size"]);
+
+		return new RenderTarget(extent.x, extent.y, dataType, 1, hasDepth);
 	}
 };

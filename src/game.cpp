@@ -32,8 +32,6 @@ namespace Game
     {
         commandBuffer = new CommandBuffer();
 
-        Resources::InitRenderTargets();
-
         mainRenderTarget = new RenderTarget(300, 300);
         
         ComponentManager::Init();

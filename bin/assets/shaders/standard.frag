@@ -6,7 +6,6 @@ in vec2 fragUV;
 in vec2 fragTime;
 
 uniform sampler2D albedoTex;
-uniform sampler2D normalTex;
 
 void main() 
 {

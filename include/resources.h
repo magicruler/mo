@@ -5,13 +5,15 @@ class Texture;
 class Shader;
 class Material;
 class Mesh;
+class RenderTarget;
 
 /*
 Lazy Initialization, Lazy Management XD
 */
 namespace Resources
 {
-	void InitRenderTargets();
+	RenderTarget* GetRenderTarget(const std::string& path);
+	RenderTarget* LoadRenderTarget(const std::string& path);
 
 	Texture* GetTexture(const std::string& path);
 	Texture* LoadTexture(const std::string& path);

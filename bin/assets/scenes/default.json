@@ -34,6 +34,30 @@
             ]
         },
         {
+            "name": "box",
+            "type": "actor",
+            "transform":
+            {
+                "position":[0.0, 1.5, 0],
+                "scale":[1, 1, 1],
+                "rotation":[0.0, 0.0, 0.0]
+            },
+            "components":
+            [
+                {
+                    "type": "meshComponent",
+                    "materials": 
+                    [
+                        "standardRenderTarget.json"
+                    ],
+                    "mesh": "cube.json"
+                }
+            ],
+            "children":
+            [
+            ]
+        },
+        {
             "name": "light1",
             "type": "actor",
             "components":
@@ -61,6 +85,30 @@
             },
             "children":
             [
+                {
+                    "name": "lightCamera",
+                    "type": "actor",
+                    "transform":
+                    {
+                        "position":[0.0, 0.0, 4.0],
+                        "scale":[1.0, 1.0, 1.0],
+                        "rotation":[0.0, 0.0, 0.0]
+                    },
+                    "components":
+                    [
+                        {
+                            "type":"camera",
+                            "fov": 45.0,
+                            "nearPlane": 0.1,
+                            "farPlane": 100.0,
+                            "clearColor": [0.892, 0.302, 0.475, 1.0],
+                            "renderTarget": "test.json"
+                        }
+                    ],
+                    "children":
+                    [
+                    ]
+                }
             ]
         },
         {
@@ -109,7 +157,8 @@
                     "fov": 45.0,
                     "nearPlane": 0.1,
                     "farPlane": 100.0,
-                    "clearColor": [0.192, 0.302, 0.475, 1.0]
+                    "clearColor": [0.192, 0.302, 0.475, 1.0],
+                    "renderTarget": null
                 }
             ],
             "children":

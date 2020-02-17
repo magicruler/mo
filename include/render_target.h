@@ -6,7 +6,13 @@ class Texture;
 class RenderTarget
 {
 public:
-    RenderTarget(unsigned int width, unsigned int height, int dataType = 0x1401, unsigned int attachmentCount = 1, bool hasDepth = true) : dataType(dataType),
+    RenderTarget(
+        unsigned int width, 
+        unsigned int height, 
+        // GL_UNSIGNED_BYTE
+        int dataType = 0x1401, 
+        unsigned int attachmentCount = 1, 
+        bool hasDepth = true) : dataType(dataType),
                                                                                                                                                      width(width),
                                                                                                                                                      height(height),
                                                                                                                                                      hasDepth(hasDepth),

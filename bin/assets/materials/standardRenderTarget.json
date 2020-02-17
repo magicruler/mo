@@ -5,8 +5,8 @@
     [
         {
             "name": "albedoTex",
-            "type": "sampler2D",
-            "value": "white.json"
+            "type": "renderTarget",
+            "value": "test.json"
         }
     ],
     "extensions":

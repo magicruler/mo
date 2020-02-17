@@ -7,6 +7,7 @@ class Texture;
 class Material;
 class Shader;
 class Mesh;
+class RenderTarget;
 
 namespace Serialization
 {
@@ -23,4 +24,6 @@ namespace Serialization
 	Shader* DeserializeShader(const std::string& content);
 
 	Mesh* DeserializeMesh(const std::string& content);
+
+	RenderTarget* DeserializeRenderTarget(const std::string& content);
 };
