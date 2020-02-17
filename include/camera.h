@@ -6,14 +6,6 @@ class RenderTarget;
 class GPUBuffer;
 struct Ray;
 
-enum CAMERA_RENDER_FLAG
-{
-	RENDER_NOTHING = 0,
-	RENDER_ID_BUFFER = 1 << 0,
-	RENDER_GIZMOS = 1 << 1,  
-	RENDER_WIRE_FRAMES = 1 <<2
-};
-
 class Camera: public Component
 {
 	MO_OBJECT("Camera")
@@ -43,7 +35,7 @@ public:
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	unsigned int renderFlag = CAMERA_RENDER_FLAG::RENDER_NOTHING;
+	unsigned int cullingMask = EVERY_THING;
 
     glm::vec4 clearColor = glm::vec4(49.0f/255.0f, 77.0f/255.0f, 121.0f/255.0f, 1.0f);
 	RenderTarget* renderTarget = nullptr;

@@ -6,6 +6,7 @@
         {
             "name": "yoda",
             "type": "actor",
+            "layer": "USER_DEFINE_1",
             "transform":
             {
                 "position":[0.0, -2.5, 0],
@@ -36,6 +37,7 @@
         {
             "name": "box",
             "type": "actor",
+            "layer": "General",
             "transform":
             {
                 "position":[0.0, 1.5, 0],
@@ -60,6 +62,7 @@
         {
             "name": "light1",
             "type": "actor",
+            "layer": "General",
             "components":
             [
                 {
@@ -88,6 +91,7 @@
                 {
                     "name": "lightCamera",
                     "type": "actor",
+                    "layer": "General",
                     "transform":
                     {
                         "position":[0.0, 0.0, 4.0],
@@ -102,7 +106,8 @@
                             "nearPlane": 0.1,
                             "farPlane": 100.0,
                             "clearColor": [0.892, 0.302, 0.475, 1.0],
-                            "renderTarget": "test.json"
+                            "renderTarget": "test.json",
+                            "cullingMask": ["USER_DEFINE_1"]
                         }
                     ],
                     "children":
@@ -114,6 +119,7 @@
         {
             "name": "light2",
             "type": "actor",
+            "layer": "General",
             "components":
             [
                 {
@@ -144,6 +150,7 @@
         {
             "name": "mainCamera",
             "type": "actor",
+            "layer": "General",
             "transform":
             {
                 "position":[0.0, 0.0, 12.0],
@@ -158,7 +165,8 @@
                     "nearPlane": 0.1,
                     "farPlane": 100.0,
                     "clearColor": [0.192, 0.302, 0.475, 1.0],
-                    "renderTarget": null
+                    "renderTarget": null,
+                    "cullingMask": null
                 }
             ],
             "children":

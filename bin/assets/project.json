@@ -1,4 +1,38 @@
 {
-    "entryScene":"default.json",
-    "frameRate":60
+    "entryScene": "default.json",
+    "frameRate": 60,
+    "layers": [
+        {
+            "name": "General",
+            "value": 1
+        },
+        {
+            "name": "ONLY_FOR_EDITOR_OBJECTS",
+            "value": 2
+        },
+        {
+            "name": "USER_DEFINE_1",
+            "value": 4
+        },
+        {
+            "name": "USER_DEFINE_2",
+            "value": 8
+        },
+        {
+            "name": "USER_DEFINE_3",
+            "value": 16
+        },
+        {
+            "name": "USER_DEFINE_4",
+            "value": 32
+        },
+        {
+            "name": "USER_DEFINE_5",
+            "value": 64
+        },
+        {
+            "name": "USER_DEFINE_6",
+            "value": 128
+        }
+    ]
 }

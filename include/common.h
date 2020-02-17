@@ -13,3 +13,5 @@
 
 #include "object.h"
 #include "mathematica.h"
+
+#define EVERY_THING 999999999

@@ -3,6 +3,9 @@
 
 namespace Configuration
 {
+	unsigned int GetLayerMask(const std::string& layerName);
+	void SetLayerMask(const std::string& layerName, unsigned int layerValue);
+
 	float GetFPS();
 	void SetFPS(float newFps);
 	std::string GetEntryScene();

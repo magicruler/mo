@@ -8,6 +8,12 @@ enum LAYER_MASK
 {
 	GENERAL = 1 << 0,
 	ONLY_FOR_EDITOR_OBJECTS = 1 << 1,
+	USER_DEFINE_1 = 1 << 2,
+	USER_DEFINE_2 = 1 << 3,
+	USER_DEFINE_3 = 1 << 4,
+	USER_DEFINE_4 = 1 << 5,
+	USER_DEFINE_5 = 1 << 6,
+	USER_DEFINE_6 = 1 << 7
 };
 
 enum PROPERTY_MASK

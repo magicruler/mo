@@ -42,6 +42,13 @@ namespace Serialization
 		
 		Configuration::SetFPS(projectJsonObject["frameRate"].get<float>());
 		Configuration::SetEntryScene(projectJsonObject["entryScene"].get<std::string>());
+
+		auto layersObject = projectJsonObject["layers"];
+		assert(layersObject.is_array());
+		for (auto& layerObject : layersObject)
+		{
+			Configuration::SetLayerMask(layerObject["name"], layerObject["value"]);
+		}
 	}
 
 	glm::vec2 DeserilizeVector2(json& jObject)
@@ -82,6 +89,9 @@ namespace Serialization
 			auto name = node["name"].get<std::string>();
 			newActor->SetName(name);
 			
+			auto layer = node["layer"].get<std::string>();
+			newActor->SetLayerFlag(Configuration::GetLayerMask(layer));
+
 			if (node.contains("components"))
 			{
 				auto componentsObject = node["components"];
@@ -118,6 +128,18 @@ namespace Serialization
 						cameraCom->nearPlane = comObject["nearPlane"];
 						cameraCom->farPlane = comObject["farPlane"];
 						cameraCom->clearColor = DeserilizeVector4(comObject["clearColor"]);
+						
+						if (comObject["cullingMask"].is_array())
+						{
+							cameraCom->cullingMask = 0;
+							for (auto& layerObject: comObject["cullingMask"])
+							{
+								assert(layerObject.is_string());
+								std::string layerName = layerObject.get<std::string>();
+								cameraCom->cullingMask = cameraCom->cullingMask | Configuration::GetLayerMask(layerName);
+							}
+						}
+
 						if (comObject["renderTarget"].is_string())
 						{
 							cameraCom->renderTarget = Resources::GetRenderTarget(comObject["renderTarget"]);

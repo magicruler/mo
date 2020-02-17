@@ -96,6 +96,13 @@ void Camera::Render()
 	// Render Stuff
 	for (auto meshComponent : meshComponents)
 	{
+		if (cullingMask != EVERY_THING)
+		{
+			if ((meshComponent->GetOwner()->GetLayerFlag() & cullingMask) == 0)
+			{
+				continue;
+			}
+		}
 		auto materials = meshComponent->materials;
 		
 		Mesh* mesh = meshComponent->mesh;
