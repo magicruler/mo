@@ -352,6 +352,44 @@ namespace Serialization
 				subMesh->AABBMin = glm::vec3(aiMesh->mAABB.mMin.x, aiMesh->mAABB.mMin.y, aiMesh->mAABB.mMin.z);
 				subMesh->AABBMax = glm::vec3(aiMesh->mAABB.mMax.x, aiMesh->mAABB.mMax.y, aiMesh->mAABB.mMax.z);
 
+				float xLength = subMesh->AABBMax.x - subMesh->AABBMin.x;
+				float yLength = subMesh->AABBMax.y - subMesh->AABBMin.y;
+				float zLength = subMesh->AABBMax.z - subMesh->AABBMin.z;
+
+				// Process Zero Size AABB
+				if ((xLength * yLength * zLength == 0.0f) && (xLength + yLength + zLength != 0.0f))
+				{
+					float delta = 0.001f;
+					float newMinX = subMesh->AABBMin.x;
+					float newMinY = subMesh->AABBMin.y;
+					float newMinZ = subMesh->AABBMin.z;
+
+					float newMaxX = subMesh->AABBMax.x;
+					float newMaxY = subMesh->AABBMax.y;
+					float newMaxZ = subMesh->AABBMax.z;
+
+					if (xLength == 0)
+					{
+						newMaxX += delta;
+						newMinX -= delta;
+					}
+
+					if (yLength == 0)
+					{
+						newMaxZ += delta;
+						newMinZ -= delta;
+					}
+
+					if (zLength == 0)
+					{
+						newMaxZ += delta;
+						newMinZ -= delta;
+					}
+
+					subMesh->AABBMin = glm::vec3(newMinX, newMinY, newMinZ);
+					subMesh->AABBMax = glm::vec3(newMaxX, newMaxY, newMaxZ);
+				}
+
 				// Indices
 				subMesh->indices.resize(aiMesh->mNumFaces * 3);
 				for (size_t f = 0; f < aiMesh->mNumFaces; ++f)

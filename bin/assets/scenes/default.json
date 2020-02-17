@@ -35,13 +35,13 @@
             ]
         },
         {
-            "name": "box",
+            "name": "plane",
             "type": "actor",
             "layer": "General",
             "transform":
             {
                 "position":[0.0, 1.5, 0],
-                "scale":[1, 1, 1],
+                "scale":[3, 3, 3],
                 "rotation":[0.0, 0.0, 0.0]
             },
             "components":
@@ -52,7 +52,7 @@
                     [
                         "standardRenderTarget.json"
                     ],
-                    "mesh": "cube.json"
+                    "mesh": "plane.json"
                 }
             ],
             "children":

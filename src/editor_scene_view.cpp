@@ -140,7 +140,7 @@ void EditorSceneView::OnIMGUI()
                 auto cameraRay = cameraCom->ScreenRay(windowPos.x, windowPos.y);
 
                 RayCastInteraction interaction;
-                Physics::RayCast(cameraRay, LAYER_MASK::GENERAL, interaction);
+                Physics::RayCast(cameraRay, LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS, interaction);
 
                 if (interaction.target != nullptr)
                 {

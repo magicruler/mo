@@ -79,7 +79,7 @@ namespace Physics
         return true;
     }
 
-	void RayCast(Ray ray, LAYER_MASK layerMask, RayCastInteraction& interaction)
+	void RayCast(Ray ray, LAYER_MASK ignorelayerMask, RayCastInteraction& interaction)
 	{
 		std::vector<Actor*> sceneFrontLayer;
 		std::vector<Actor*> sceneBackLayer;
@@ -104,7 +104,9 @@ namespace Physics
                 if (IntersectRay(ray, actorBoundingBox, t))
                 {
                     // actor could only have one flag
-                    if ((t < minT) && (actor->GetLayerFlag() & layerMask))
+                    if ((t < minT) && 
+                        ((actor->GetLayerFlag() & ignorelayerMask) == 0)
+                        )
                     {
                         minT = t;
                         targetActor = actor;
