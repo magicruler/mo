@@ -22,6 +22,8 @@
 #include "gpu_buffer.h"
 #include "command_buffer.h"
 
+#include "resources.h"
+
 struct CameraUniformBlock
 {
 	alignas(16) glm::mat4 projection;
@@ -47,6 +49,12 @@ Camera::Camera()
 glm::mat4 Camera::GetProjection()
 {
 	return glm::perspective(fov, ratio, nearPlane, farPlane);
+}
+
+glm::mat4 Camera::GetRenderTargetProjection()
+{
+	auto renderTargetSize = this->renderTarget->GetSize();
+	return glm::ortho(0.0f, renderTargetSize.x, renderTargetSize.y, 0.0f, -1.0f, 1.0f);
 }
 
 /*
@@ -121,6 +129,14 @@ void Camera::Render()
 				cb->RenderMesh(this, materials[i], mesh->children[i], transformation);
 			}
 		}
+	}
+
+	// Post Processing
+	if (renderTarget->HasDepth())
+	{
+		cb->DisableDepth();
+		cb->RenderQuad(glm::vec2(50.0f, 50.0f), glm::vec2(100.0f, 100.0f), GetRenderTargetProjection(), Resources::GetMaterial("quad.json"));
+		cb->EnableDepth();
 	}
 
 	cb->Submit();

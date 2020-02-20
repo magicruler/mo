@@ -40,8 +40,12 @@ void VertexArray::UpdateLayoutToGPU()
 	Bind();
 
 	arrayBuffer->BindArrayBuffer();
-	elementBuffer->BindElementBuffer();
 	
+	if (elementBuffer != nullptr)
+	{
+		elementBuffer->BindElementBuffer();
+	}
+
 	unsigned int offset = 0;
 
 	for (int i = 0; i < vertexLayout.size(); i++)

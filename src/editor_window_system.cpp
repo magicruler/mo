@@ -131,7 +131,7 @@ EditorWindowSystem::~EditorWindowSystem()
 void EditorWindowSystem::InitWindows()
 {
     editorWindows.push_back(new EditorConsole(400, 200, true, "Console"));
-    editorWindows.push_back(new EditorGame(200, 200, true, "Game"));
+    //editorWindows.push_back(new EditorGame(200, 200, true, "Game"));
 
     editorWindows.push_back(new EditorResources(800, 600, true, "Resources"));
     editorWindows.push_back(new EditorSceneView(200, 200, true, "Scene View"));

@@ -13,9 +13,30 @@
 #include "actor.h"
 #include "vertex_array.h"
 
+float quadVertices[] =
+{
+	0.0f, 1.0f, 0.0f, 1.0f,
+	1.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 0.0f,
+
+	0.0f, 1.0f, 0.0f, 1.0f,
+	1.0f, 1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 1.0f, 0.0f
+};
+
 void GLStateCache::Init()
 {
 
+}
+
+CommandBuffer::CommandBuffer()
+{
+	quadVertexBuffer = new GPUBuffer();
+	quadVertexBuffer->SetData(BUFFER_USAGE::ARRAY, quadVertices, sizeof(quadVertices), BUFFER_DRAW_TYPE::STATIC_DRAW);
+	quadVertexArray = new VertexArray(quadVertexBuffer, nullptr);
+	quadVertexArray->LayoutAddFloat2();
+	quadVertexArray->LayoutAddFloat2();
+	quadVertexArray->UpdateLayoutToGPU();
 }
 
 void CommandBuffer::Clear(unsigned int mask)
@@ -70,9 +91,33 @@ void CommandBuffer::RenderMesh(Camera* camera, Material* material, SubMesh* mesh
 	AddCommand(cmd);
 }
 
+void CommandBuffer::RenderQuad(const glm::vec2& position, const glm::vec2& size, const glm::mat4& projection, Material* material)
+{
+	std::shared_ptr<CommandRenderQuad> cmd = std::make_shared<CommandRenderQuad>();
+	cmd->material = material;
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(position, 0.0f));
+	model = glm::scale(model, glm::vec3(size, 1.0f));
+
+	cmd->model = model;
+	cmd->projection = projection;
+
+	auto testPos = projection* model* glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	auto testPos1 = projection * model * glm::vec4(100.0f, 100.0f, 0.0f, 1.0f);
+
+	AddCommand(cmd);
+}
+
 void CommandBuffer::EnableDepth()
 {
 	std::shared_ptr<CommandEnableDepth> cmd = std::make_shared<CommandEnableDepth>();
+	AddCommand(cmd);
+}
+
+void CommandBuffer::DisableDepth()
+{
+	std::shared_ptr<CommandDisableDepth> cmd = std::make_shared<CommandDisableDepth>();
 	AddCommand(cmd);
 }
 
@@ -109,6 +154,28 @@ void CommandBuffer::Submit()
 			}
 
 			glClear(bufferBit);
+		}
+			break;
+		case RENDER_COMMAND_TYPE::RENDER_QUAD:
+		{
+			auto quadCmd = std::static_pointer_cast<CommandRenderQuad>(cmd);
+			auto material = quadCmd->material;
+			material->Use();
+			std::vector<MaterialExtension> extensions = material->GetExtensions();
+			for (auto extension : extensions)
+			{
+				if (extension == MaterialExtension::TIME)
+				{
+					material->SetFloat("time", Time::GetTime());
+				}
+			}
+
+			material->SetMatrix4("model", quadCmd->model);
+			material->SetMatrix4("projection", quadCmd->projection);
+
+			quadVertexArray->Bind();
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			quadVertexArray->UnBind();
 		}
 			break;
 		case RENDER_COMMAND_TYPE::RENDER_MESH:
@@ -168,7 +235,6 @@ void CommandBuffer::Submit()
 			}
 
 			mesh->vertexArray->Bind();
-			material->Use();
 			glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
 			mesh->vertexArray->UnBind();
 		}
@@ -200,8 +266,12 @@ void CommandBuffer::Submit()
 			break;
 		case RENDER_COMMAND_TYPE::ENABLE_DEPTH:
 		{
-			// auto setCmd = std::static_pointer_cast<CommandEnableDepth>(cmd);
 			glEnable(GL_DEPTH_TEST);
+		}
+		break;
+		case RENDER_COMMAND_TYPE::DISABLE_DEPTH:
+		{
+			glDisable(GL_DEPTH_TEST);
 		}
 		break;
 		default :

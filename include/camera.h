@@ -18,6 +18,8 @@ public:
 	void PreRender();
 
 	glm::mat4 GetProjection();
+	glm::mat4 GetRenderTargetProjection();
+
 	glm::mat4 GetViewMatrix();
 
 	GPUBuffer* GetUniformBlock()

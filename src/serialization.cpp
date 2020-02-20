@@ -49,6 +49,15 @@ namespace Serialization
 		{
 			Configuration::SetLayerMask(layerObject["name"], layerObject["value"]);
 		}
+
+		// Built In Material
+		auto materialsObject = projectJsonObject["builtInMaterials"];
+		assert(materialsObject.is_array());
+		for (auto& materialPath : materialsObject)
+		{
+			assert(materialPath.is_string());
+			Resources::LoadMaterial(materialPath.get<std::string>());
+		}
 	}
 
 	glm::vec2 DeserilizeVector2(json& jObject)

@@ -27,7 +27,8 @@ static float pitch = 0.0f;
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
 {
-    sceneViewRenderTarget = new RenderTarget(initialWidth, initialHeight);
+    sceneViewRenderTarget = Game::MainRenderTargetGetPointer();
+        // new RenderTarget(initialWidth, initialHeight);
     
     sceneCamera = new Actor();
 

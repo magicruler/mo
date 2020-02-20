@@ -1,0 +1,5 @@
+{
+    "name":"quad",
+    "vert":"quad.vert",
+    "frag":"quad.frag"
+}

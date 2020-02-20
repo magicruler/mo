@@ -1,6 +1,10 @@
 {
     "entryScene": "default.json",
     "frameRate": 60,
+    "builtInMaterials":
+    [
+        "quad.json"
+    ],
     "layers": [
         {
             "name": "General",
