@@ -26,14 +26,11 @@ static float yaw = -90.0f;
 static float pitch = 0.0f;
 
 EditorSceneView::EditorSceneView(unsigned int initialWidth, unsigned int initialHeight, bool initialOpen, std::string title) : EditorWindow(initialWidth, initialHeight, initialOpen, title)
-{
-    sceneViewRenderTarget = Game::MainRenderTargetGetPointer();
-        // new RenderTarget(initialWidth, initialHeight);
-    
+{    
     sceneCamera = new Actor();
 
     cameraCom = ComponentManager::GetInstance()->CreateCameraComponent();
-    cameraCom->renderTarget = sceneViewRenderTarget;
+    cameraCom->SetRenderTarget(Game::MainRenderTargetGetPointer());
 
     sceneCamera->AddComponent(cameraCom);
 
@@ -66,12 +63,12 @@ void EditorSceneView::OnIMGUI()
     if (!initialized)
     {
         initialized = true;
-        sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
+        Game::MainRenderTargetGetPointer()->Resize(contentSize.x, contentSize.y);
     }
     else
     {
-        auto textureId = sceneViewRenderTarget->GetAttachmentTexture(0)->AsID();
-        ImGui::Image((ImTextureID)textureId, sceneViewRenderTarget->GetSize(), ImVec2(0, 1), ImVec2(1, 0));
+        auto textureId = Game::MainRenderTargetGetPointer()->GetAttachmentTexture(0)->AsID();
+        ImGui::Image((ImTextureID)textureId, Game::MainRenderTargetGetPointer()->GetSize(), ImVec2(0, 1), ImVec2(1, 0));
     }
 
     //// Draw AABB
@@ -206,8 +203,8 @@ void EditorSceneView::OnIMGUI()
 
 void EditorSceneView::OnResize() 
 {
-    spdlog::info("Scene Render Target Is {}", sceneViewRenderTarget->GetGPUHandle());
-    sceneViewRenderTarget->Resize(contentSize.x, contentSize.y);
+    spdlog::info("Scene Render Target Is {}", Game::MainRenderTargetGetPointer()->GetGPUHandle());
+    Game::MainRenderTargetGetPointer()->Resize(contentSize.x, contentSize.y);
 }
 
 void EditorSceneView::OnSceneCameraControl()

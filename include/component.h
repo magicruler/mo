@@ -34,6 +34,17 @@ public:
     {
     }
 
+    void SetEnable(bool val)
+    {
+        enable = val;
+    }
+    
+    bool GetEnable() const
+    {
+        return enable;
+    }
+
 private:
+    bool enable = true;
     Actor* parent = nullptr;
 };

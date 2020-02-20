@@ -22,7 +22,5 @@ private:
     virtual void OnResize();
 
     Actor* sceneCamera = nullptr;
-
-    RenderTarget* sceneViewRenderTarget;
     bool initialized = false;
 };

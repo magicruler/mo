@@ -3,8 +3,9 @@
 
 class Texture;
 
-class RenderTarget
+class RenderTarget:public Object
 {
+    MO_OBJECT("RenderTarget")
 public:
     RenderTarget(
         unsigned int width, 

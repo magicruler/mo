@@ -1,6 +1,16 @@
 #pragma once
 #include "common.h"
 
+class RenderTarget;
+
+class RenderTargetResizeEvent : public Event
+{
+    MO_EVENT("RenderTargetResizeEvent")
+public:
+    RenderTarget* renderTarget = nullptr;
+    glm::vec2 size;
+};
+
 class UpdateEvent: public Event
 {
     MO_EVENT("UpdateEvent")

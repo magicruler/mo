@@ -31,6 +31,8 @@
 
 #include "render_target.h"
 
+#include "game.h"
+
 using json = nlohmann::json;
 
 namespace Serialization
@@ -151,7 +153,12 @@ namespace Serialization
 
 						if (comObject["renderTarget"].is_string())
 						{
-							cameraCom->renderTarget = Resources::GetRenderTarget(comObject["renderTarget"]);
+							cameraCom->SetRenderTarget(Resources::GetRenderTarget(comObject["renderTarget"]));
+						}
+						else
+						{
+							cameraCom->SetRenderTarget(Game::MainRenderTargetGetPointer());
+							cameraCom->SetEnable(false);
 						}
 					}
 					else if (typeName == "light")

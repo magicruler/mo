@@ -38,12 +38,15 @@ void Camera::Clear()
 Camera::Camera()
 	:Component()
 {
-	// default render target
-	renderTarget = Game::MainRenderTargetGetPointer();
-
+	renderTarget = nullptr;
 	uniformBlock = new GPUBuffer();
 	auto size = sizeof(CameraUniformBlock);
 	uniformBlock->SetData(BUFFER_USAGE::UNIFORM, nullptr, size, BUFFER_DRAW_TYPE::STREAM_DRAW);
+}
+
+void Camera::SetRenderTarget(RenderTarget* renderTarget)
+{
+	this->renderTarget = renderTarget;
 }
 
 glm::mat4 Camera::GetProjection()
@@ -69,6 +72,11 @@ glm::mat4 Camera::GetViewMatrix()
 
 void Camera::PreRender()
 {
+	if (!GetEnable())
+	{
+		return;
+	}
+
 	// Write Uniform Buffer
 	CameraUniformBlock uniformBlockData;
 	uniformBlockData.projection = GetProjection();
@@ -79,6 +87,11 @@ void Camera::PreRender()
 
 void Camera::Render()
 {
+	if (!GetEnable())
+	{
+		return;
+	}
+
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 	Scene* currentScene = Game::ActiveSceneGetPointer();
 	ratio = renderTargetSize.x / renderTargetSize.y;
@@ -132,11 +145,14 @@ void Camera::Render()
 	}
 
 	// Post Processing
-	if (renderTarget->HasDepth())
+	if (hasPostProcessing)
 	{
-		cb->DisableDepth();
-		cb->RenderQuad(glm::vec2(50.0f, 50.0f), glm::vec2(100.0f, 100.0f), GetRenderTargetProjection(), Resources::GetMaterial("quad.json"));
-		cb->EnableDepth();
+		if (renderTarget->HasDepth())
+		{
+			cb->DisableDepth();
+			cb->RenderQuad(glm::vec2(50.0f, 50.0f), glm::vec2(100.0f, 100.0f), GetRenderTargetProjection(), Resources::GetMaterial("quad.json"));
+			cb->EnableDepth();
+		}
 	}
 
 	cb->Submit();

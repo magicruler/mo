@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #endif
 #include "texture.h"
+#include "event.h"
 
 RenderTarget::~RenderTarget()
 {
@@ -57,6 +58,11 @@ void RenderTarget::Resize(unsigned int width, unsigned int height)
     }
 
     Init();
+
+    RenderTargetResizeEvent e;
+    e.size = glm::vec2(width, height);
+    e.renderTarget = this;
+    this->Dispatch(e);
 }
 
 void RenderTarget::Bind()

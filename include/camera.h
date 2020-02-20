@@ -11,11 +11,13 @@ class Camera: public Component
 	MO_OBJECT("Camera")
 public:
 	Camera();
-
+	
 	virtual void Clear();
 	void Render();
 
 	void PreRender();
+
+	void SetRenderTarget(RenderTarget* renderTarget);
 
 	glm::mat4 GetProjection();
 	glm::mat4 GetRenderTargetProjection();
@@ -40,8 +42,10 @@ public:
 	unsigned int cullingMask = EVERY_THING;
 
     glm::vec4 clearColor = glm::vec4(49.0f/255.0f, 77.0f/255.0f, 121.0f/255.0f, 1.0f);
-	RenderTarget* renderTarget = nullptr;
+	bool hasPostProcessing = true;
 
 private:
+	RenderTarget* hdrTarget = nullptr;
+	RenderTarget* renderTarget = nullptr;
 	GPUBuffer* uniformBlock;
 };
