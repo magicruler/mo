@@ -12,6 +12,7 @@
 #include "light.h"
 #include "actor.h"
 #include "vertex_array.h"
+#include "resources.h"
 
 float quadVertices[] =
 {
@@ -22,6 +23,50 @@ float quadVertices[] =
 	0.0f, 1.0f, 0.0f, 1.0f,
 	1.0f, 1.0f, 1.0f, 1.0f,
 	1.0f, 0.0f, 1.0f, 0.0f
+};
+
+float skyboxVertices[] = {       
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f
 };
 
 void GLStateCache::Init()
@@ -37,6 +82,15 @@ CommandBuffer::CommandBuffer()
 	quadVertexArray->LayoutAddFloat2();
 	quadVertexArray->LayoutAddFloat2();
 	quadVertexArray->UpdateLayoutToGPU();
+
+	skyBoxVertexBuffer = new GPUBuffer();
+	skyBoxVertexBuffer->SetData(BUFFER_USAGE::ARRAY, skyboxVertices, sizeof(skyboxVertices), BUFFER_DRAW_TYPE::STATIC_DRAW);
+
+	skyBoxVertexArray = new VertexArray(skyBoxVertexBuffer, nullptr);
+	skyBoxVertexArray->LayoutAddFloat3();
+	skyBoxVertexArray->UpdateLayoutToGPU();
+
+	skyBoxMaterial = Resources::GetMaterial("skybox.json");
 }
 
 void CommandBuffer::Clear(unsigned int mask)
@@ -109,6 +163,15 @@ void CommandBuffer::RenderQuad(const glm::vec2& position, const glm::vec2& size,
 	AddCommand(cmd);
 }
 
+void CommandBuffer::RenderSkyBox(const glm::mat4& view, const glm::mat4& projection)
+{
+	std::shared_ptr<CommandRenderSkybox> cmd = std::make_shared<CommandRenderSkybox>();
+	cmd->view = view;
+	cmd->projection = projection;
+
+	AddCommand(cmd);
+}
+
 void CommandBuffer::EnableDepth()
 {
 	std::shared_ptr<CommandEnableDepth> cmd = std::make_shared<CommandEnableDepth>();
@@ -154,6 +217,23 @@ void CommandBuffer::Submit()
 			}
 
 			glClear(bufferBit);
+		}
+			break;
+		case RENDER_COMMAND_TYPE::RENDER_SKYBOX:
+		{
+			auto skyBoxCmd = std::static_pointer_cast<CommandRenderSkybox>(cmd);
+			glDepthFunc(GL_LEQUAL);
+
+			skyBoxMaterial->SetMatrix4("view", skyBoxCmd->view);
+			skyBoxMaterial->SetMatrix4("projection", skyBoxCmd->projection);
+
+			skyBoxMaterial->Use();
+
+			skyBoxVertexArray->Bind();
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			skyBoxVertexArray->UnBind();
+
+			glDepthFunc(GL_LESS);
 		}
 			break;
 		case RENDER_COMMAND_TYPE::RENDER_QUAD:

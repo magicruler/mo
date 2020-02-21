@@ -1,6 +1,6 @@
 {
     "name":"default",
-    "amibent":[0.2, 0.2, 0.2],
+    "amibent":[0.1, 0.1, 0.1],
     "children":
     [
         {
@@ -77,7 +77,7 @@
                     "type":"light",
                     "lightType":"point",
                     "lightIntensity": 1.0,
-                    "lightColor":[10.8, 10.8, 10.8]
+                    "lightColor":[3.8, 3.8, 3.8]
                 }
             ],
             "transform":

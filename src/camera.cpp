@@ -194,6 +194,9 @@ void Camera::Render()
 		}
 	}
 
+	// Render skybox
+	cb->RenderSkyBox(glm::mat4(glm::mat3(GetViewMatrix())), GetProjection());
+
 	// Post Processing
 	if (hasPostProcessing)
 	{

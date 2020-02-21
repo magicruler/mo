@@ -1,0 +1,5 @@
+{
+    "name":"skybox",
+    "vert":"skybox.vert",
+    "frag":"skybox.frag"
+}

@@ -14,6 +14,7 @@ enum class RENDER_COMMAND_TYPE
 {
 	RENDER_QUAD,
 	RENDER_MESH,
+	RENDER_SKYBOX,
 	SET_RENDER_TARGET,
 	SET_VIEW_PORT,
 	SET_CLEAR_COLOR,
@@ -138,6 +139,18 @@ public:
 	glm::mat4 projection;
 };
 
+class CommandRenderSkybox : public RenderCommand
+{
+public:
+	CommandRenderSkybox()
+	{
+		commandType = RENDER_COMMAND_TYPE::RENDER_SKYBOX;
+	}
+
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+};
+
 class GLStateCache
 {
 	friend CommandBuffer;
@@ -165,6 +178,7 @@ public:
 	void Clear(unsigned int mask);
 	void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, glm::mat4& transformation);
 	void RenderQuad(const glm::vec2& position, const glm::vec2& size, const glm::mat4& projection, Material* material);
+	void RenderSkyBox(const glm::mat4& view, const glm::mat4& projection);
 
 	inline void AddCommand(const std::shared_ptr<RenderCommand> command)
 	{
@@ -175,6 +189,12 @@ public:
 private:
 	GLStateCache stateCahce;
 	std::vector<std::shared_ptr<RenderCommand>> commandList;
+	
 	GPUBuffer* quadVertexBuffer = nullptr;
 	VertexArray* quadVertexArray = nullptr;
+
+	GPUBuffer* skyBoxVertexBuffer = nullptr;
+	VertexArray* skyBoxVertexArray = nullptr;
+	
+	Material* skyBoxMaterial = nullptr;
 };

@@ -1,0 +1,15 @@
+{
+    "name": "skybox",
+    "shader": "skybox.json",
+    "properties":
+    [
+        {
+            "name": "skybox",
+            "type": "samplerCube",
+            "value": "skybox/skybox.json"
+        }
+    ],
+    "extensions":
+    [
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "type": "textureCubeMap",
+    "mipmap": true,
+    "paths": 
+    [
+        "skybox/px.hdr",
+        "skybox/nx.hdr",
+        "skybox/py.hdr",
+        "skybox/ny.hdr",
+        "skybox/pz.hdr",
+        "skybox/nz.hdr"
+    ]
+}

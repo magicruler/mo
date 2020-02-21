@@ -8,6 +8,8 @@ public:
     ~Texture();
 
     void SetData2D(unsigned int width, unsigned int height, int internalFormat, int format, int dataType, void *data);
+    void SetDataCubeMap(unsigned int width, unsigned int height, int internalFormat, int format, int dataType, const std::vector<void*>& datas);
+
 
     void Bind(int texUnit = 0);
     void Unbind();

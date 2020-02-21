@@ -4,7 +4,8 @@
     "builtInMaterials":
     [
         "quad.json",
-        "postprocessing.json"
+        "postprocessing.json",
+        "skybox.json"
     ],
     "layers": [
         {

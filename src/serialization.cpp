@@ -226,6 +226,34 @@ namespace Serialization
 			texture->SetData2D(textureWidth, textureHeight, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 			stbi_image_free(pixels);
 		}
+		else if (textureType == "textureCubeMap")
+		{
+			auto paths = textureJsonObject["paths"];
+			assert(paths.is_array() && paths.size() == 6);
+
+			std::vector<void*> datas;
+
+			int textureWidth = 0;
+			int textureHeight = 0;
+			int textureChannels = 0;
+
+			for (auto& pathObj : paths)
+			{
+				std::string path = "textures/" + pathObj.get<std::string>();
+				float* pixels = stbi_loadf(path.c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
+				datas.push_back(pixels);
+			}
+
+			bool mipmapped = textureJsonObject["mipmap"].get<bool>();
+			texture->isMipmapped = mipmapped;
+
+			texture->SetDataCubeMap(textureWidth, textureHeight, GL_RGB16F, GL_RGB, GL_FLOAT, datas);
+
+			for (auto data : datas)
+			{
+				stbi_image_free(data);
+			}
+		}
 
 		return texture;
 	}
@@ -251,7 +279,7 @@ namespace Serialization
 			assert(prop.is_object());
 			auto propName = prop["name"].get<std::string>();
 			auto propType = prop["type"].get<std::string>();
-			if (propType == "sampler2D")
+			if (propType == "sampler2D" || propType == "samplerCube")
 			{
 				auto texturePath = prop["value"].get<std::string>();
 				Texture* texture = Resources::GetTexture(texturePath);
