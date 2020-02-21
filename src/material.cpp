@@ -14,7 +14,7 @@ void Material::SetTextureProperty(const std::string& propName, Texture* texValue
 
 void Material::SetMatrix4(const std::string& propName, glm::mat4& matrix)
 {
-	shader->SetMat4(propName, matrix);
+	mat4Properties[propName] = matrix;
 }
 
 void Material::SetVector3(const std::string& propName, glm::vec3& value)
@@ -40,6 +40,8 @@ void Material::SetUniformBlock(const std::string& location, int index)
 
 void Material::Use()
 {
+	shader->Use();
+
 	int unitIndex = 0;
 	for (auto& item : textureProperties)
 	{
@@ -62,7 +64,11 @@ void Material::Use()
 		shader->SetInt(item.first, item.second);
 	}
 
-	shader->Use();
+	for (auto& item : mat4Properties)
+	{
+		shader->SetMat4(item.first, item.second);
+	}
+
 	/*
 	Bind Textures
 	*/

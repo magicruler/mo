@@ -69,8 +69,11 @@ void main()
 
             vec3 lightIntensity = NDotL * lightColor;
 
-            lambert += lightIntensity * diffuseColor;
-            specular += lightColor * specularColor * pow(HDotN, glossiness); 
+            float lightDistance = distance(lightPos, position);
+            float falloff = 1.0 / (lightDistance * lightDistance);
+
+            lambert += falloff * lightIntensity * diffuseColor;
+            specular += falloff * lightColor * specularColor * pow(HDotN, glossiness); 
         }
     }
     

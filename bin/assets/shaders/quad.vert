@@ -11,5 +11,5 @@ out vec2 fragUV;
 void main() 
 {
     gl_Position = projection * model * vec4(inPosition, 0.0, 1.0);
-    fragUV = inUV;
+    fragUV = vec2(inUV.x, 1.0 - inUV.y);
 }

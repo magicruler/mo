@@ -1,0 +1,10 @@
+{
+    "name": "postprocessing",
+    "shader": "postprocessing.json",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

@@ -3,7 +3,7 @@
 
 class Actor;
 
-class Component
+class Component: public Object
 {
     MO_OBJECT("Component")
 

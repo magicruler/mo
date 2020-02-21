@@ -160,7 +160,7 @@ void CommandBuffer::Submit()
 		{
 			auto quadCmd = std::static_pointer_cast<CommandRenderQuad>(cmd);
 			auto material = quadCmd->material;
-			material->Use();
+			
 			std::vector<MaterialExtension> extensions = material->GetExtensions();
 			for (auto extension : extensions)
 			{
@@ -173,6 +173,8 @@ void CommandBuffer::Submit()
 			material->SetMatrix4("model", quadCmd->model);
 			material->SetMatrix4("projection", quadCmd->projection);
 
+			material->Use();
+			
 			quadVertexArray->Bind();
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			quadVertexArray->UnBind();

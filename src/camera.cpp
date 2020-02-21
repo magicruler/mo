@@ -23,6 +23,7 @@
 #include "command_buffer.h"
 
 #include "resources.h"
+#include "event.h"
 
 struct CameraUniformBlock
 {
@@ -33,6 +34,14 @@ struct CameraUniformBlock
 void Camera::Clear()
 {
 	ComponentManager::GetInstance()->AddToAvaliableCameraComponentsList(this);
+	
+	renderTarget = nullptr;
+
+	if (hdrTarget != nullptr)
+	{
+		delete hdrTarget;
+		hdrTarget = nullptr;
+	}
 }
 
 Camera::Camera()
@@ -44,9 +53,43 @@ Camera::Camera()
 	uniformBlock->SetData(BUFFER_USAGE::UNIFORM, nullptr, size, BUFFER_DRAW_TYPE::STREAM_DRAW);
 }
 
+Camera::~Camera()
+{
+	if (hdrTarget != nullptr)
+	{
+		delete hdrTarget;
+	}
+
+	if (uniformBlock != nullptr)
+	{
+		delete uniformBlock;
+	}
+}
+
 void Camera::SetRenderTarget(RenderTarget* renderTarget)
 {
 	this->renderTarget = renderTarget;
+
+	if (hdrTarget == nullptr && this->hasPostProcessing)
+	{
+		postProcessingMaterial = Resources::GetMaterial("postprocessing.json");
+
+		auto size = this->renderTarget->GetSize();
+		hdrTarget = new RenderTarget(size.x, size.y, GL_HALF_FLOAT, 1, true, false);
+		this->Register(RenderTargetResizeEvent::GetHashIDStatic());
+	}
+}
+
+void Camera::OnNotify(const Event& e)
+{
+	if (e.GetHashID() == RenderTargetResizeEvent::GetHashIDStatic())
+	{
+		const RenderTargetResizeEvent& resizeEvent = dynamic_cast<const RenderTargetResizeEvent&>(e);
+		if (resizeEvent.renderTarget == this->renderTarget)
+		{
+			hdrTarget->Resize(resizeEvent.size.x, resizeEvent.size.y);
+		}
+	}
 }
 
 glm::mat4 Camera::GetProjection()
@@ -102,7 +145,14 @@ void Camera::Render()
 
 	auto cb = Game::GetCommandBuffer();
 
-	cb->SetRenderTarget(renderTarget);
+	if (hasPostProcessing)
+	{
+		cb->SetRenderTarget(hdrTarget);
+	}
+	else
+	{
+		cb->SetRenderTarget(renderTarget);
+	}
 
 	if (renderTarget->HasDepth())
 	{
@@ -147,12 +197,14 @@ void Camera::Render()
 	// Post Processing
 	if (hasPostProcessing)
 	{
-		if (renderTarget->HasDepth())
-		{
-			cb->DisableDepth();
-			cb->RenderQuad(glm::vec2(50.0f, 50.0f), glm::vec2(100.0f, 100.0f), GetRenderTargetProjection(), Resources::GetMaterial("quad.json"));
-			cb->EnableDepth();
-		}
+		cb->SetRenderTarget(this->renderTarget);
+		cb->DisableDepth();
+
+		postProcessingMaterial->SetTextureProperty("hdrTarget", hdrTarget->GetAttachmentTexture(0));
+		postProcessingMaterial->SetFloat("exposure", 1.0f);
+
+		cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, GetRenderTargetProjection(), postProcessingMaterial);
+		cb->EnableDepth();
 	}
 
 	cb->Submit();

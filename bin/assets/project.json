@@ -3,7 +3,8 @@
     "frameRate": 60,
     "builtInMaterials":
     [
-        "quad.json"
+        "quad.json",
+        "postprocessing.json"
     ],
     "layers": [
         {

@@ -77,7 +77,7 @@
                     "type":"light",
                     "lightType":"point",
                     "lightIntensity": 1.0,
-                    "lightColor":[0.8, 0.8, 0.8]
+                    "lightColor":[10.8, 10.8, 10.8]
                 }
             ],
             "transform":

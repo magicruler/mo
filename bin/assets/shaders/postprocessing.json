@@ -1,0 +1,5 @@
+{
+    "name":"postprocessing",
+    "vert":"quad.vert",
+    "frag":"postprocessing.frag"
+}

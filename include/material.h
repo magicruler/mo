@@ -57,6 +57,7 @@ private:
 	std::map<std::string, float> floatProperties;
 	std::map<std::string, glm::vec3> vec3Properties;
 	std::map<std::string, int> intProperties;
+	std::map<std::string, glm::mat4> mat4Properties;
 
 	Shader* shader;
 };

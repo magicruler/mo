@@ -5,14 +5,18 @@
 class RenderTarget;
 class GPUBuffer;
 struct Ray;
+class Event;
+class Material;
 
 class Camera: public Component
 {
 	MO_OBJECT("Camera")
 public:
 	Camera();
+	~Camera();
 	
 	virtual void Clear();
+	virtual void OnNotify(const Event& e);
 	void Render();
 
 	void PreRender();
@@ -45,7 +49,8 @@ public:
 	bool hasPostProcessing = true;
 
 private:
+	Material* postProcessingMaterial = nullptr;
 	RenderTarget* hdrTarget = nullptr;
 	RenderTarget* renderTarget = nullptr;
-	GPUBuffer* uniformBlock;
+	GPUBuffer* uniformBlock = nullptr;
 };
