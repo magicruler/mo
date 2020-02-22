@@ -139,7 +139,8 @@ namespace Serialization
 						cameraCom->nearPlane = comObject["nearPlane"];
 						cameraCom->farPlane = comObject["farPlane"];
 						cameraCom->clearColor = DeserilizeVector4(comObject["clearColor"]);
-						
+						cameraCom->hasPostProcessing = comObject["postprocessing"];
+
 						if (comObject["cullingMask"].is_array())
 						{
 							cameraCom->cullingMask = 0;

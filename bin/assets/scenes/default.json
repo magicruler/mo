@@ -107,7 +107,8 @@
                             "farPlane": 100.0,
                             "clearColor": [0.892, 0.302, 0.475, 1.0],
                             "renderTarget": "test.json",
-                            "cullingMask": ["USER_DEFINE_1"]
+                            "cullingMask": ["USER_DEFINE_1"],
+                            "postprocessing": false
                         }
                     ],
                     "children":
@@ -166,7 +167,8 @@
                     "farPlane": 100.0,
                     "clearColor": [0.192, 0.302, 0.475, 1.0],
                     "renderTarget": null,
-                    "cullingMask": null
+                    "cullingMask": null,
+                    "postprocessing": false
                 }
             ],
             "children":
