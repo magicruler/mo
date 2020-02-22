@@ -85,6 +85,8 @@ void RenderTarget::Init()
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
+    std::vector<GLenum> attachmentEnums;
+
     for (unsigned int i = 0; i < attachmentCount; i++)
     {
         Texture* texture = new Texture();
@@ -119,7 +121,10 @@ void RenderTarget::Init()
         }
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->AsID(), 0);
         colorAttachments.push_back(texture);
+        attachmentEnums.push_back(GL_COLOR_ATTACHMENT0 + i);
     }
+
+    glNamedFramebufferDrawBuffers(ID, attachmentEnums.size(), attachmentEnums.data());
 
     if (hasDepth)
     {

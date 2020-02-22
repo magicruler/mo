@@ -13,11 +13,17 @@
 void DeferredPipeline::Init(Camera* camera)
 {
 	this->camera = camera;
+
+
 }
 
-void DeferredPipeline::Resize(glm::vec2 size)
+void DeferredPipeline::Resize(const glm::vec2& size)
 {
-
+	if (gBuffer != nullptr && lightPass != nullptr)
+	{
+		gBuffer->Resize(size.x, size.y);
+		lightPass->Resize(size.x, size.y);
+	}
 }
 
 void DeferredPipeline::Render()

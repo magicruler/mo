@@ -11,9 +11,10 @@ public:
 
 	void Render();
 
-	void Resize(glm::vec2 size);
+	void Resize(const glm::vec2& size);
 
 private:
 	Camera* camera = nullptr;
 	RenderTarget* gBuffer = nullptr;
+	RenderTarget* lightPass = nullptr;
 };
