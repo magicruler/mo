@@ -29,5 +29,8 @@ uniform sampler2D normalMap;
 
 void main()
 {
-
+    gPosition = position;
+    gNormalMetalness = vec4(normalize(normal), 1.0)
+    vec3 diffuseColor = texture(albedoMap, uv).rgb;
+    gAlbedoSpec = vec4(diffuseColor, 1.0);
 }

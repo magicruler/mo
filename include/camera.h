@@ -7,6 +7,7 @@ class GPUBuffer;
 struct Ray;
 class Event;
 class Material;
+class DeferredPipeline;
 
 class Camera: public Component
 {
@@ -22,6 +23,21 @@ public:
 	void PreRender();
 
 	void SetRenderTarget(RenderTarget* renderTarget);
+
+	RenderTarget* GetRenderTarget() const
+	{
+		return renderTarget;
+	}
+
+	RenderTarget* GetHdrTarget() const
+	{
+		return hdrTarget;
+	}
+
+	Material* GetPostProcessingMaterial() const
+	{
+		return postProcessingMaterial;
+	}
 
 	glm::mat4 GetProjection();
 	glm::mat4 GetRenderTargetProjection();
@@ -53,4 +69,5 @@ private:
 	RenderTarget* hdrTarget = nullptr;
 	RenderTarget* renderTarget = nullptr;
 	GPUBuffer* uniformBlock = nullptr;
+	DeferredPipeline* pipeline = nullptr;
 };
