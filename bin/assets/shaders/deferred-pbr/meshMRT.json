@@ -1,0 +1,5 @@
+{
+    "name":"meshMRT",
+    "vert":"meshMRT.vert",
+    "frag":"meshMRT.frag"
+}
