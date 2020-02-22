@@ -13,8 +13,39 @@
 void DeferredPipeline::Init(Camera* camera)
 {
 	this->camera = camera;
+	assert(this->camera->GetRenderTarget() != nullptr);
+	
+	// CreateGBuffer
+	std::vector<RenderTargetDescriptor> gBufferDescriptors;
+	
+	// Position
+	RenderTargetDescriptor gBufferAttachment0Descriptor = RenderTargetDescriptor();
+	gBufferAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGB32F;
 
+	// Normal Metalness
+	RenderTargetDescriptor gBufferAttachment1Descriptor = RenderTargetDescriptor();
+	gBufferAttachment1Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
 
+	// Albedo Specular
+	RenderTargetDescriptor gBufferAttachment2Descriptor = RenderTargetDescriptor();
+	gBufferAttachment2Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+
+	gBufferDescriptors.push_back(gBufferAttachment0Descriptor);
+	gBufferDescriptors.push_back(gBufferAttachment1Descriptor);
+	gBufferDescriptors.push_back(gBufferAttachment2Descriptor);
+
+	gBuffer = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, gBufferDescriptors);
+
+	// Create Light Pass
+	std::vector<RenderTargetDescriptor> lightPassDescriptors;
+
+	// Color
+	RenderTargetDescriptor colorAttachment0Descriptor = RenderTargetDescriptor();
+	colorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+
+	lightPassDescriptors.push_back(colorAttachment0Descriptor);
+
+	lightPass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, lightPassDescriptors, false);
 }
 
 void DeferredPipeline::Resize(const glm::vec2& size)
@@ -60,7 +91,7 @@ void DeferredPipeline::Render()
 	cb->SetClearColor(camera->clearColor);
 	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
 
-	// Render Stuff
+	// Render Opaque Stuff
 	for (auto meshComponent : meshComponents)
 	{
 		if (camera->cullingMask != EVERY_THING)

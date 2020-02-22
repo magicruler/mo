@@ -37,6 +37,13 @@ public:
         bool hasDepth = true,
         bool isRenderTexture = false);
 
+    RenderTarget(
+        unsigned int width,
+        unsigned int height,
+        std::vector<RenderTargetDescriptor> descriptors,
+        bool hasDepth = true,
+        bool isRenderTexture = false);
+
     ~RenderTarget();
 
     Texture *GetDepthTexture() const;

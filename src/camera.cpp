@@ -53,9 +53,6 @@ Camera::Camera()
 	uniformBlock = new GPUBuffer();
 	auto size = sizeof(CameraUniformBlock);
 	uniformBlock->SetData(BUFFER_USAGE::UNIFORM, nullptr, size, BUFFER_DRAW_TYPE::STREAM_DRAW);
-	
-	pipeline = new DeferredPipeline();
-	pipeline->Init(this);
 }
 
 Camera::~Camera()
@@ -70,7 +67,10 @@ Camera::~Camera()
 		delete uniformBlock;
 	}
 
-	delete pipeline;
+	if (pipeline != nullptr)
+	{
+		delete pipeline;
+	}
 }
 
 void Camera::SetRenderTarget(RenderTarget* renderTarget)
@@ -85,6 +85,12 @@ void Camera::SetRenderTarget(RenderTarget* renderTarget)
 		hdrTarget = new RenderTarget(size.x, size.y, GL_HALF_FLOAT, 1, true, false);
 		this->Register(RenderTargetResizeEvent::GetHashIDStatic());
 	}
+
+	if (pipeline == nullptr)
+	{
+		pipeline = new DeferredPipeline();
+		pipeline->Init(this);
+	}
 }
 
 void Camera::OnNotify(const Event& e)
@@ -95,6 +101,11 @@ void Camera::OnNotify(const Event& e)
 		if (resizeEvent.renderTarget == this->renderTarget)
 		{
 			hdrTarget->Resize(resizeEvent.size.x, resizeEvent.size.y);
+
+			if (pipeline != nullptr)
+			{
+				pipeline->Resize(resizeEvent.size);
+			}
 		}
 	}
 }

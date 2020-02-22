@@ -32,7 +32,12 @@ namespace Game
     {
         commandBuffer = new CommandBuffer();
 
-        mainRenderTarget = new RenderTarget(300, 300);
+        std::vector<RenderTargetDescriptor> renderTargetDescriptors;
+        RenderTargetDescriptor descriptor = RenderTargetDescriptor();
+        descriptor.format = RENDER_TARGET_FORMAT::RGBA8888;
+        renderTargetDescriptors.push_back(descriptor);
+        
+        mainRenderTarget = new RenderTarget(300, 300, renderTargetDescriptors, false, false);
         
         ComponentManager::Init();
         Serialization::LoadProject();

@@ -47,6 +47,23 @@ RenderTarget::RenderTarget(
     Init();
 }
 
+RenderTarget::RenderTarget(
+    unsigned int width,
+    unsigned int height,
+    std::vector<RenderTargetDescriptor> descriptors,
+    bool hasDepth,
+    bool isRenderTexture) :
+    isRenderTexture(isRenderTexture),
+    width(width),
+    height(height),
+    hasDepth(hasDepth)
+{
+    attachmentCount = descriptors.size();
+    this->descriptors = descriptors;
+
+    Init();
+}
+
 RenderTarget::~RenderTarget()
 {
     glDeleteFramebuffers(1, &ID);
