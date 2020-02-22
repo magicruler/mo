@@ -5,6 +5,48 @@
 #include "texture.h"
 #include "event.h"
 
+RenderTarget::RenderTarget(
+    unsigned int width,
+    unsigned int height,
+    // GL_UNSIGNED_BYTE
+    int dataType,
+    unsigned int attachmentCount,
+    bool hasDepth,
+    bool isRenderTexture) :
+    isRenderTexture(isRenderTexture),
+    width(width),
+    height(height),
+    hasDepth(hasDepth),
+    attachmentCount(attachmentCount)
+{
+    for (int i = 0; i < attachmentCount; i++)
+    {
+        RenderTargetDescriptor descriptor = RenderTargetDescriptor();
+
+        if (dataType == GL_UNSIGNED_BYTE)
+        {
+            descriptor.format = RENDER_TARGET_FORMAT::RGBA8888;
+        }
+        else if (dataType == GL_HALF_FLOAT)
+        {
+            descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+        }
+        else if (dataType == GL_FLOAT)
+        {
+            descriptor.format = RENDER_TARGET_FORMAT::RGBA32F;
+        }
+        else
+        {
+            // Need More Implementation
+            assert(false);
+        }
+
+        descriptors.push_back(descriptor);
+    }
+
+    Init();
+}
+
 RenderTarget::~RenderTarget()
 {
     glDeleteFramebuffers(1, &ID);
@@ -89,6 +131,8 @@ void RenderTarget::Init()
 
     for (unsigned int i = 0; i < attachmentCount; i++)
     {
+        RenderTargetDescriptor descriptor = descriptors[i];
+
         Texture* texture = new Texture();
         texture->filterMin = GL_LINEAR;
         texture->filterMag = GL_LINEAR;
@@ -105,16 +149,44 @@ void RenderTarget::Init()
         texture->wrapT = GL_CLAMP_TO_EDGE;
        
         int internalFormat = GL_RGBA;
-        if (dataType == GL_HALF_FLOAT)
+        int generalFormat = GL_RGBA;
+        int dataFormat = GL_UNSIGNED_BYTE;
+
+        switch (descriptor.format)
         {
+        case RENDER_TARGET_FORMAT::RGBA8888:
+            internalFormat = GL_RGBA;
+            generalFormat = GL_RGBA;
+            dataFormat = GL_UNSIGNED_BYTE;
+            break;
+        case RENDER_TARGET_FORMAT::RGB888:
+            internalFormat = GL_RGB;
+            generalFormat = GL_RGB;
+            dataFormat = GL_UNSIGNED_BYTE;
+            break;
+        case RENDER_TARGET_FORMAT::RGBA16F:
             internalFormat = GL_RGBA16F;
-        }
-        else if (dataType == GL_FLOAT)
-        {
+            generalFormat = GL_RGBA;
+            dataFormat = GL_HALF_FLOAT;
+            break;
+        case RENDER_TARGET_FORMAT::RGB16F:
+            internalFormat = GL_RGB16F;
+            generalFormat = GL_RGB;
+            dataFormat = GL_HALF_FLOAT;
+            break;
+        case RENDER_TARGET_FORMAT::RGBA32F:
             internalFormat = GL_RGBA32F;
+            generalFormat = GL_RGBA;
+            dataFormat = GL_FLOAT;
+            break;
+        case RENDER_TARGET_FORMAT::RGB32F:
+            internalFormat = GL_RGB32F;
+            generalFormat = GL_RGB;
+            dataFormat = GL_FLOAT;
+            break;
         }
 
-        texture->SetData2D(width, height, internalFormat, GL_RGBA, dataType, 0);
+        texture->SetData2D(width, height, internalFormat, generalFormat, dataFormat, 0);
         if (isRenderTexture)
         {
             texture->SetAnisotropy(4.0f);

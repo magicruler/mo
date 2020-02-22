@@ -3,27 +3,39 @@
 
 class Texture;
 
+enum class RENDER_TARGET_FORMAT
+{
+    RGBA8888,
+    RGB888,
+    RGBA16F,
+    RGB16F,
+    RGBA32F,
+    RGB32F
+};
+
+class RenderTargetDescriptor
+{
+public:
+    RenderTargetDescriptor()
+        :format(RENDER_TARGET_FORMAT::RGBA8888)
+    {
+    }
+
+    RENDER_TARGET_FORMAT format;
+};
+
 class RenderTarget:public Object
 {
     MO_OBJECT("RenderTarget")
 public:
     RenderTarget(
-        unsigned int width, 
-        unsigned int height, 
+        unsigned int width,
+        unsigned int height,
         // GL_UNSIGNED_BYTE
-        int dataType = 0x1401, 
-        unsigned int attachmentCount = 1, 
+        int dataType = 0x1401,
+        unsigned int attachmentCount = 1,
         bool hasDepth = true,
-        bool isRenderTexture = false) : 
-        dataType(dataType),
-        isRenderTexture(isRenderTexture),
-        width(width),
-        height(height),
-        hasDepth(hasDepth),
-        attachmentCount(attachmentCount)
-    {
-        Init();
-    }
+        bool isRenderTexture = false);
 
     ~RenderTarget();
 
@@ -52,7 +64,6 @@ public:
 private:
     void Init();
 
-    int dataType;
     unsigned int width;
     unsigned int height;
     bool hasDepth;
@@ -61,4 +72,5 @@ private:
     std::vector<Texture *> colorAttachments;
     unsigned int ID;
     bool isRenderTexture = false;
+    std::vector<RenderTargetDescriptor> descriptors;
 };
