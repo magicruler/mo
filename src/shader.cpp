@@ -202,6 +202,7 @@ void Shader::SetUniformBlock(const std::string& location, int index)
     else
     {
         uniformBlockIndex = glGetUniformBlockIndex(ID, location.c_str());
+        uniformBlockIndexMap[location] = uniformBlockIndex;
     }
 
     glUniformBlockBinding(ID, uniformBlockIndex, index);

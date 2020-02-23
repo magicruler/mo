@@ -266,7 +266,9 @@ void CommandBuffer::Submit()
 			auto mesh = meshCmd->mesh;
 			auto light = lights.front();
 
-			material->Use();
+			/*spdlog::info("Material:{}, Mesh:{}", material->GetName(), mesh->name);*/
+
+			// material->Use();
 			std::vector<MaterialExtension> extensions = material->GetExtensions();
 			for (auto extension : extensions)
 			{
@@ -312,6 +314,8 @@ void CommandBuffer::Submit()
 					material->SetVector3("cameraPos", camera->GetOwner()->GetPosition());
 				}
 			}
+
+			material->Use();
 
 			mesh->vertexArray->Bind();
 			glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);

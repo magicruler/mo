@@ -35,7 +35,7 @@ void Material::SetInt(const std::string& propName, int value)
 
 void Material::SetUniformBlock(const std::string& location, int index)
 {
-	shader->SetUniformBlock(location, index);
+	uniformProperties[location] = index;
 }
 
 void Material::Use()
@@ -67,6 +67,11 @@ void Material::Use()
 	for (auto& item : mat4Properties)
 	{
 		shader->SetMat4(item.first, item.second);
+	}
+
+	for (auto& item : uniformProperties)
+	{
+		shader->SetUniformBlock(item.first, item.second);
 	}
 
 	/*
