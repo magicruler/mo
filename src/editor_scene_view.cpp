@@ -91,7 +91,8 @@ void EditorSceneView::OnIMGUI()
     auto view = cameraCom->GetViewMatrix();
 
     auto renderables = ComponentManager::GetInstance()->GetMeshComponents();
-    //// Draw AABB
+    
+    // Draw Guizmo
     if(guizmoOpen)
     {
         for (auto renderable : renderables)
@@ -145,77 +146,77 @@ void EditorSceneView::OnIMGUI()
         }
     }
 
-        auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
+    auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
    
-        if (ImGui::IsWindowHovered())
+    if (ImGui::IsWindowHovered())
+    {
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver())
         {
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver())
+            // another
+            auto cameraRay = cameraCom->ScreenRay(windowPos.x, windowPos.y);
+
+            RayCastInteraction interaction;
+            Physics::RayCast(cameraRay, LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS, interaction);
+
+            if (interaction.target != nullptr)
             {
-                // another
-                auto cameraRay = cameraCom->ScreenRay(windowPos.x, windowPos.y);
-
-                RayCastInteraction interaction;
-                Physics::RayCast(cameraRay, LAYER_MASK::ONLY_FOR_EDITOR_OBJECTS, interaction);
-
-                if (interaction.target != nullptr)
-                {
-                    EditorWindowSystem::GetInstance()->SetActorSelection(interaction.target);
-                    Debug::Log("Actor %s Casted By Ray", interaction.target->GetName().c_str());
-                }
-                else
-                {
-                    EditorWindowSystem::GetInstance()->ClearActorSelection();
-                }
+                EditorWindowSystem::GetInstance()->SetActorSelection(interaction.target);
+                Debug::Log("Actor %s Casted By Ray", interaction.target->GetName().c_str());
+            }
+            else
+            {
+                EditorWindowSystem::GetInstance()->ClearActorSelection();
             }
         }
+    }
     
 
-        auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
-        if (selection.size() == 1)
+    auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
+    if (selection.size() == 1)
+    {
+        auto actor = selection[0];
+            
+        if (Input::CheckKey(KEYBOARD_KEY::W))
         {
-            auto actor = selection[0];
+            operation = ImGuizmo::OPERATION::TRANSLATE;
+        }
+        else if (Input::CheckKey(KEYBOARD_KEY::E))
+        {
+            operation = ImGuizmo::OPERATION::ROTATE;
+        }
+        else if (Input::CheckKey(KEYBOARD_KEY::R))
+        {
+            operation = ImGuizmo::OPERATION::SCALE;
+        }
             
-            if (Input::CheckKey(KEYBOARD_KEY::W))
-            {
-                operation = ImGuizmo::OPERATION::TRANSLATE;
-            }
-            else if (Input::CheckKey(KEYBOARD_KEY::E))
-            {
-                operation = ImGuizmo::OPERATION::ROTATE;
-            }
-            else if (Input::CheckKey(KEYBOARD_KEY::R))
-            {
-                operation = ImGuizmo::OPERATION::SCALE;
-            }
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
+        glm::mat4 matrix = actor->GetLocalToWorldMatrix();
+        glm::mat4 delta = glm::mat4(1.0f);
+        ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::LOCAL, glm::value_ptr(matrix), glm::value_ptr(delta));
             
-            ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(contentMin.x, contentMin.y, contentSize.x, contentSize.y);
-            glm::mat4 matrix = actor->GetLocalToWorldMatrix();
-            glm::mat4 delta = glm::mat4(1.0f);
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation, ImGuizmo::MODE::LOCAL, glm::value_ptr(matrix), glm::value_ptr(delta));
-            
-            glm::vec3 deltaPosition;
-            glm::vec3 deltaRotation;
-            glm::vec3 deltaScale;
+        glm::vec3 deltaPosition;
+        glm::vec3 deltaRotation;
+        glm::vec3 deltaScale;
 
-            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(delta), glm::value_ptr(deltaPosition), glm::value_ptr(deltaRotation), glm::value_ptr(deltaScale));
+        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(delta), glm::value_ptr(deltaPosition), glm::value_ptr(deltaRotation), glm::value_ptr(deltaScale));
 
-            if ((Math::AbsSum(deltaPosition) + Math::AbsSum(deltaRotation)) > 0.0f || Math::AbsSum(deltaScale) != 3.0f)
-            {
-                glm::vec3 worldPosition;
-                glm::vec3 worldRotation;
-                glm::vec3 worldScale;
+        if ((Math::AbsSum(deltaPosition) + Math::AbsSum(deltaRotation)) > 0.0f || Math::AbsSum(deltaScale) != 3.0f)
+        {
+            glm::vec3 worldPosition;
+            glm::vec3 worldRotation;
+            glm::vec3 worldScale;
 
-                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix), glm::value_ptr(worldPosition), glm::value_ptr(worldRotation), glm::value_ptr(worldScale));
 
-                actor->SetScale(worldScale);
-                actor->SetRotation(worldRotation);
-                actor->SetPosition(worldPosition);
+            actor->SetScale(worldScale);
+            actor->SetRotation(worldRotation);
+            actor->SetPosition(worldPosition);
 
-                SelectionPropertyChangeEvent e;
-                Dispatch(e);
-            }
-        }  
+            SelectionPropertyChangeEvent e;
+            Dispatch(e);
+        }
+    }  
 }
 
 void EditorSceneView::OnResize() 
