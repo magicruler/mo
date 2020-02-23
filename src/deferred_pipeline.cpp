@@ -238,7 +238,7 @@ void DeferredPipeline::RenderForwardPass()
 		cb->DisableDepth();
 
 		camera->GetPostProcessingMaterial()->SetTextureProperty("hdrTarget", hdrTarget->GetAttachmentTexture(0));
-		camera->GetPostProcessingMaterial()->SetFloat("exposure", 1.0f);
+		camera->GetPostProcessingMaterial()->SetFloat("exposure", 1.5f);
 
 		cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), camera->GetPostProcessingMaterial());
 		cb->EnableDepth();
