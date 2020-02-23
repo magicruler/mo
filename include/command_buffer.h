@@ -22,6 +22,7 @@ enum class RENDER_COMMAND_TYPE
 	CLEAR,
 	ENABLE_DEPTH,
 	DISABLE_DEPTH,
+	COPY_DEPTH_BUFFER,
 };
 
 enum CLEAR_BIT
@@ -151,6 +152,18 @@ public:
 	glm::mat4 projection = glm::mat4(1.0f);
 };
 
+class CommandCopyDepthBuffer : public RenderCommand
+{
+public:
+	CommandCopyDepthBuffer()
+	{
+		commandType = RENDER_COMMAND_TYPE::COPY_DEPTH_BUFFER;
+	}
+
+	RenderTarget* src = nullptr;
+	RenderTarget* dst = nullptr;
+};
+
 class GLStateCache
 {
 	friend CommandBuffer;
@@ -179,6 +192,7 @@ public:
 	void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, glm::mat4& transformation);
 	void RenderQuad(const glm::vec2& position, const glm::vec2& size, const glm::mat4& projection, Material* material);
 	void RenderSkyBox(const glm::mat4& view, const glm::mat4& projection);
+	void CopyDepthBuffer(RenderTarget* src, RenderTarget* dst);
 
 	inline void AddCommand(const std::shared_ptr<RenderCommand> command)
 	{

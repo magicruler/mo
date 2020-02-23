@@ -255,3 +255,9 @@ void RenderTarget::Init()
 
     spdlog::info("Framebuffer Creation Compelete");
 }
+
+void RenderTarget::CopyDepth(RenderTarget* src)
+{
+    glm::vec2 srcSize = src->GetSize();
+    glBlitNamedFramebuffer(src->ID, ID, 0, 0, srcSize.x, srcSize.y, 0, 0, srcSize.x, srcSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+}

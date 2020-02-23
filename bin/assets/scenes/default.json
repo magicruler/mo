@@ -4,13 +4,13 @@
     "children":
     [
         {
-            "name": "yoda",
+            "name": "pillar",
             "type": "actor",
-            "layer": "USER_DEFINE_1",
+            "layer": "General",
             "transform":
             {
                 "position":[0.0, -2.5, 0],
-                "scale":[0.002, 0.002, 0.002],
+                "scale":[0.1, 0.1, 0.1],
                 "rotation":[-90.0, 0.0, 0.0]
             },
             "components":
@@ -19,15 +19,9 @@
                     "type": "meshComponent",
                     "materials": 
                     [
-                        "yoda_body.json",
-                        "yoda_stick.json",
-                        "yoda_head.json",
-                        "yoda_body.json",
-                        "yoda_body.json",
-                        "yoda_handfoot.json",
-                        "yoda_eye.json"
+                        "demo/carved_pillar.json"
                     ],
-                    "mesh": "yoda/yoda.json"
+                    "mesh": "demo/carved_pillar.json"
                 }
             ],
             "children":

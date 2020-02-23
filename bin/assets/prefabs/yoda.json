@@ -1,0 +1,31 @@
+{
+    "name": "yoda",
+    "type": "actor",
+    "layer": "USER_DEFINE_1",
+    "transform":
+    {
+        "position":[0.0, -2.5, 0],
+        "scale":[0.002, 0.002, 0.002],
+        "rotation":[-90.0, 0.0, 0.0]
+    },
+    "components":
+    [
+        {
+            "type": "meshComponent",
+            "materials": 
+            [
+                "yoda_body.json",
+                "yoda_stick.json",
+                "yoda_head.json",
+                "yoda_body.json",
+                "yoda_body.json",
+                "yoda_handfoot.json",
+                "yoda_eye.json"
+            ],
+            "mesh": "yoda/yoda.json"
+        }
+    ],
+    "children":
+    [
+    ]
+}

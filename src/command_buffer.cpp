@@ -76,6 +76,9 @@ void GLStateCache::Init()
 
 CommandBuffer::CommandBuffer()
 {
+	const GLubyte* glVersion = glGetString(GL_VERSION);
+	spdlog::info("GL Version Is {}", glVersion);
+
 	quadVertexBuffer = new GPUBuffer();
 	quadVertexBuffer->SetData(BUFFER_USAGE::ARRAY, quadVertices, sizeof(quadVertices), BUFFER_DRAW_TYPE::STATIC_DRAW);
 	quadVertexArray = new VertexArray(quadVertexBuffer, nullptr);
@@ -178,6 +181,15 @@ void CommandBuffer::EnableDepth()
 void CommandBuffer::DisableDepth()
 {
 	std::shared_ptr<CommandDisableDepth> cmd = std::make_shared<CommandDisableDepth>();
+	AddCommand(cmd);
+}
+
+void CommandBuffer::CopyDepthBuffer(RenderTarget* src, RenderTarget* dst)
+{
+	std::shared_ptr<CommandCopyDepthBuffer> cmd = std::make_shared<CommandCopyDepthBuffer>();
+	cmd->src = src;
+	cmd->dst = dst;
+
 	AddCommand(cmd);
 }
 
@@ -347,6 +359,12 @@ void CommandBuffer::Submit()
 			glViewport(setCmd->origin.x, setCmd->origin.y, setCmd->contentSize.x, setCmd->contentSize.y);
 		}
 			break;
+		case RENDER_COMMAND_TYPE::COPY_DEPTH_BUFFER:
+		{
+			auto copyCmd = std::static_pointer_cast<CommandCopyDepthBuffer>(cmd);
+			copyCmd->dst->CopyDepth(copyCmd->src);
+		}
+		break;
 		case RENDER_COMMAND_TYPE::ENABLE_DEPTH:
 		{
 			glEnable(GL_DEPTH_TEST);

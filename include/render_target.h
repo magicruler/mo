@@ -68,6 +68,8 @@ public:
         return ID;
     }
 
+    void CopyDepth(RenderTarget* src);
+
 private:
     void Init();
 

@@ -77,6 +77,54 @@ void DeferredPipeline::RenderDeferredPass()
 	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
 
 	auto cb = Game::GetCommandBuffer();
+	cb->SetRenderTarget(gBuffer);
+
+	glm::vec2 renderTargetSize = gBuffer->GetSize();
+
+	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
+	
+	cb->SetClearDepth(1.0f);
+	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
+
+	for (auto meshComponent : meshComponents)
+	{
+		if (camera->cullingMask != EVERY_THING)
+		{
+			if ((meshComponent->GetOwner()->GetLayerFlag() & camera->cullingMask) == 0)
+			{
+				continue;
+			}
+		}
+
+		auto materials = meshComponent->materials;
+
+		Mesh* mesh = meshComponent->mesh;
+		assert(mesh != nullptr);
+
+		glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
+
+		for (int i = 0; i < mesh->children.size(); i++)
+		{
+			Material* material = nullptr;
+			if (i >= materials.size())
+			{
+				material = materials[0];
+			}
+			else
+			{
+				material = materials[i];
+			}
+
+			if (material->GetPass() != MATERIAL_PASS::DEFERRED)
+			{
+				continue;
+			}
+
+			cb->RenderMesh(camera, material, mesh->children[i], transformation);
+		}
+	}
 
 	cb->Submit();
 }
@@ -110,9 +158,11 @@ void DeferredPipeline::RenderForwardPass()
 	}
 
 	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
-	cb->SetClearDepth(1.0f);
+	
 	cb->SetClearColor(camera->clearColor);
-	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
+	cb->Clear(CLEAR_BIT::COLOR);
+
+	cb->CopyDepthBuffer(gBuffer, (camera->hasPostProcessing?hdrTarget:renderTarget));
 
 	for (auto meshComponent : meshComponents)
 	{
