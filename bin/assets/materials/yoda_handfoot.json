@@ -1,6 +1,7 @@
 {
     "name": "yoda_handfoot",
     "shader": "blinnTexDiffuseNormal.json",
+    "pass":"forward",
     "properties":
     [
         {

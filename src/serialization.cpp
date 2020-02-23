@@ -273,6 +273,22 @@ namespace Serialization
 
 		material->SetName(name);
 
+		// decode pass info
+		std::string passName = materialJsonObject["pass"].get<std::string>();
+		if (passName == "forward")
+		{
+			material->SetPass(MATERIAL_PASS::FORWARD);
+		}
+		else if (passName == "deferred")
+		{
+			material->SetPass(MATERIAL_PASS::DEFERRED);
+		}
+		else if (passName == "none")
+		{
+			material->SetPass(MATERIAL_PASS::NONE);
+		}
+
+		// 
 		auto properties = materialJsonObject["properties"];
 		assert(properties.is_array());
 		for (auto& prop : properties)
@@ -317,23 +333,23 @@ namespace Serialization
 			auto extensionName = extension.get<std::string>();
 			if (extensionName == "mvp")
 			{
-				material->AddExtension(MaterialExtension::MODEL_VIEW_PROJECTION);
+				material->AddExtension(MATERIAL_EXTENSION::MODEL_VIEW_PROJECTION);
 			}
 			else if (extensionName == "time")
 			{
-				material->AddExtension(MaterialExtension::TIME);
+				material->AddExtension(MATERIAL_EXTENSION::TIME);
 			}
 			else if (extensionName == "nearestLight")
 			{
-				material->AddExtension(MaterialExtension::NEAREST_LIGHT);
+				material->AddExtension(MATERIAL_EXTENSION::NEAREST_LIGHT);
 			}
 			else if (extensionName == "ambient")
 			{
-				material->AddExtension(MaterialExtension::AMBIENT);
+				material->AddExtension(MATERIAL_EXTENSION::AMBIENT);
 			}
 			else if (extensionName == "camera")
 			{
-				material->AddExtension(MaterialExtension::CAMERA);
+				material->AddExtension(MATERIAL_EXTENSION::CAMERA);
 			}
 		}
 

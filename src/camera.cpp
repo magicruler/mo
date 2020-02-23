@@ -106,6 +106,9 @@ void Camera::OnNotify(const Event& e)
 			{
 				pipeline->Resize(resizeEvent.size);
 			}
+
+			// Update Ratio
+			ratio = resizeEvent.size.x / resizeEvent.size.y;
 		}
 	}
 }
@@ -154,85 +157,6 @@ void Camera::Render()
 	}
 
 	pipeline->Render();
-	//// Update Ratio
-	//glm::vec2 renderTargetSize = renderTarget->GetSize();
-	//ratio = renderTargetSize.x / renderTargetSize.y;
-
-
-	//Scene* currentScene = Game::ActiveSceneGetPointer();
-	//
-	//std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
-
-	//std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
-
-	//auto cb = Game::GetCommandBuffer();
-
-	//if (hasPostProcessing)
-	//{
-	//	cb->SetRenderTarget(hdrTarget);
-	//}
-	//else
-	//{
-	//	cb->SetRenderTarget(renderTarget);
-	//}
-
-	//if (renderTarget->HasDepth())
-	//{
-	//	cb->EnableDepth();
-	//}
-
-	//cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
-	//cb->SetClearDepth(1.0f);
-	//cb->SetClearColor(clearColor);	
-	//cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
-
-	//// Render Stuff
-	//for (auto meshComponent : meshComponents)
-	//{
-	//	if (cullingMask != EVERY_THING)
-	//	{
-	//		if ((meshComponent->GetOwner()->GetLayerFlag() & cullingMask) == 0)
-	//		{
-	//			continue;
-	//		}
-	//	}
-	//	auto materials = meshComponent->materials;
-	//	
-	//	Mesh* mesh = meshComponent->mesh;
-	//	assert(mesh != nullptr);
-
-	//	glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
-
-	//	for (int i = 0; i < mesh->children.size(); i++)
-	//	{
-	//		if (i >= materials.size())
-	//		{
-	//			cb->RenderMesh(this, materials[0], mesh->children[i], transformation);
-	//		}
-	//		else
-	//		{
-	//			cb->RenderMesh(this, materials[i], mesh->children[i], transformation);
-	//		}
-	//	}
-	//}
-
-	//// Render skybox
-	//cb->RenderSkyBox(glm::mat4(glm::mat3(GetViewMatrix())), GetProjection());
-
-	//// Post Processing
-	//if (hasPostProcessing)
-	//{
-	//	cb->SetRenderTarget(this->renderTarget);
-	//	cb->DisableDepth();
-
-	//	postProcessingMaterial->SetTextureProperty("hdrTarget", hdrTarget->GetAttachmentTexture(0));
-	//	postProcessingMaterial->SetFloat("exposure", 1.0f);
-
-	//	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, GetRenderTargetProjection(), postProcessingMaterial);
-	//	cb->EnableDepth();
-	//}
-
-	//cb->Submit();
 }
 
 Ray Camera::ScreenRay(float mouseX, float mouseY)

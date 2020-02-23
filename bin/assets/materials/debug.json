@@ -1,6 +1,7 @@
 {
     "name": "debug",
     "shader": "debug.json",
+    "pass":"forward",
     "properties":
     [
         {

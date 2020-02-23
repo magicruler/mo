@@ -13,6 +13,9 @@ public:
 
 	void Render();
 
+	void RenderDeferredPass();
+	void RenderForwardPass();
+
 	void Resize(const glm::vec2& size);
 
 	Texture* GetPositionTexture() const;

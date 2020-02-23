@@ -238,10 +238,10 @@ void CommandBuffer::Submit()
 			auto quadCmd = std::static_pointer_cast<CommandRenderQuad>(cmd);
 			auto material = quadCmd->material;
 			
-			std::vector<MaterialExtension> extensions = material->GetExtensions();
+			std::vector<MATERIAL_EXTENSION> extensions = material->GetExtensions();
 			for (auto extension : extensions)
 			{
-				if (extension == MaterialExtension::TIME)
+				if (extension == MATERIAL_EXTENSION::TIME)
 				{
 					material->SetFloat("time", Time::GetTime());
 				}
@@ -269,25 +269,25 @@ void CommandBuffer::Submit()
 			/*spdlog::info("Material:{}, Mesh:{}", material->GetName(), mesh->name);*/
 
 			// material->Use();
-			std::vector<MaterialExtension> extensions = material->GetExtensions();
+			std::vector<MATERIAL_EXTENSION> extensions = material->GetExtensions();
 			for (auto extension : extensions)
 			{
-				if (extension == MaterialExtension::MODEL_VIEW_PROJECTION)
+				if (extension == MATERIAL_EXTENSION::MODEL_VIEW_PROJECTION)
 				{
 					material->SetUniformBlock("CameraBlock", 0);
 					camera->GetUniformBlock()->BindBufferBase(BUFFER_USAGE::UNIFORM, 0);
 
 					material->SetMatrix4("model", transformation);
 				}
-				else if (extension == MaterialExtension::TIME)
+				else if (extension == MATERIAL_EXTENSION::TIME)
 				{
 					material->SetFloat("time", Time::GetTime());
 				}
-				else if (extension == MaterialExtension::AMBIENT)
+				else if (extension == MATERIAL_EXTENSION::AMBIENT)
 				{
 					material->SetVector3("ambient", scene->GetAmbient());
 				}
-				else if (extension == MaterialExtension::NEAREST_LIGHT)
+				else if (extension == MATERIAL_EXTENSION::NEAREST_LIGHT)
 				{
 					int index = 0;
 					for (auto light: lights)
@@ -309,7 +309,7 @@ void CommandBuffer::Submit()
 						material->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));	
 					}
 				}
-				else if (extension == MaterialExtension::CAMERA)
+				else if (extension == MATERIAL_EXTENSION::CAMERA)
 				{
 					material->SetVector3("cameraPos", camera->GetOwner()->GetPosition());
 				}

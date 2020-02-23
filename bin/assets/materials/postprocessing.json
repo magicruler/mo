@@ -1,6 +1,7 @@
 {
     "name": "postprocessing",
     "shader": "postprocessing.json",
+    "pass":"none",
     "properties":
     [
     ],

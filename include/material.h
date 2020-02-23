@@ -4,13 +4,20 @@
 class Shader;
 class Texture;
 
-enum class MaterialExtension
+enum class MATERIAL_EXTENSION
 {
 	MODEL_VIEW_PROJECTION,
 	TIME,
 	AMBIENT,
 	NEAREST_LIGHT,
 	CAMERA
+};
+
+enum class MATERIAL_PASS
+{
+	FORWARD,
+	DEFERRED,
+	NONE
 };
 
 class Material
@@ -27,14 +34,24 @@ public:
 
 	void Use();
 
-	void AddExtension(MaterialExtension extension)
+	void AddExtension(MATERIAL_EXTENSION extension)
 	{
 		extensions.push_back(extension);
 	}
 
-	std::vector<MaterialExtension> GetExtensions()
+	std::vector<MATERIAL_EXTENSION> GetExtensions()
 	{
 		return extensions;
+	}
+
+	MATERIAL_PASS GetPass() const
+	{
+		return pass;
+	}
+
+	void SetPass(MATERIAL_PASS pass)
+	{
+		this->pass = pass;
 	}
 
 public:
@@ -49,9 +66,12 @@ public:
 	}
 
 private:
+
+	MATERIAL_PASS pass = MATERIAL_PASS::NONE;
+
 	std::string name = "";
 
-	std::vector<MaterialExtension> extensions;
+	std::vector<MATERIAL_EXTENSION> extensions;
 	std::map<std::string, Texture*> textureProperties;
 	
 	std::map<std::string, float> floatProperties;

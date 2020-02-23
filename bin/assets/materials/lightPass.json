@@ -1,6 +1,7 @@
 {
     "name": "lightPass",
     "shader": "deferred-pbr/lightPass.json",
+    "pass":"none",
     "properties":
     [
     ],

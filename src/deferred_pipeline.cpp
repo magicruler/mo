@@ -62,12 +62,32 @@ void DeferredPipeline::Resize(const glm::vec2& size)
 
 void DeferredPipeline::Render()
 {
+	// Render Deferred Pass
+	RenderDeferredPass();
+	
+	// Render Forward Pass
+	RenderForwardPass();
+}
+
+void DeferredPipeline::RenderDeferredPass()
+{
+	Scene* currentScene = Game::ActiveSceneGetPointer();
+
+	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
+	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
+
+	auto cb = Game::GetCommandBuffer();
+
+	cb->Submit();
+}
+
+void DeferredPipeline::RenderForwardPass()
+{
 	RenderTarget* renderTarget = camera->GetRenderTarget();
 	RenderTarget* hdrTarget = camera->GetHdrTarget();
 
 	glm::vec2 renderTargetSize = renderTarget->GetSize();
 	Scene* currentScene = Game::ActiveSceneGetPointer();
-	camera->ratio = renderTargetSize.x / renderTargetSize.y;
 
 	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
 
@@ -75,9 +95,6 @@ void DeferredPipeline::Render()
 
 	auto cb = Game::GetCommandBuffer();
 
-	// Render Deferred Objects
-
-	// Render Unlit Objects
 	if (camera->hasPostProcessing)
 	{
 		cb->SetRenderTarget(hdrTarget);
@@ -97,7 +114,6 @@ void DeferredPipeline::Render()
 	cb->SetClearColor(camera->clearColor);
 	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
 
-	// Render Opaque Stuff
 	for (auto meshComponent : meshComponents)
 	{
 		if (camera->cullingMask != EVERY_THING)
@@ -107,6 +123,7 @@ void DeferredPipeline::Render()
 				continue;
 			}
 		}
+
 		auto materials = meshComponent->materials;
 
 		Mesh* mesh = meshComponent->mesh;
@@ -116,14 +133,22 @@ void DeferredPipeline::Render()
 
 		for (int i = 0; i < mesh->children.size(); i++)
 		{
+			Material* material = nullptr;
 			if (i >= materials.size())
 			{
-				cb->RenderMesh(camera, materials[0], mesh->children[i], transformation);
+				material = materials[0];
 			}
 			else
 			{
-				cb->RenderMesh(camera, materials[i], mesh->children[i], transformation);
+				material = materials[i];
 			}
+
+			if (material->GetPass() != MATERIAL_PASS::FORWARD)
+			{
+				continue;
+			}
+
+			cb->RenderMesh(camera, material, mesh->children[i], transformation);
 		}
 	}
 

@@ -1,6 +1,7 @@
 {
     "name": "yoda_eye",
     "shader": "blinnTexDiffuse.json",
+    "pass":"forward",
     "properties":
     [
         {

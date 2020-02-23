@@ -1,6 +1,7 @@
 {
     "name": "yoda_stick",
     "shader": "blinnTexDiffuse.json",
+    "pass":"forward",
     "properties":
     [
         {

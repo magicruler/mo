@@ -1,6 +1,7 @@
 {
     "name": "standard",
     "shader": "standard.json",
+    "pass":"forward",
     "properties":
     [
         {

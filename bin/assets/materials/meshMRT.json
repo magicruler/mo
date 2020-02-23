@@ -1,6 +1,7 @@
 {
     "name": "meshMRT",
     "shader": "deferred-pbr/meshMRT.json",
+    "pass":"deferred",
     "properties":
     [
     ],

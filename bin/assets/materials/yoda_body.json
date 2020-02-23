@@ -1,6 +1,7 @@
 {
     "name": "yoda_body",
     "shader": "blinnTex.json",
+    "pass":"forward",
     "properties":
     [
         {

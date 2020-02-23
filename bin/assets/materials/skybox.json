@@ -1,6 +1,7 @@
 {
     "name": "skybox",
     "shader": "skybox.json",
+    "pass":"none",
     "properties":
     [
         {

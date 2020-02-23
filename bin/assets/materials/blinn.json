@@ -1,6 +1,7 @@
 {
     "name": "bilnn",
     "shader": "blinn.json",
+    "pass":"forward",
     "properties":
     [
         {

@@ -1,6 +1,7 @@
 {
     "name": "carved_pillar",
     "shader": "deferred-pbr/meshMRT.json",
+    "pass":"deferred",
     "properties":
     [
         {
