@@ -26,5 +26,13 @@ void main()
     // Gamma Correction
     mappedColor = pow(mappedColor, vec3(1.0 / 2.2));
 
+    // Vignette 
+    const float strength = 12.0;
+    const float power = 0.13;
+    vec2 tuv = fragUV * (vec2(1.0) - fragUV.yx);
+    float vign = tuv.x*tuv.y * strength;
+    vign = pow(vign, power);
+    mappedColor *= vign;
+
     outColor = vec4(mappedColor, 1.0);
 }
