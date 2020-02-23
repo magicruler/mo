@@ -151,8 +151,8 @@ void RenderTarget::Init()
         RenderTargetDescriptor descriptor = descriptors[i];
 
         Texture* texture = new Texture();
-        texture->filterMin = GL_LINEAR;
-        texture->filterMag = GL_LINEAR;
+        texture->filterMin = GL_NEAREST;
+        texture->filterMag = GL_NEAREST;
         texture->isMipmapped = false;
 
         if (isRenderTexture)
