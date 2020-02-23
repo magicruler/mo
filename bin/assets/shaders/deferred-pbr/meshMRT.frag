@@ -29,8 +29,13 @@ uniform sampler2D normalMap;
 
 void main()
 {
+    // Attachment 0
     gPosition = position;
-    gNormalMetalness = vec4(normalize(normal), 1.0)
+    
+    // Attachment 1
+    gNormalMetalness = vec4(normalize(normal), 1.0);
+
+    // Attachment 2
     vec3 diffuseColor = texture(albedoMap, uv).rgb;
     gAlbedoSpec = vec4(diffuseColor, 1.0);
 }

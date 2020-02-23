@@ -1,0 +1,10 @@
+{
+    "name": "meshMRT",
+    "shader": "deferred-pbr/meshMRT.json",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

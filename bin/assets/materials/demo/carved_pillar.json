@@ -1,0 +1,22 @@
+{
+    "name": "carved_pillar",
+    "shader": "deferred-pbr/meshMRT.json",
+    "properties":
+    [
+        {
+            "name": "albedoMap",
+            "type": "sampler2D",
+            "value": "carved-pillar/carved_pillar_Albedo.json"
+        },
+        {
+            "name": "normalMap",
+            "type": "sampler2D",
+            "value": "carved-pillar/carved_pillar_Normal.json"
+        }
+    ],
+    "extensions":
+    [
+        "mvp",
+        "camera"
+    ]
+}

@@ -9,11 +9,14 @@
 #include "actor.h"
 #include "mesh.h"
 #include "material.h"
+#include "resources.h"
 
 void DeferredPipeline::Init(Camera* camera)
 {
 	this->camera = camera;
 	assert(this->camera->GetRenderTarget() != nullptr);
+
+	lightPassMaterial = Resources::GetMaterial("lightPass.json");
 	
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
@@ -72,6 +75,9 @@ void DeferredPipeline::Render()
 
 	auto cb = Game::GetCommandBuffer();
 
+	// Render Deferred Objects
+
+	// Render Unlit Objects
 	if (camera->hasPostProcessing)
 	{
 		cb->SetRenderTarget(hdrTarget);
@@ -138,4 +144,44 @@ void DeferredPipeline::Render()
 	}
 
 	cb->Submit();
+}
+
+Texture* DeferredPipeline::GetPositionTexture() const
+{
+	if (gBuffer != nullptr)
+	{
+		gBuffer->GetAttachmentTexture(0);
+	}
+
+	return nullptr;
+}
+
+Texture* DeferredPipeline::GetNormalMetalnessTexture() const
+{
+	if (gBuffer != nullptr)
+	{
+		gBuffer->GetAttachmentTexture(1);
+	}
+
+	return nullptr;
+}
+
+Texture* DeferredPipeline::GetAlbedoSpecularTexture() const
+{
+	if (gBuffer != nullptr)
+	{
+		gBuffer->GetAttachmentTexture(2);
+	}
+
+	return nullptr;
+}
+
+Texture* DeferredPipeline::GetDepthTexture() const
+{
+	if (gBuffer != nullptr)
+	{
+		gBuffer->GetDepthTexture();
+	}
+
+	return nullptr;
 }

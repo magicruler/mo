@@ -1,0 +1,5 @@
+{
+    "name":"lightPass",
+    "vert":"deferred-pbr/lightPass.vert",
+    "frag":"deferred-pbr/lightPass.frag"
+}

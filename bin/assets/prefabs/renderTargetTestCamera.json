@@ -1,0 +1,27 @@
+{
+    "name": "renderTargetTestCamera",
+    "type": "actor",
+    "layer": "General",
+    "transform":
+    {
+        "position":[0.0, 0.0, 4.0],
+        "scale":[1.0, 1.0, 1.0],
+        "rotation":[0.0, 0.0, 0.0]
+    },
+    "components":
+    [
+        {
+            "type":"camera",
+            "fov": 45.0,
+            "nearPlane": 0.1,
+            "farPlane": 100.0,
+            "clearColor": [0.892, 0.302, 0.475, 1.0],
+            "renderTarget": "test.json",
+            "cullingMask": ["USER_DEFINE_1"],
+            "postprocessing": false
+        }
+    ],
+    "children":
+    [
+    ]
+}

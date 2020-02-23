@@ -5,7 +5,9 @@
     [
         "quad.json",
         "postprocessing.json",
-        "skybox.json"
+        "skybox.json",
+        "lightPass.json",
+        "meshMRT.json"
     ],
     "layers": [
         {

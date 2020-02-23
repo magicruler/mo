@@ -1,5 +1,5 @@
 {
     "name":"meshMRT",
-    "vert":"meshMRT.vert",
-    "frag":"meshMRT.frag"
+    "vert":"deferred-pbr/meshMRT.vert",
+    "frag":"deferred-pbr/meshMRT.frag"
 }

@@ -157,9 +157,6 @@ void CommandBuffer::RenderQuad(const glm::vec2& position, const glm::vec2& size,
 	cmd->model = model;
 	cmd->projection = projection;
 
-	auto testPos = projection* model* glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	auto testPos1 = projection * model * glm::vec4(100.0f, 100.0f, 0.0f, 1.0f);
-
 	AddCommand(cmd);
 }
 
