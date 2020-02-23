@@ -8,7 +8,8 @@
         "skybox.json",
         "lightPass.json",
         "meshMRT.json",
-        "gbufferDebug.json"
+        "gbufferDebug.json",
+        "renderTargetBlit.json"
     ],
     "layers": [
         {

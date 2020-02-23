@@ -1,0 +1,11 @@
+{
+    "name": "renderTargetBlit",
+    "shader": "renderTargetBlit.json",
+    "pass":"none",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

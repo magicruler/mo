@@ -74,7 +74,7 @@ void EditorSceneView::OnIMGUI()
 
     ImGui::SetCursorPos(glm::vec2(20.0f, 30.0f));
     ImGui::SetNextItemWidth(90.0f);
-    const char* items[] = { "Shading", "Albedo", "Position", "Normal", "Roughness", "Metalness", "Depth"};
+    const char* items[] = { "Shading", "Albedo", "Position", "Normal", "Roughness", "Metalness", "Depth", "LightPass"};
     static int item_current = 0;
     ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
     ImGui::SetCursorPos(glm::vec2(0.0f, 0.0f));

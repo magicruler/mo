@@ -18,7 +18,8 @@ void DeferredPipeline::Init(Camera* camera)
 
 	lightPassMaterial = Resources::GetMaterial("lightPass.json");
 	gbufferDebugMaterial = Resources::GetMaterial("gbufferDebug.json");
-	
+	renderTargetBlitMaterial = Resources::GetMaterial("renderTargetBlit.json");
+
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
 	
@@ -44,10 +45,10 @@ void DeferredPipeline::Init(Camera* camera)
 	std::vector<RenderTargetDescriptor> lightPassDescriptors;
 
 	// Color
-	RenderTargetDescriptor colorAttachment0Descriptor = RenderTargetDescriptor();
-	colorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+	RenderTargetDescriptor lightPassColorAttachment0Descriptor = RenderTargetDescriptor();
+	lightPassColorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
 
-	lightPassDescriptors.push_back(colorAttachment0Descriptor);
+	lightPassDescriptors.push_back(lightPassColorAttachment0Descriptor);
 
 	lightPass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, lightPassDescriptors, false);
 }
@@ -139,6 +140,16 @@ void DeferredPipeline::RenderDeferredPass()
 
 	// Light Pass Rendering
 
+	// Draw On Light Pass
+	cb->SetRenderTarget(lightPass);
+	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	cb->Clear(CLEAR_BIT::COLOR);
+
+	lightPassMaterial->SetTextureProperty("gBufferPosition", GetPositionTexture());
+	lightPassMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
+	lightPassMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
+
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), lightPassMaterial);
 
 	cb->Submit();
 }
@@ -166,17 +177,18 @@ void DeferredPipeline::RenderForwardPass()
 		cb->SetRenderTarget(renderTarget);
 	}
 
-	if (renderTarget->HasDepth())
-	{
-		cb->EnableDepth();
-	}
-
 	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
 	
 	cb->SetClearColor(camera->clearColor);
 	cb->Clear(CLEAR_BIT::COLOR);
 
 	cb->CopyDepthBuffer(gBuffer, (camera->hasPostProcessing?hdrTarget:renderTarget));
+
+	// Draw Light Pass On Current Render Target
+	cb->DisableDepth();
+	renderTargetBlitMaterial->SetTextureProperty("renderTarget", lightPass->GetAttachmentTexture(0));
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), renderTargetBlitMaterial);
+	cb->EnableDepth();
 
 	for (auto meshComponent : meshComponents)
 	{
@@ -269,6 +281,7 @@ void DeferredPipeline::RenderDebugPass()
 	gbufferDebugMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
 	gbufferDebugMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
 	gbufferDebugMaterial->SetTextureProperty("gBufferDepth", GetDepthTexture());
+	gbufferDebugMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);
 	cb->EnableDepth();

@@ -7,6 +7,7 @@ uniform sampler2D gBufferPosition;
 uniform sampler2D gBufferNormalMetalness;
 uniform sampler2D gBufferAlbedoRoughness;
 uniform sampler2D gBufferDepth;
+uniform sampler2D lightPass;
 // 1 albedo
 // 2 position
 // 3 normal
@@ -48,5 +49,9 @@ void main()
     {
         float depth = texture(gBufferNormalMetalness, fragUV).x * 0.5 + 0.5;
         outColor = vec4(depth, depth, depth, 1.0);
+    }
+    else if(debugOption == 7)
+    {
+        outColor = vec4(texture(lightPass, fragUV).rgb, 1.0);
     }
 }

@@ -1,0 +1,5 @@
+{
+    "name":"renderTargetBlit",
+    "vert":"renderTargetBlit.vert",
+    "frag":"renderTargetBlit.frag"
+}

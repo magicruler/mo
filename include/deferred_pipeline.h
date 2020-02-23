@@ -30,6 +30,7 @@ public:
 private:
 	Material* lightPassMaterial = nullptr;
 	Material* gbufferDebugMaterial = nullptr;
+	Material* renderTargetBlitMaterial = nullptr;
 
 	Camera* camera = nullptr;
 	RenderTarget* gBuffer = nullptr;
