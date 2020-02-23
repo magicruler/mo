@@ -7,7 +7,8 @@
         "postprocessing.json",
         "skybox.json",
         "lightPass.json",
-        "meshMRT.json"
+        "meshMRT.json",
+        "gbufferDebug.json"
     ],
     "layers": [
         {

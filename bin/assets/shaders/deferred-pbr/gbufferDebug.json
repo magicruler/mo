@@ -1,0 +1,5 @@
+{
+    "name":"gbufferDebug",
+    "vert":"deferred-pbr/gbufferDebug.vert",
+    "frag":"deferred-pbr/gbufferDebug.frag"
+}

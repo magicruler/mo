@@ -15,6 +15,7 @@
 #include "mesh_component.h"
 #include "event.h"
 #include "debug.h"
+#include "deferred_pipeline.h"
 
 constexpr float CAMERA_SPEED = 12.0f;
 constexpr float CAMERA_SENSITIVITY = 0.2f;
@@ -71,13 +72,28 @@ void EditorSceneView::OnIMGUI()
         ImGui::Image((ImTextureID)textureId, Game::MainRenderTargetGetPointer()->GetSize(), ImVec2(0, 1), ImVec2(1, 0));
     }
 
+    ImGui::SetCursorPos(glm::vec2(20.0f, 30.0f));
+    ImGui::SetNextItemWidth(90.0f);
+    const char* items[] = { "Shading", "Albedo", "Position", "Normal", "Roughness", "Metalness", "Depth"};
+    static int item_current = 0;
+    ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
+    ImGui::SetCursorPos(glm::vec2(0.0f, 0.0f));
+
+    DeferredPipeline* pipleLine = cameraCom->GetPipeline();
+    pipleLine->debugOption = item_current;
+
+    ImGui::SameLine();
+
+    static bool guizmoOpen = true;
+    ImGui::Checkbox("Guizmo", &guizmoOpen);
+
+    auto projection = cameraCom->GetProjection();
+    auto view = cameraCom->GetViewMatrix();
+
+    auto renderables = ComponentManager::GetInstance()->GetMeshComponents();
     //// Draw AABB
-    //{
-        auto projection = cameraCom->GetProjection();
-        auto view = cameraCom->GetViewMatrix();
-
-        auto renderables = ComponentManager::GetInstance()->GetMeshComponents();
-
+    if(guizmoOpen)
+    {
         for (auto renderable : renderables)
         {
             auto aabb = renderable->GetOwner()->GetAABB();
@@ -96,17 +112,17 @@ void EditorSceneView::OnIMGUI()
                 ImColor(1.0f, 0.0f, 0.0f));
             // Face 2
             drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
+                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
+                ImColor(1.0f, 0.0f, 0.0f));
             drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[0].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
+                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
+                ImColor(1.0f, 0.0f, 0.0f));
             drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[1].x, aabb[1].y, aabb[1].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
+                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
+                ImColor(1.0f, 0.0f, 0.0f));
             drawList->AddLine(p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[1].z)),
-                              p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
-                              ImColor(1.0f, 0.0f, 0.0f));
+                p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[1].y, aabb[0].z)),
+                ImColor(1.0f, 0.0f, 0.0f));
 
             drawList->AddLine(
                 p + WorldToScreen(projection, view, contentSize, glm::vec3(aabb[0].x, aabb[0].y, aabb[0].z)),
@@ -127,6 +143,7 @@ void EditorSceneView::OnIMGUI()
                 ImColor(1.0f, 0.0f, 0.0f));
 
         }
+    }
 
         auto windowPos = glm::vec2(ImGui::GetMousePos()) - contentMin;
    
@@ -151,7 +168,7 @@ void EditorSceneView::OnIMGUI()
                 }
             }
         }
-    // }
+    
 
         auto selection = EditorWindowSystem::GetInstance()->GetActorSelection();
         if (selection.size() == 1)

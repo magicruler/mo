@@ -1,0 +1,11 @@
+{
+    "name": "gbufferDebug",
+    "shader": "deferred-pbr/gbufferDebug.json",
+    "pass":"none",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

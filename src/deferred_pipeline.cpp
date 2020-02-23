@@ -17,6 +17,7 @@ void DeferredPipeline::Init(Camera* camera)
 	assert(this->camera->GetRenderTarget() != nullptr);
 
 	lightPassMaterial = Resources::GetMaterial("lightPass.json");
+	gbufferDebugMaterial = Resources::GetMaterial("gbufferDebug.json");
 	
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
@@ -65,8 +66,15 @@ void DeferredPipeline::Render()
 	// Render Deferred Pass
 	RenderDeferredPass();
 	
-	// Render Forward Pass
-	RenderForwardPass();
+	if (debugOption == 0)
+	{
+		// Render Forward Pass
+		RenderForwardPass();
+	}
+	else
+	{
+		RenderDebugPass();
+	}
 }
 
 void DeferredPipeline::RenderDeferredPass()
@@ -77,6 +85,9 @@ void DeferredPipeline::RenderDeferredPass()
 	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
 
 	auto cb = Game::GetCommandBuffer();
+
+	// G Buffer Rendering
+
 	cb->SetRenderTarget(gBuffer);
 
 	glm::vec2 renderTargetSize = gBuffer->GetSize();
@@ -125,6 +136,9 @@ void DeferredPipeline::RenderDeferredPass()
 			cb->RenderMesh(camera, material, mesh->children[i], transformation);
 		}
 	}
+
+	// Light Pass Rendering
+
 
 	cb->Submit();
 }
@@ -221,11 +235,52 @@ void DeferredPipeline::RenderForwardPass()
 	cb->Submit();
 }
 
+void DeferredPipeline::RenderDebugPass()
+{
+	if (gBuffer == nullptr)
+	{
+		return;
+	}
+
+	RenderTarget* renderTarget = camera->GetRenderTarget();
+	RenderTarget* hdrTarget = camera->GetHdrTarget();
+
+	glm::vec2 renderTargetSize = renderTarget->GetSize();
+	Scene* currentScene = Game::ActiveSceneGetPointer();
+
+	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
+
+	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
+
+	auto cb = Game::GetCommandBuffer();
+	cb->SetRenderTarget(renderTarget);
+
+	if (renderTarget->HasDepth())
+	{
+		cb->EnableDepth();
+	}
+
+	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
+
+	cb->DisableDepth();
+
+	gbufferDebugMaterial->SetInt("debugOption", debugOption);
+	gbufferDebugMaterial->SetTextureProperty("gBufferPosition", GetPositionTexture());
+	gbufferDebugMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
+	gbufferDebugMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
+	gbufferDebugMaterial->SetTextureProperty("gBufferDepth", GetDepthTexture());
+
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);
+	cb->EnableDepth();
+
+	cb->Submit();
+}
+
 Texture* DeferredPipeline::GetPositionTexture() const
 {
 	if (gBuffer != nullptr)
 	{
-		gBuffer->GetAttachmentTexture(0);
+		return gBuffer->GetAttachmentTexture(0);
 	}
 
 	return nullptr;
@@ -235,17 +290,17 @@ Texture* DeferredPipeline::GetNormalMetalnessTexture() const
 {
 	if (gBuffer != nullptr)
 	{
-		gBuffer->GetAttachmentTexture(1);
+		return gBuffer->GetAttachmentTexture(1);
 	}
 
 	return nullptr;
 }
 
-Texture* DeferredPipeline::GetAlbedoSpecularTexture() const
+Texture* DeferredPipeline::GetAlbedoRoughnessTexture() const
 {
 	if (gBuffer != nullptr)
 	{
-		gBuffer->GetAttachmentTexture(2);
+		return gBuffer->GetAttachmentTexture(2);
 	}
 
 	return nullptr;
@@ -255,7 +310,7 @@ Texture* DeferredPipeline::GetDepthTexture() const
 {
 	if (gBuffer != nullptr)
 	{
-		gBuffer->GetDepthTexture();
+		return gBuffer->GetDepthTexture();
 	}
 
 	return nullptr;

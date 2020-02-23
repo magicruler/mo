@@ -15,17 +15,21 @@ public:
 
 	void RenderDeferredPass();
 	void RenderForwardPass();
+	void RenderDebugPass();
 
 	void Resize(const glm::vec2& size);
 
 	Texture* GetPositionTexture() const;
 	Texture* GetNormalMetalnessTexture() const;
-	Texture* GetAlbedoSpecularTexture() const;
+	Texture* GetAlbedoRoughnessTexture() const;
 	Texture* GetDepthTexture() const;
 
-private:
+	// 0 ---- without debug
+	int debugOption = 0;
 
+private:
 	Material* lightPassMaterial = nullptr;
+	Material* gbufferDebugMaterial = nullptr;
 
 	Camera* camera = nullptr;
 	RenderTarget* gBuffer = nullptr;

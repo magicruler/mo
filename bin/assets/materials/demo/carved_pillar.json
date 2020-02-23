@@ -13,6 +13,16 @@
             "name": "normalMap",
             "type": "sampler2D",
             "value": "carved-pillar/carved_pillar_Normal.json"
+        },
+        {
+            "name": "metalnessMap",
+            "type": "sampler2D",
+            "value": "Dielectric_metallic.json"
+        },
+        {
+            "name": "roughnessMap",
+            "type": "sampler2D",
+            "value": "carved-pillar/carved_pillar_Roughness.json"
         }
     ],
     "extensions":

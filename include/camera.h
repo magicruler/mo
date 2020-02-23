@@ -64,6 +64,11 @@ public:
     glm::vec4 clearColor = glm::vec4(49.0f/255.0f, 77.0f/255.0f, 121.0f/255.0f, 1.0f);
 	bool hasPostProcessing = true;
 
+	DeferredPipeline* GetPipeline() const
+	{
+		return pipeline;
+	}
+
 private:
 	Material* postProcessingMaterial = nullptr;
 	RenderTarget* hdrTarget = nullptr;
