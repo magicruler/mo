@@ -11,7 +11,8 @@
         "gbufferDebug.json",
         "renderTargetBlit.json",
         "ssr.json",
-        "ssrCombine.json"
+        "ssrCombine.json",
+        "meshDepth.json"
     ],
     "layers": [
         {

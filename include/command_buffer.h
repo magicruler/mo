@@ -23,6 +23,9 @@ enum class RENDER_COMMAND_TYPE
 	ENABLE_DEPTH,
 	DISABLE_DEPTH,
 	COPY_DEPTH_BUFFER,
+	CULL_FACE,
+	ENABLE_CULL_FACE,
+	DISABLE_CULL_FACE
 };
 
 enum CLEAR_BIT
@@ -30,6 +33,13 @@ enum CLEAR_BIT
 	COLOR = 1 << 0,
 	DEPTH = 1 << 1,
 	STENCIL = 1 << 2,
+};
+
+enum class FACE_ORIENTATION
+{
+	FORWARD,
+	BACKWARD,
+	ALL
 };
 
 class RenderCommand
@@ -164,6 +174,35 @@ public:
 	RenderTarget* dst = nullptr;
 };
 
+class CommandCullFace : public RenderCommand
+{
+public:
+	CommandCullFace()
+	{
+		commandType = RENDER_COMMAND_TYPE::CULL_FACE;
+	}
+
+	FACE_ORIENTATION faceOrientation = FACE_ORIENTATION::BACKWARD;
+};
+
+class CommandEnableCullFace : public RenderCommand
+{
+public:
+	CommandEnableCullFace()
+	{
+		commandType = RENDER_COMMAND_TYPE::ENABLE_CULL_FACE;
+	}
+};
+
+class CommandDisableCullFace : public RenderCommand
+{
+public:
+	CommandDisableCullFace()
+	{
+		commandType = RENDER_COMMAND_TYPE::DISABLE_CULL_FACE;
+	}
+};
+
 class GLStateCache
 {
 	friend CommandBuffer;
@@ -193,6 +232,10 @@ public:
 	void RenderQuad(const glm::vec2& position, const glm::vec2& size, const glm::mat4& projection, Material* material);
 	void RenderSkyBox(const glm::mat4& view, const glm::mat4& projection);
 	void CopyDepthBuffer(RenderTarget* src, RenderTarget* dst);
+
+	void EnableCullFace();
+	void DisableCullFace();
+	void CullFace(FACE_ORIENTATION faceOrientation);
 
 	inline void AddCommand(const std::shared_ptr<RenderCommand> command)
 	{

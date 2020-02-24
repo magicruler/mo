@@ -1,0 +1,12 @@
+{
+    "name": "meshDepth",
+    "shader": "deferred-pbr/meshDepth.json",
+    "pass":"deferred",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+        "mvp"
+    ]
+}

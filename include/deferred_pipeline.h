@@ -37,6 +37,9 @@ private:
 	// SSR Material
 	Material* ssrMaterial = nullptr;
 	Material* ssrCombineMaterial = nullptr;
+
+	// Back Face Material
+	Material* backFaceMaterial = nullptr;
 	
 	// Deferred Pass
 	RenderTarget* gBuffer = nullptr;
@@ -45,4 +48,7 @@ private:
 	// SSR PASS
 	RenderTarget* ssrPass = nullptr;
 	RenderTarget* ssrCombinePass = nullptr;
+
+	// For Thickness
+	RenderTarget* backFacePass = nullptr;
 };

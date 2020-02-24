@@ -194,6 +194,14 @@ void RenderTarget::Init()
             generalFormat = GL_RGB;
             dataFormat = GL_FLOAT;
             break;
+        case RENDER_TARGET_FORMAT::R32F:
+            internalFormat = GL_R32F;
+            generalFormat = GL_RED;
+            dataFormat = GL_FLOAT;
+            break;
+        default:
+            assert(false);
+            break;
         }
 
         texture->SetData2D(width, height, internalFormat, generalFormat, dataFormat, 0);

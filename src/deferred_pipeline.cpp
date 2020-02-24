@@ -22,6 +22,7 @@ void DeferredPipeline::Init(Camera* camera)
 	renderTargetBlitMaterial = Resources::GetMaterial("renderTargetBlit.json");
 	ssrMaterial = Resources::GetMaterial("ssr.json");
 	ssrCombineMaterial = Resources::GetMaterial("ssrCombine.json");
+	backFaceMaterial = Resources::GetMaterial("meshDepth.json");
 
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
@@ -78,6 +79,16 @@ void DeferredPipeline::Init(Camera* camera)
 	ssrCombinePassDescriptors.push_back(ssrCombinePassColorAttachment0Descriptor);
 
 	ssrCombinePass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, ssrCombinePassDescriptors, false);
+
+	// Back Face Pass
+	std::vector<RenderTargetDescriptor> backFacePassDescriptors;
+	RenderTargetDescriptor backFaceAttachment0ColorAttachment0Descriptor = RenderTargetDescriptor();
+	backFaceAttachment0ColorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::R32F;
+	backFaceAttachment0ColorAttachment0Descriptor.mipmap = true;
+
+	backFacePassDescriptors.push_back(backFaceAttachment0ColorAttachment0Descriptor);
+
+	backFacePass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, backFacePassDescriptors);
 }
 
 void DeferredPipeline::Resize(const glm::vec2& size)
@@ -88,6 +99,7 @@ void DeferredPipeline::Resize(const glm::vec2& size)
 		lightPass->Resize(size.x, size.y);
 		ssrPass->Resize(size.x, size.y);
 		ssrCombinePass->Resize(size.x, size.y);
+		backFacePass->Resize(size.x, size.y);
 	}
 }
 
@@ -173,6 +185,56 @@ void DeferredPipeline::RenderDeferredPass()
 		}
 	}
 
+	// Back Face Rendering
+	cb->SetRenderTarget(backFacePass);
+
+	cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(renderTargetSize.x, renderTargetSize.y));
+
+	cb->SetClearDepth(1.0f);
+	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+	cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
+	cb->CullFace(FACE_ORIENTATION::FORWARD);
+
+	for (auto meshComponent : meshComponents)
+	{
+		if (camera->cullingMask != EVERY_THING)
+		{
+			if ((meshComponent->GetOwner()->GetLayerFlag() & camera->cullingMask) == 0)
+			{
+				continue;
+			}
+		}
+
+		auto materials = meshComponent->materials;
+
+		Mesh* mesh = meshComponent->mesh;
+		assert(mesh != nullptr);
+
+		glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
+
+		for (int i = 0; i < mesh->children.size(); i++)
+		{
+			Material* material = nullptr;
+			if (i >= materials.size())
+			{
+				material = materials[0];
+			}
+			else
+			{
+				material = materials[i];
+			}
+
+			if (material->GetPass() != MATERIAL_PASS::DEFERRED)
+			{
+				continue;
+			}
+
+			cb->RenderMesh(camera, backFaceMaterial, mesh->children[i], transformation);
+		}
+	}
+	cb->CullFace(FACE_ORIENTATION::BACKWARD);
+
 	// Light Pass Rendering
 
 	// Draw On Light Pass
@@ -209,6 +271,7 @@ void DeferredPipeline::RenderDeferredPass()
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));
 	}
 
+	cb->DisableCullFace();
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, lightPassMaterial);
 
 	// Render SSR Pass
@@ -242,6 +305,7 @@ void DeferredPipeline::RenderDeferredPass()
 	ssrCombineMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, ssrCombineMaterial);
+	cb->EnableCullFace();
 
 	cb->Submit();
 }
@@ -278,8 +342,10 @@ void DeferredPipeline::RenderForwardPass()
 
 	// Draw SSR Combine Pass On Current Render Target
 	cb->DisableDepth();
+	cb->DisableCullFace();
 	renderTargetBlitMaterial->SetTextureProperty("renderTarget", ssrCombinePass->GetAttachmentTexture(0));
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), renderTargetBlitMaterial);
+	cb->EnableCullFace();
 	cb->EnableDepth();
 
 	for (auto meshComponent : meshComponents)
@@ -332,7 +398,9 @@ void DeferredPipeline::RenderForwardPass()
 		camera->GetPostProcessingMaterial()->SetTextureProperty("hdrTarget", hdrTarget->GetAttachmentTexture(0));
 		camera->GetPostProcessingMaterial()->SetFloat("exposure", 1.5f);
 
+		cb->DisableCullFace();
 		cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), camera->GetPostProcessingMaterial());
+		cb->EnableCullFace();
 		cb->EnableDepth();
 	}
 
@@ -377,8 +445,12 @@ void DeferredPipeline::RenderDebugPass()
 	gbufferDebugMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
 	gbufferDebugMaterial->SetTextureProperty("ssrPass", ssrPass->GetAttachmentTexture(0));
 	gbufferDebugMaterial->SetTextureProperty("ssrCombinePass", ssrCombinePass->GetAttachmentTexture(0));
+	gbufferDebugMaterial->SetTextureProperty("backFacePass", backFacePass->GetAttachmentTexture(0));
 
+	cb->DisableCullFace();
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);
+	cb->EnableCullFace();
+
 	cb->EnableDepth();
 
 	cb->Submit();

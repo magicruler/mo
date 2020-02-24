@@ -10,7 +10,8 @@ enum class RENDER_TARGET_FORMAT
     RGBA16F,
     RGB16F,
     RGBA32F,
-    RGB32F
+    RGB32F,
+    R32F
 };
 
 class RenderTargetDescriptor

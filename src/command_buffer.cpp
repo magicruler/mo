@@ -77,6 +77,10 @@ void GLStateCache::Init()
 CommandBuffer::CommandBuffer()
 {
 	const GLubyte* glVersion = glGetString(GL_VERSION);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	spdlog::info("GL Version Is {}", glVersion);
 
 	quadVertexBuffer = new GPUBuffer();
@@ -189,6 +193,26 @@ void CommandBuffer::CopyDepthBuffer(RenderTarget* src, RenderTarget* dst)
 	std::shared_ptr<CommandCopyDepthBuffer> cmd = std::make_shared<CommandCopyDepthBuffer>();
 	cmd->src = src;
 	cmd->dst = dst;
+
+	AddCommand(cmd);
+}
+
+void CommandBuffer::EnableCullFace()
+{
+	std::shared_ptr<CommandEnableCullFace> cmd = std::make_shared<CommandEnableCullFace>();
+	AddCommand(cmd);
+}
+
+void CommandBuffer::DisableCullFace()
+{
+	std::shared_ptr<CommandDisableCullFace> cmd = std::make_shared<CommandDisableCullFace>();
+	AddCommand(cmd);
+}
+
+void CommandBuffer::CullFace(FACE_ORIENTATION faceOrientation)
+{
+	std::shared_ptr<CommandCullFace> cmd = std::make_shared<CommandCullFace>();
+	cmd->faceOrientation = faceOrientation;
 
 	AddCommand(cmd);
 }
@@ -373,6 +397,33 @@ void CommandBuffer::Submit()
 		case RENDER_COMMAND_TYPE::DISABLE_DEPTH:
 		{
 			glDisable(GL_DEPTH_TEST);
+		}
+		break;
+		case RENDER_COMMAND_TYPE::ENABLE_CULL_FACE:
+		{
+			glEnable(GL_CULL_FACE);
+		}
+		break;
+		case RENDER_COMMAND_TYPE::DISABLE_CULL_FACE:
+		{
+			glDisable(GL_CULL_FACE);
+		}
+		break;
+		case RENDER_COMMAND_TYPE::CULL_FACE:
+		{
+			auto cullFaceCmd = std::static_pointer_cast<CommandCullFace>(cmd);
+			if (cullFaceCmd->faceOrientation == FACE_ORIENTATION::FORWARD)
+			{
+				glCullFace(GL_FRONT);
+			}
+			else if (cullFaceCmd->faceOrientation == FACE_ORIENTATION::BACKWARD)
+			{
+				glCullFace(GL_BACK);
+			}
+			else
+			{
+				glCullFace(GL_FRONT_AND_BACK);
+			}
 		}
 		break;
 		default :

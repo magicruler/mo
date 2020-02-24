@@ -37,8 +37,7 @@
     ],
     "extensions":
     [
-        "mvp",
-        "camera"
+        "mvp"
     ]
 }
 

@@ -1,0 +1,5 @@
+{
+    "name":"meshDepth",
+    "vert":"deferred-pbr/meshDepth.vert",
+    "frag":"deferred-pbr/meshDepth.frag"
+}
