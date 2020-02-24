@@ -29,6 +29,7 @@ void DeferredPipeline::Init(Camera* camera)
 	// Position
 	RenderTargetDescriptor gBufferAttachment0Descriptor = RenderTargetDescriptor();
 	gBufferAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGB32F;
+	gBufferAttachment0Descriptor.mipmap = true;
 
 	// Normal Metalness
 	RenderTargetDescriptor gBufferAttachment1Descriptor = RenderTargetDescriptor();
@@ -72,6 +73,7 @@ void DeferredPipeline::Init(Camera* camera)
 	// Color
 	RenderTargetDescriptor ssrCombinePassColorAttachment0Descriptor = RenderTargetDescriptor();
 	ssrCombinePassColorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+	ssrCombinePassColorAttachment0Descriptor.mipmap = true;
 
 	ssrCombinePassDescriptors.push_back(ssrCombinePassColorAttachment0Descriptor);
 
@@ -113,6 +115,10 @@ void DeferredPipeline::RenderDeferredPass()
 	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
 
 	glm::mat4 renderTargetProjection = camera->GetRenderTargetProjection();
+	glm::mat4 view = camera->GetViewMatrix();
+	glm::mat4 invView = glm::inverse(view);
+	glm::mat4 projection = camera->GetProjection();
+	glm::mat4 invProjection = glm::inverse(projection);
 
 	auto cb = Game::GetCommandBuffer();
 
@@ -180,7 +186,6 @@ void DeferredPipeline::RenderDeferredPass()
 	lightPassMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
 
 	// Light Uniforms
-	glm::mat4 view = camera->GetViewMatrix();
 	int index = 0;
 	for (auto light : lights)
 	{
@@ -217,6 +222,12 @@ void DeferredPipeline::RenderDeferredPass()
 	ssrMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
 	// SSR Combine Pass Uniform
 	ssrMaterial->SetTextureProperty("ssrCombine", ssrCombinePass->GetAttachmentTexture(0));
+
+	// Camera Uniforms
+	// ssrMaterial->SetMatrix4("view", view);
+	// ssrMaterial->SetMatrix4("invView", invView);
+	ssrMaterial->SetMatrix4("perspectiveProjection", projection);
+	// ssrMaterial->SetMatrix4("invProjection", invProjection);
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, ssrMaterial);
 
@@ -364,6 +375,8 @@ void DeferredPipeline::RenderDebugPass()
 	gbufferDebugMaterial->SetTextureProperty("gBufferDepth", GetDepthTexture());
 
 	gbufferDebugMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
+	gbufferDebugMaterial->SetTextureProperty("ssrPass", ssrPass->GetAttachmentTexture(0));
+	gbufferDebugMaterial->SetTextureProperty("ssrCombinePass", ssrCombinePass->GetAttachmentTexture(0));
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);
 	cb->EnableDepth();

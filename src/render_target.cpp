@@ -153,14 +153,7 @@ void RenderTarget::Init()
         Texture* texture = new Texture();
         texture->filterMin = GL_NEAREST;
         texture->filterMag = GL_NEAREST;
-        texture->isMipmapped = false;
-
-        if (isRenderTexture)
-        {
-            texture->filterMin = GL_LINEAR;
-            texture->filterMag = GL_LINEAR;
-            texture->isMipmapped = true;
-        }
+        texture->isMipmapped = descriptor.mipmap;
 
         texture->wrapS = GL_CLAMP_TO_EDGE;
         texture->wrapT = GL_CLAMP_TO_EDGE;
@@ -204,10 +197,7 @@ void RenderTarget::Init()
         }
 
         texture->SetData2D(width, height, internalFormat, generalFormat, dataFormat, 0);
-        if (isRenderTexture)
-        {
-            texture->SetAnisotropy(4.0f);
-        }
+
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->AsID(), 0);
         colorAttachments.push_back(texture);
         attachmentEnums.push_back(GL_COLOR_ATTACHMENT0 + i);

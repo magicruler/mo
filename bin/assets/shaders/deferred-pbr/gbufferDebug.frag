@@ -8,11 +8,17 @@ uniform sampler2D gBufferNormalMetalness;
 uniform sampler2D gBufferAlbedoRoughness;
 uniform sampler2D gBufferDepth;
 uniform sampler2D lightPass;
+uniform sampler2D ssrPass;
+uniform sampler2D ssrCombinePass;
 // 1 albedo
 // 2 position
 // 3 normal
 // 4 roughness
 // 5 metalness
+// 6 depth pass
+// 7 light pass
+// 8 ssr pass
+// 9 ssr combine pass
 
 uniform int debugOption;
 
@@ -47,11 +53,19 @@ void main()
     }
     else if(debugOption == 6)
     {
-        float depth = texture(gBufferNormalMetalness, fragUV).x * 0.5 + 0.5;
+        float depth = texture(gBufferNormalMetalness, fragUV).x;
         outColor = vec4(depth, depth, depth, 1.0);
     }
     else if(debugOption == 7)
     {
         outColor = vec4(texture(lightPass, fragUV).rgb, 1.0);
+    }
+    else if(debugOption == 8)
+    {
+        outColor = vec4(texture(ssrPass, fragUV).rgb, 1.0);
+    }
+    else if(debugOption == 9)
+    {
+        outColor = vec4(texture(ssrCombinePass, fragUV).rgb, 1.0);
     }
 }

@@ -21,6 +21,7 @@ public:
     {
     }
 
+    bool mipmap = false;
     RENDER_TARGET_FORMAT format;
 };
 
