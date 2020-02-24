@@ -19,21 +19,94 @@ uniform mat4 perspectiveProjection;
 // camera space Z
 uniform sampler2D backZPass;
 
-const int stepNum = 16;
-const float stepDistance = 0.1;
-
 vec2 ViewSpaceToScreenSpace(vec3 viewPos)
 {
     vec4 clipSpacePos = perspectiveProjection * vec4(viewPos, 1.0);
     vec3 ndcSpacePos = clipSpacePos.xyz / clipSpacePos.w;
+    
+    if(min(ndcSpacePos.x, min(ndcSpacePos.y, ndcSpacePos.z)) < -1.0 || max(ndcSpacePos.x, max(ndcSpacePos.y, ndcSpacePos.z)) > 1.0)
+    {
+        return vec2(-1.0);
+    }
+
     vec2 screenSpacePos = (ndcSpacePos.xy + vec2(1.0)) / 2.0;
     return screenSpacePos.xy;
 }
- 
+
+// Screem Pos: [0 to 1], [0 to 1]
+float ComputeZDepth(vec2 screenPos)
+{
+    return texture(gBufferPosition, screenPos).z;
+}
+
 float distanceSquared(vec2 a, vec2 b) 
 { 
     a -= b; 
     return dot(a, a); 
+}
+
+bool RayCast(vec3 origin, vec3 dir, out vec3 hitPos, float stepDistance, int stepNum, int binarySteps)
+{
+    // initial hitpos
+    hitPos = origin;
+    vec3 deltaVector = stepDistance * dir;
+   
+    for(int i = 0; i < stepNum; i++)
+    {
+        hitPos = hitPos + deltaVector;
+        vec2 hitPosScreenSpace = ViewSpaceToScreenSpace(hitPos);
+        
+        if(min(hitPosScreenSpace.x, hitPosScreenSpace.y) < 0.0)
+        {
+            continue;
+        }
+
+        float zDepth = ComputeZDepth(hitPosScreenSpace);
+
+        if(zDepth <= -1000)
+        {
+            continue;
+        }
+
+        float deltaDepth = hitPos.z - zDepth;
+        
+        // zDepth In Front Of Current Hit Pos
+        if((deltaVector.z - deltaDepth) < 1.2)
+        {
+            if(deltaDepth < 0.0)
+            {
+                // Do Binary Roll Back To More Accurate Result
+                vec3 startPoint = hitPos - deltaVector;
+                vec3 endPoint = hitPos;
+                vec3 midPoint = vec3(0.0);
+
+                for(int j = 0; j < binarySteps; j++)
+                {
+                    // mid point
+                    midPoint = (startPoint + endPoint) * 0.5;
+                    float currentZDepth = ComputeZDepth(ViewSpaceToScreenSpace(midPoint));
+                    float currentDeltaDepth = midPoint.z - currentZDepth;
+                    
+                    // Go Left, Change End Point
+                    if(currentDeltaDepth < 0.0)
+                    {
+                        endPoint = (midPoint + endPoint) * 0.5;
+                    }
+                    // Go Right, Change Start Point
+                    else
+                    {
+                        startPoint = (startPoint + midPoint) * 0.5;
+                    }
+                }
+
+                hitPos = midPoint;
+
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
  
 // This Pass Should Output Non-Analytical Specular Term Based On Last Frame Before Post Processing
@@ -56,7 +129,23 @@ void main()
     // perfect reflection vector 
     vec3 R = normalize(reflect(-V, N));
   
+    // Do Ray Cast
+    vec3 origin = position;
+    // Perfect Reflection
+    vec3 dir = R;
+    vec3 hitPos;
+
     vec3 result = vec3(0.0, 0.0, 0.0);
+
+    if (RayCast(origin, dir, hitPos, 0.4, 48, 8))
+    {
+        vec2 screenSpaceHitPos = ViewSpaceToScreenSpace(hitPos);
+        if(screenSpaceHitPos.x > 0.0 && screenSpaceHitPos.x < 1.0 && screenSpaceHitPos.y > 0.0 && screenSpaceHitPos.y < 1.0)
+        {
+            result += texture(ssrCombine, screenSpaceHitPos).rgb;
+        }
+    }
+
     // result = vec3(fragUV, 0.0);
     // result = vec3(thickness, 0, 0);
     // result = vec3(ViewSpaceToScreenSpace(position), 0.0);

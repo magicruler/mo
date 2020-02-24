@@ -115,7 +115,7 @@ void Camera::OnNotify(const Event& e)
 
 glm::mat4 Camera::GetProjection()
 {
-	return glm::perspective(fov, ratio, nearPlane, farPlane);
+	return glm::perspective(glm::radians(fov), ratio, nearPlane, farPlane);
 }
 
 glm::mat4 Camera::GetRenderTargetProjection()
