@@ -28,11 +28,21 @@ public:
 	int debugOption = 0;
 
 private:
+	Camera* camera = nullptr;
+
+	// Deferred Material
 	Material* lightPassMaterial = nullptr;
 	Material* gbufferDebugMaterial = nullptr;
 	Material* renderTargetBlitMaterial = nullptr;
-
-	Camera* camera = nullptr;
+	// SSR Material
+	Material* ssrMaterial = nullptr;
+	Material* ssrCombineMaterial = nullptr;
+	
+	// Deferred Pass
 	RenderTarget* gBuffer = nullptr;
 	RenderTarget* lightPass = nullptr;
+
+	// SSR PASS
+	RenderTarget* ssrPass = nullptr;
+	RenderTarget* ssrCombinePass = nullptr;
 };

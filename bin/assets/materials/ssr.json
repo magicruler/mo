@@ -1,0 +1,11 @@
+{
+    "name": "ssr",
+    "shader": "deferred-pbr/ssr.json",
+    "pass":"none",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

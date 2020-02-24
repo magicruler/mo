@@ -1,0 +1,5 @@
+{
+    "name":"ssrCombine",
+    "vert":"deferred-pbr/ssrCombine.vert",
+    "frag":"deferred-pbr/ssrCombine.frag"
+}

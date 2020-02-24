@@ -9,7 +9,9 @@
         "lightPass.json",
         "meshMRT.json",
         "gbufferDebug.json",
-        "renderTargetBlit.json"
+        "renderTargetBlit.json",
+        "ssr.json",
+        "ssrCombine.json"
     ],
     "layers": [
         {

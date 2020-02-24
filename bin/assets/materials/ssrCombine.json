@@ -1,0 +1,11 @@
+{
+    "name": "ssrCombine",
+    "shader": "deferred-pbr/ssrCombine.json",
+    "pass":"none",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+    ]
+}

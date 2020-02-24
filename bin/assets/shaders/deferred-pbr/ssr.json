@@ -1,0 +1,5 @@
+{
+    "name":"ssr",
+    "vert":"deferred-pbr/ssr.vert",
+    "frag":"deferred-pbr/ssr.frag"
+}

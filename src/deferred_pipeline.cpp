@@ -20,6 +20,8 @@ void DeferredPipeline::Init(Camera* camera)
 	lightPassMaterial = Resources::GetMaterial("lightPass.json");
 	gbufferDebugMaterial = Resources::GetMaterial("gbufferDebug.json");
 	renderTargetBlitMaterial = Resources::GetMaterial("renderTargetBlit.json");
+	ssrMaterial = Resources::GetMaterial("ssr.json");
+	ssrCombineMaterial = Resources::GetMaterial("ssrCombine.json");
 
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
@@ -52,6 +54,28 @@ void DeferredPipeline::Init(Camera* camera)
 	lightPassDescriptors.push_back(lightPassColorAttachment0Descriptor);
 
 	lightPass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, lightPassDescriptors, false);
+
+	// Create SSR Pass
+	std::vector<RenderTargetDescriptor> ssrPassDescriptors;
+
+	// Color
+	RenderTargetDescriptor ssrPassColorAttachment0Descriptor = RenderTargetDescriptor();
+	ssrPassColorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+
+	ssrPassDescriptors.push_back(ssrPassColorAttachment0Descriptor);
+
+	ssrPass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, ssrPassDescriptors, false);
+
+	// Create SSR Combine Pass
+	std::vector<RenderTargetDescriptor> ssrCombinePassDescriptors;
+
+	// Color
+	RenderTargetDescriptor ssrCombinePassColorAttachment0Descriptor = RenderTargetDescriptor();
+	ssrCombinePassColorAttachment0Descriptor.format = RENDER_TARGET_FORMAT::RGBA16F;
+
+	ssrCombinePassDescriptors.push_back(ssrCombinePassColorAttachment0Descriptor);
+
+	ssrCombinePass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, ssrCombinePassDescriptors, false);
 }
 
 void DeferredPipeline::Resize(const glm::vec2& size)
@@ -60,6 +84,8 @@ void DeferredPipeline::Resize(const glm::vec2& size)
 	{
 		gBuffer->Resize(size.x, size.y);
 		lightPass->Resize(size.x, size.y);
+		ssrPass->Resize(size.x, size.y);
+		ssrCombinePass->Resize(size.x, size.y);
 	}
 }
 
@@ -85,6 +111,8 @@ void DeferredPipeline::RenderDeferredPass()
 
 	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
 	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
+
+	glm::mat4 renderTargetProjection = camera->GetRenderTargetProjection();
 
 	auto cb = Game::GetCommandBuffer();
 
@@ -176,7 +204,33 @@ void DeferredPipeline::RenderDeferredPass()
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));
 	}
 
-	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), lightPassMaterial);
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, lightPassMaterial);
+
+	// Render SSR Pass
+	cb->SetRenderTarget(ssrPass);
+	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	cb->Clear(CLEAR_BIT::COLOR);
+
+	// G Buffer Uniforms
+	ssrMaterial->SetTextureProperty("gBufferPosition", GetPositionTexture());
+	ssrMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
+	ssrMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
+	// SSR Combine Pass Uniform
+	ssrMaterial->SetTextureProperty("ssrCombine", ssrCombinePass->GetAttachmentTexture(0));
+
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, ssrMaterial);
+
+	// Render SSR Combine Pass
+
+	cb->SetRenderTarget(ssrCombinePass);
+	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	cb->Clear(CLEAR_BIT::COLOR);
+
+	// Combine Uniforms
+	ssrCombineMaterial->SetTextureProperty("ssrPass", ssrPass->GetAttachmentTexture(0));
+	ssrCombineMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
+
+	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, ssrCombineMaterial);
 
 	cb->Submit();
 }
@@ -211,9 +265,9 @@ void DeferredPipeline::RenderForwardPass()
 
 	cb->CopyDepthBuffer(gBuffer, (camera->hasPostProcessing?hdrTarget:renderTarget));
 
-	// Draw Light Pass On Current Render Target
+	// Draw SSR Combine Pass On Current Render Target
 	cb->DisableDepth();
-	renderTargetBlitMaterial->SetTextureProperty("renderTarget", lightPass->GetAttachmentTexture(0));
+	renderTargetBlitMaterial->SetTextureProperty("renderTarget", ssrCombinePass->GetAttachmentTexture(0));
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), renderTargetBlitMaterial);
 	cb->EnableDepth();
 
