@@ -29,22 +29,33 @@ uniform sampler2D normalMap;
 uniform sampler2D metalnessMap;
 uniform sampler2D roughnessMap;
 
+uniform float tillingX;
+uniform float tillingY;
+
 void main()
 {
-    float metalness = texture(metalnessMap, uv).r;
-    float roughness = texture(roughnessMap, uv).r;
+    float actualULength = 1.0 / tillingX;
+    float actualVLength = 1.0 / tillingY;
 
-    // Attachment 0
+    float xIndex = floor(uv.x / actualULength);
+    float yIndex = floor(uv.y / actualVLength);
+
+    vec2 actualUV = vec2((uv.x - xIndex * actualULength)/actualULength, (uv.y - yIndex * actualVLength)/actualVLength);
+
+    float metalness = texture(metalnessMap, actualUV).r;
+    float roughness = texture(roughnessMap, actualUV).r;
+
+    // Attachment 0 CameraSpace
     gPosition = position;
     
     // Attachment 1
-    vec3 mappedNormal = vec3(texture(normalMap, uv));
+    vec3 mappedNormal = vec3(texture(normalMap, actualUV));
     mappedNormal = normalize(mappedNormal * 2.0 - 1.0);
 
     vec3 N = normalize(normal * mappedNormal.z + tangent * mappedNormal.x + bitangent * mappedNormal.y);
     gNormalMetalness = vec4(N, metalness);
 
     // Attachment 2
-    vec3 diffuseColor = texture(albedoMap, uv).rgb;
+    vec3 diffuseColor = texture(albedoMap, actualUV).rgb;
     gAlbedoRoughness = vec4(diffuseColor, roughness);
 }

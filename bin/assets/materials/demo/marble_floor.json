@@ -23,6 +23,16 @@
             "name": "roughnessMap",
             "type": "sampler2D",
             "value": "marble-floor/floor_marble_Roughness.json"
+        },
+        {
+            "name": "tillingX",
+            "type": "float",
+            "value": 8.0
+        },
+        {
+            "name": "tillingY",
+            "type": "float",
+            "value": 8.0
         }
     ],
     "extensions":

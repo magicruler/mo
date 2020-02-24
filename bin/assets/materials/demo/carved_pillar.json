@@ -23,6 +23,16 @@
             "name": "roughnessMap",
             "type": "sampler2D",
             "value": "carved-pillar/carved_pillar_Roughness.json"
+        },
+        {
+            "name": "tillingX",
+            "type": "float",
+            "value": 1.0
+        },
+        {
+            "name": "tillingY",
+            "type": "float",
+            "value": 1.0
         }
     ],
     "extensions":
@@ -31,3 +41,4 @@
         "camera"
     ]
 }
+
