@@ -290,6 +290,7 @@ void DeferredPipeline::RenderDeferredPass()
 	// ssrMaterial->SetMatrix4("view", view);
 	// ssrMaterial->SetMatrix4("invView", invView);
 	ssrMaterial->SetMatrix4("perspectiveProjection", projection);
+	ssrMaterial->SetTextureProperty("backZPass", backFacePass->GetAttachmentTexture(0));
 	// ssrMaterial->SetMatrix4("invProjection", invProjection);
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, ssrMaterial);
