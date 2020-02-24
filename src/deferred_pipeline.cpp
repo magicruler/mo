@@ -10,6 +10,7 @@
 #include "mesh.h"
 #include "material.h"
 #include "resources.h"
+#include "light.h"
 
 void DeferredPipeline::Init(Camera* camera)
 {
@@ -145,9 +146,35 @@ void DeferredPipeline::RenderDeferredPass()
 	cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	cb->Clear(CLEAR_BIT::COLOR);
 
+	// G Buffer Pass
 	lightPassMaterial->SetTextureProperty("gBufferPosition", GetPositionTexture());
 	lightPassMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
 	lightPassMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
+
+	// Light Uniforms
+	glm::mat4 view = camera->GetViewMatrix();
+	int index = 0;
+	for (auto light : lights)
+	{
+		if (index >= 16)
+		{
+			break;
+		}
+
+		// Camera Space
+		glm::vec3 lightPos = view * glm::vec4(light->GetOwner()->GetPosition(), 1.0f);
+
+		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", light->GetLightIntensityColor());
+		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", lightPos);
+
+		index += 1;
+	}
+
+	for (int i = index; i <= 15; i++)
+	{
+		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", glm::vec3(0.0f));
+		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));
+	}
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), lightPassMaterial);
 
@@ -281,6 +308,7 @@ void DeferredPipeline::RenderDebugPass()
 	gbufferDebugMaterial->SetTextureProperty("gBufferNormalMetalness", GetNormalMetalnessTexture());
 	gbufferDebugMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
 	gbufferDebugMaterial->SetTextureProperty("gBufferDepth", GetDepthTexture());
+
 	gbufferDebugMaterial->SetTextureProperty("lightPass", lightPass->GetAttachmentTexture(0));
 
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);

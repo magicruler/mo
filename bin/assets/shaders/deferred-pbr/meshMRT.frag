@@ -46,13 +46,13 @@ void main()
     float roughness = texture(roughnessMap, actualUV).r;
 
     // Attachment 0 CameraSpace
-    gPosition = position;
+    gPosition = positionCameraSpace;
     
     // Attachment 1
     vec3 mappedNormal = vec3(texture(normalMap, actualUV));
     mappedNormal = normalize(mappedNormal * 2.0 - 1.0);
 
-    vec3 N = normalize(normal * mappedNormal.z + tangent * mappedNormal.x + bitangent * mappedNormal.y);
+    vec3 N = normalize(normalCameraSpace * mappedNormal.z + tangentCameraSpace * mappedNormal.x + bitangentCameraSpace * mappedNormal.y);
     gNormalMetalness = vec4(N, metalness);
 
     // Attachment 2

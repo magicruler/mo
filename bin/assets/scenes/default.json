@@ -70,7 +70,7 @@
                 {
                     "type":"light",
                     "lightType":"point",
-                    "lightIntensity": 1.0,
+                    "lightIntensity": 15.0,
                     "lightColor":[3.8, 3.8, 3.8]
                 }
             ],
@@ -101,7 +101,7 @@
                 {
                     "type":"light",
                     "lightType":"point",
-                    "lightIntensity": 1.0,
+                    "lightIntensity": 20.0,
                     "lightColor":[0.2, 0.6, 0.3]
                 }
             ],
