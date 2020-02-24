@@ -9,7 +9,7 @@ uniform sampler2D gBufferAlbedoRoughness;
 
 void main() 
 {
-    vec3 albedoColor = texture(gBufferAlbedoRoughness, fragUV).xyz;
+    vec3 albedoColor = texture(gBufferAlbedoRoughness, fragUV).xyz / 3.14159;
     vec3 N = texture(gBufferNormalMetalness, fragUV).xyz;
     float colorFactor = length(N);
 

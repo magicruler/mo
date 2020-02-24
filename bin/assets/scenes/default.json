@@ -34,9 +34,9 @@
             "layer": "General",
             "transform":
             {
-                "position":[0.0, 1.5, 0],
-                "scale":[3, 3, 3],
-                "rotation":[0.0, 0.0, 0.0]
+                "position":[0.0, -2.571, 0],
+                "scale":[20, 20, 1],
+                "rotation":[90.0, 0.0, 0.0]
             },
             "components":
             [
@@ -44,7 +44,7 @@
                     "type": "meshComponent",
                     "materials": 
                     [
-                        "unlitWhite.json"
+                        "demo/marble_floor.json"
                     ],
                     "mesh": "plane.json"
                 }

@@ -1,0 +1,33 @@
+{
+    "name": "carved_pillar",
+    "shader": "deferred-pbr/meshMRT.json",
+    "pass":"deferred",
+    "properties":
+    [
+        {
+            "name": "albedoMap",
+            "type": "sampler2D",
+            "value": "marble-floor/floor_marble_Albedo.json"
+        },
+        {
+            "name": "normalMap",
+            "type": "sampler2D",
+            "value": "marble-floor/floor_marble_Normal.json"
+        },
+        {
+            "name": "metalnessMap",
+            "type": "sampler2D",
+            "value": "Dielectric_metallic.json"
+        },
+        {
+            "name": "roughnessMap",
+            "type": "sampler2D",
+            "value": "marble-floor/floor_marble_Roughness.json"
+        }
+    ],
+    "extensions":
+    [
+        "mvp",
+        "camera"
+    ]
+}
