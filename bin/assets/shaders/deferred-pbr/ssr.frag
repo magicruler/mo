@@ -10,9 +10,10 @@ uniform sampler2D gBufferNormalMetalness;
 uniform sampler2D gBufferAlbedoRoughness;
 // SSR Combine Pass
 uniform sampler2D ssrCombine;
+uniform samplerCube radianceMap;
 
 // uniform mat4 view;
-// uniform mat4 invView;
+uniform mat4 invView;
 uniform mat4 perspectiveProjection;
 // uniform mat4 invProjection;
 
@@ -128,7 +129,8 @@ void main()
     float colorFactor = length(N);
     // perfect reflection vector 
     vec3 R = normalize(reflect(-V, N));
-  
+    vec3 worldR = mat3(invView) * R;
+
     // Do Ray Cast
     vec3 origin = position;
     // Perfect Reflection
@@ -142,8 +144,17 @@ void main()
         vec2 screenSpaceHitPos = ViewSpaceToScreenSpace(hitPos);
         if(screenSpaceHitPos.x > 0.0 && screenSpaceHitPos.x < 1.0 && screenSpaceHitPos.y > 0.0 && screenSpaceHitPos.y < 1.0)
         {
-            result += texture(ssrCombine, screenSpaceHitPos).rgb;
+            result += 0.2 * texture(ssrCombine, screenSpaceHitPos).rgb;
         }
+        else
+        {
+            result += 1.0 * texture(radianceMap, worldR).rgb;
+        }
+    }
+    // Fallback To Radiance Map
+    else
+    {
+        result += 1.0 * texture(radianceMap, worldR).rgb;
     }
 
     // result = vec3(fragUV, 0.0);

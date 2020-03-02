@@ -11,6 +11,7 @@
 #include "material.h"
 #include "resources.h"
 #include "light.h"
+#include "texture.h"
 
 void DeferredPipeline::Init(Camera* camera)
 {
@@ -89,6 +90,9 @@ void DeferredPipeline::Init(Camera* camera)
 	backFacePassDescriptors.push_back(backFaceAttachment0ColorAttachment0Descriptor);
 
 	backFacePass = new RenderTarget(this->camera->GetRenderTarget()->GetSize().x, this->camera->GetRenderTarget()->GetSize().y, backFacePassDescriptors);
+
+	// TODO should use render target to generate radiance map
+	radianceMap = Resources::GetTexture("skybox/skybox.json");
 }
 
 void DeferredPipeline::Resize(const glm::vec2& size)
@@ -259,6 +263,25 @@ void DeferredPipeline::RenderDeferredPass()
 		// Camera Space
 		glm::vec3 lightPos = view * glm::vec4(light->GetOwner()->GetPosition(), 1.0f);
 
+		switch (light->GetLightType())
+		{
+			case LightType::Point:
+			{
+				lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].Type", 0);
+				lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotAngle", 0);
+				lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].SpotDir", glm::vec3(0.0f));
+			}
+			break;
+			case LightType::Spot:
+			{
+				lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].Type", 1);
+				lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotAngle", light->GetSpotAngle());
+				auto rotationMat = glm::mat3x3(view * light->GetOwner()->GetLocalToWorldMatrix());
+				lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].SpotDir", rotationMat * light->GetSpotDir());
+			}
+			break;
+		}
+
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", light->GetLightIntensityColor());
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", lightPos);
 
@@ -269,6 +292,9 @@ void DeferredPipeline::RenderDeferredPass()
 	{
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", glm::vec3(0.0f));
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));
+		lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].Type", 0);
+		lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotAngle", 0);
+		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].SpotDir", glm::vec3(0.0f));
 	}
 
 	cb->DisableCullFace();
@@ -285,10 +311,10 @@ void DeferredPipeline::RenderDeferredPass()
 	ssrMaterial->SetTextureProperty("gBufferAlbedoRoughness", GetAlbedoRoughnessTexture());
 	// SSR Combine Pass Uniform
 	ssrMaterial->SetTextureProperty("ssrCombine", ssrCombinePass->GetAttachmentTexture(0));
-
+	ssrMaterial->SetTextureProperty("radianceMap", radianceMap);
 	// Camera Uniforms
 	// ssrMaterial->SetMatrix4("view", view);
-	// ssrMaterial->SetMatrix4("invView", invView);
+	ssrMaterial->SetMatrix4("invView", invView);
 	ssrMaterial->SetMatrix4("perspectiveProjection", projection);
 	ssrMaterial->SetTextureProperty("backZPass", backFacePass->GetAttachmentTexture(0));
 	// ssrMaterial->SetMatrix4("invProjection", invProjection);

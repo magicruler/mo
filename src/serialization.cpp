@@ -167,6 +167,18 @@ namespace Serialization
 						Light* lightCom = ComponentManager::GetInstance()->CreateLightComponent();
 
 						newActor->AddComponent(lightCom);
+						std::string lightTypeStr = comObject["lightType"];
+						if (lightTypeStr == "point")
+						{
+							lightCom->SetLightType(LightType::Point);
+						}
+						else if (lightTypeStr == "spot")
+						{
+							lightCom->SetLightType(LightType::Spot);
+							float spotAngle = comObject["spotAngle"];
+							lightCom->SetSpotAngle(spotAngle);
+						}
+
 						// Light Properties
 						lightCom->SetLightIntensity(comObject["lightIntensity"]);
 						lightCom->SetLightColor(DeserilizeVector3(comObject["lightColor"]));

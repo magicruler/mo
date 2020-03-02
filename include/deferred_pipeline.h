@@ -51,4 +51,8 @@ private:
 
 	// For Thickness
 	RenderTarget* backFacePass = nullptr;
+
+	// Texture
+	// TODO Use RenderTarget To Generate Radiance Map
+	Texture* radianceMap = nullptr;
 };

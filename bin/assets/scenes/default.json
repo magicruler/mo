@@ -69,9 +69,10 @@
                 },
                 {
                     "type":"light",
-                    "lightType":"point",
+                    "lightType":"spot",
                     "lightIntensity": 15.0,
-                    "lightColor":[3.8, 3.8, 3.8]
+                    "lightColor":[3.8, 3.8, 3.8],
+                    "spotAngle":45
                 }
             ],
             "transform":

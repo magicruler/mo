@@ -13,6 +13,9 @@ struct Light
 {
     vec3 Position;
     vec3 Color;
+    int Type;
+    float SpotAngle;
+    vec3 SpotDir;
 };
 
 uniform Light lights[16];
@@ -39,6 +42,7 @@ void main()
     {
         vec3 lightPos = lights[i].Position;
         vec3 lightColor = lights[i].Color;
+        int lightType = lights[i].Type;
 
         if(lightColor.x + lightColor.y + lightColor.z > 0.0)
         {
@@ -50,6 +54,17 @@ void main()
             float NDotL = clamp(dot(N, L), 0.0, 1.0);    
 
             vec3 lightIntensity = NDotL * lightColor;
+
+            if(lightType == 1)
+            {
+                vec3 spotDir = normalize(lights[i].SpotDir);
+                vec3 lightDir = -L;
+                float spotDotLight = dot(spotDir, lightDir);
+                if(spotDotLight < lights[i].SpotAngle)
+                {
+                    lightIntensity = vec3(0.0);
+                }
+            }
 
             float lightDistance = distance(lightPos, position);
             float falloff = 1.0 / (lightDistance * lightDistance);
