@@ -168,6 +168,9 @@ namespace Serialization
 
 						newActor->AddComponent(lightCom);
 						std::string lightTypeStr = comObject["lightType"];
+						bool castShadow = comObject["castShadow"];
+						lightCom->SetCastShadow(castShadow);
+
 						if (lightTypeStr == "point")
 						{
 							lightCom->SetLightType(LightType::Point);

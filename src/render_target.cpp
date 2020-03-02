@@ -211,7 +211,15 @@ void RenderTarget::Init()
         attachmentEnums.push_back(GL_COLOR_ATTACHMENT0 + i);
     }
 
-    glNamedFramebufferDrawBuffers(ID, attachmentEnums.size(), attachmentEnums.data());
+    if (attachmentCount > 0)
+    {
+        glNamedFramebufferDrawBuffers(ID, attachmentEnums.size(), attachmentEnums.data());
+    }
+    else
+    {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+    }
 
     if (hasDepth)
     {

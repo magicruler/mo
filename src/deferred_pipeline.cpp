@@ -24,6 +24,7 @@ void DeferredPipeline::Init(Camera* camera)
 	ssrMaterial = Resources::GetMaterial("ssr.json");
 	ssrCombineMaterial = Resources::GetMaterial("ssrCombine.json");
 	backFaceMaterial = Resources::GetMaterial("meshDepth.json");
+	shadowMapMaterial = Resources::GetMaterial("shadowMap.json");
 
 	// CreateGBuffer
 	std::vector<RenderTargetDescriptor> gBufferDescriptors;
@@ -107,8 +108,105 @@ void DeferredPipeline::Resize(const glm::vec2& size)
 	}
 }
 
+void DeferredPipeline::Bake()
+{
+	BakeShadowMap();
+}
+
+void DeferredPipeline::BakeShadowMap()
+{
+	Scene* currentScene = Game::ActiveSceneGetPointer();
+
+	std::list<MeshComponent*> meshComponents = ComponentManager::GetInstance()->GetMeshComponents();
+	std::list<Light*> lights = ComponentManager::GetInstance()->GetLightComponents();
+
+	glm::mat4 renderTargetProjection = camera->GetRenderTargetProjection();
+	glm::mat4 view = camera->GetViewMatrix();
+	glm::mat4 invView = glm::inverse(view);
+	glm::mat4 projection = camera->GetProjection();
+	glm::mat4 invProjection = glm::inverse(projection);
+
+	auto cb = Game::GetCommandBuffer();
+
+	for (auto light : lights)
+	{
+		if (light->GetCastShadow())
+		{
+			if (shadowMaps.find(light) == shadowMaps.end())
+			{
+				// Position
+				RenderTargetDescriptor gBufferAttachment0Descriptor = RenderTargetDescriptor();
+				gBufferAttachment0Descriptor.format = RENDER_TARGET_FORMAT::R32F;
+				gBufferAttachment0Descriptor.mipmap = true;
+
+				std::vector<RenderTargetDescriptor> gBufferDescriptors;
+				gBufferDescriptors.push_back(gBufferAttachment0Descriptor);
+
+				// Create Shadow Map
+				RenderTarget* shadowMapTarget = new RenderTarget(1024, 1024, gBufferDescriptors);
+				shadowMaps[light] = shadowMapTarget;
+			}
+
+			cb->SetRenderTarget(shadowMaps[light]);
+			cb->SetViewport(glm::vec2(0.0f, 0.0f), glm::vec2(1024.0f, 1024.0f));
+			
+			// cb->SetClearDepth(1.0f);
+			cb->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+			cb->Clear(CLEAR_BIT::COLOR | CLEAR_BIT::DEPTH);
+
+			if (light->GetLightType() == LightType::Spot)
+			{
+				glm::mat4 lightView = glm::inverse(light->GetOwner()->GetLocalToWorldMatrix());
+				glm::mat4 lightProjection = light->GetLightProjection();
+
+				for (auto meshComponent : meshComponents)
+				{
+					auto materials = meshComponent->materials;
+
+					Mesh* mesh = meshComponent->mesh;
+					assert(mesh != nullptr);
+
+					glm::mat4 transformation = meshComponent->GetOwner()->GetLocalToWorldMatrix();
+
+					for (int i = 0; i < mesh->children.size(); i++)
+					{
+						Material* material = nullptr;
+						if (i >= materials.size())
+						{
+							material = materials[0];
+						}
+						else
+						{
+							material = materials[i];
+						}
+
+						if (material->GetPass() != MATERIAL_PASS::DEFERRED)
+						{
+							continue;
+						}
+
+						cb->RenderMeshMVP( shadowMapMaterial, mesh->children[i], transformation, lightView, lightProjection);
+					}
+				}
+			}
+
+			cb->Submit();
+		}
+	}
+}
+
 void DeferredPipeline::Render()
 {
+	//if (!baked)
+	//{
+	//	Bake();
+	//	baked = true;
+	//	return;
+	//}
+
+	BakeShadowMap();
+
 	// Render Deferred Pass
 	RenderDeferredPass();
 	
@@ -276,10 +374,26 @@ void DeferredPipeline::RenderDeferredPass()
 			{
 				lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].Type", 1);
 				lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotAngle", light->GetSpotAngle());
+				lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotEdgeAngle", light->GetSpotEdgeAngle());
 				auto rotationMat = glm::mat3x3(view * light->GetOwner()->GetLocalToWorldMatrix());
 				lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].SpotDir", rotationMat * light->GetSpotDir());
 			}
 			break;
+		}
+
+		bool castShadow = light->GetCastShadow();
+		lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].CastShadow", castShadow);
+		if (castShadow)
+		{
+			// auto rotationMat = glm::mat3x3(light->GetOwner()->GetLocalToWorldMatrix());
+			// auto spotDir = glm::normalize(rotationMat * light->GetSpotDir());
+			glm::mat4 lightView = glm::inverse(light->GetOwner()->GetLocalToWorldMatrix());
+			// glm::mat4 lightView = glm::lookAt(light->GetOwner()->GetPosition(), light->GetOwner()->GetPosition() + spotDir, glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 lightProjection = light->GetLightProjection();
+
+			lightPassMaterial->SetTextureProperty("lights[" + std::to_string(index) + "].ShadowMap", shadowMaps[light]->GetAttachmentTexture(0));
+			lightPassMaterial->SetMatrix4("lights[" + std::to_string(index) + "].LightProjection", lightProjection);
+			lightPassMaterial->SetMatrix4("lights[" + std::to_string(index) + "].LightView", lightView);
 		}
 
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", light->GetLightIntensityColor());
@@ -290,12 +404,15 @@ void DeferredPipeline::RenderDeferredPass()
 
 	for (int i = index; i <= 15; i++)
 	{
+		lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].CastShadow", 0);
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Color", glm::vec3(0.0f));
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].Position", glm::vec3(0.0f));
 		lightPassMaterial->SetInt("lights[" + std::to_string(index) + "].Type", 0);
 		lightPassMaterial->SetFloat("lights[" + std::to_string(index) + "].SpotAngle", 0);
 		lightPassMaterial->SetVector3("lights[" + std::to_string(index) + "].SpotDir", glm::vec3(0.0f));
 	}
+
+	lightPassMaterial->SetMatrix4("invView", invView);
 
 	cb->DisableCullFace();
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, renderTargetProjection, lightPassMaterial);
@@ -473,6 +590,11 @@ void DeferredPipeline::RenderDebugPass()
 	gbufferDebugMaterial->SetTextureProperty("ssrPass", ssrPass->GetAttachmentTexture(0));
 	gbufferDebugMaterial->SetTextureProperty("ssrCombinePass", ssrCombinePass->GetAttachmentTexture(0));
 	gbufferDebugMaterial->SetTextureProperty("backFacePass", backFacePass->GetAttachmentTexture(0));
+
+	if (shadowMaps.size() >= 1)
+	{
+		gbufferDebugMaterial->SetTextureProperty("shadowMap", shadowMaps.begin()->second->GetAttachmentTexture(0));
+	}
 
 	cb->DisableCullFace();
 	cb->RenderQuad(glm::vec2(0.0f, 0.0f), renderTargetSize, camera->GetRenderTargetProjection(), gbufferDebugMaterial);

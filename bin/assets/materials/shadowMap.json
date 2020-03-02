@@ -1,0 +1,13 @@
+{
+    "name": "shadowMap",
+    "shader": "deferred-pbr/shadowMap.json",
+    "pass":"deferred",
+    "properties":
+    [
+    ],
+    "extensions":
+    [
+        "mvp"
+    ]
+}
+

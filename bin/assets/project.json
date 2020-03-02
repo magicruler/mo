@@ -12,7 +12,8 @@
         "renderTargetBlit.json",
         "ssr.json",
         "ssrCombine.json",
-        "meshDepth.json"
+        "meshDepth.json",
+        "shadowMap.json"
     ],
     "layers": [
         {

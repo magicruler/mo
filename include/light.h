@@ -9,6 +9,8 @@ enum class LightType
     Directional = 2
 };
 
+class GPUBuffer;
+
 class Light: public Component
 {
     MO_OBJECT("Light")
@@ -40,6 +42,18 @@ public:
         return this->lightType;
     }
 
+    void SetCastShadow(bool val);
+
+    bool GetCastShadow()
+    {
+        return this->castShadow;
+    }
+
+    glm::mat4 GetLightProjection() const
+    {
+        return glm::perspective(spotAngle * 2.0f + spotEdgeAngle * 2.0f, 1.0f, 0.1f, 1000.0f);
+    }
+
     /*
     Spot Only
     */
@@ -65,16 +79,37 @@ public:
     {
         return this->spotAngle;
     }
-    
+
+    void SetSpotEdgeAngle(float spotEdgeAngle)
+    {
+        this->spotEdgeAngle = glm::radians(spotEdgeAngle);
+    }
+
+    float GetSpotEdgeAngle() const
+    {
+        return this->spotEdgeAngle;
+    }
+
+    void SetShadowUniformBlock();
+
+    GPUBuffer* GetShadowUniformBlock() const
+    {
+        return shadowUniformBlock;
+    }
 
 private:
     
     LightType lightType = LightType::Point;
     float lightIntensity = 1.0f;
     glm::vec3 lightColor = glm::vec3(0.7f, 0.7f, 0.7f);
+    bool castShadow = false;
+
+    GPUBuffer* shadowUniformBlock = nullptr;
+
     /*
     Spot Light Only
     */
     glm::vec3 spotDir = glm::vec3(0.0f, 0.0f, -1.0f);
     float spotAngle = 0.0f;
+    float spotEdgeAngle = glm::radians(10.0f);
 };

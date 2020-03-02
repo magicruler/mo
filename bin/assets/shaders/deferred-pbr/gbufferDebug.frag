@@ -11,6 +11,8 @@ uniform sampler2D lightPass;
 uniform sampler2D ssrPass;
 uniform sampler2D ssrCombinePass;
 uniform sampler2D backFacePass;
+uniform sampler2D shadowMap;
+
 // 1 albedo
 // 2 position
 // 3 normal
@@ -72,5 +74,10 @@ void main()
     else if(debugOption == 10)
     {
         outColor = vec4(-texture(backFacePass, fragUV).r, 0.0, 0.0, 1.0);
+    }
+    else if(debugOption == 11)
+    {
+        float positionColor = -texture(shadowMap, fragUV).x;
+        outColor = vec4(positionColor, 0.0, 0.0, 1.0);
     }
 }

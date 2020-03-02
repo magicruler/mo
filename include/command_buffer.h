@@ -9,11 +9,13 @@ class CommandBuffer;
 class RenderCommand;
 class GPUBuffer;
 class VertexArray;
+class Light;
 
 enum class RENDER_COMMAND_TYPE
 {
 	RENDER_QUAD,
 	RENDER_MESH,
+	RENDER_MESH_MVP,
 	RENDER_SKYBOX,
 	SET_RENDER_TARGET,
 	SET_VIEW_PORT,
@@ -137,6 +139,21 @@ public:
 	glm::mat4 transformation;
 };
 
+class CommandRenderMeshMVP :public RenderCommand
+{
+public:
+	CommandRenderMeshMVP()
+	{
+		commandType = RENDER_COMMAND_TYPE::RENDER_MESH_MVP;
+	}
+
+	Material* material;
+	SubMesh* mesh;
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 projection;
+};
+
 class CommandRenderQuad :public RenderCommand
 {
 public:
@@ -229,6 +246,7 @@ public:
 	void SetClearDepth(float depth);
 	void Clear(unsigned int mask);
 	void RenderMesh(Camera* camera, Material* material, SubMesh* mesh, glm::mat4& transformation);
+	void RenderMeshMVP(Material* material, SubMesh* mesh, glm::mat4& model, glm::mat4& view, glm::mat4& projection);
 	void RenderQuad(const glm::vec2& position, const glm::vec2& size, const glm::mat4& projection, Material* material);
 	void RenderSkyBox(const glm::mat4& view, const glm::mat4& projection);
 	void CopyDepthBuffer(RenderTarget* src, RenderTarget* dst);

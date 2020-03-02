@@ -5,11 +5,15 @@ class Camera;
 class RenderTarget;
 class Texture;
 class Material;
+class Light;
 
 class DeferredPipeline
 {
 public:
 	void Init(Camera* camera);
+
+	void Bake();
+	void BakeShadowMap();
 
 	void Render();
 
@@ -28,6 +32,8 @@ public:
 	int debugOption = 0;
 
 private:
+	bool baked = false;
+
 	Camera* camera = nullptr;
 
 	// Deferred Material
@@ -40,6 +46,9 @@ private:
 
 	// Back Face Material
 	Material* backFaceMaterial = nullptr;
+
+	// Shadow Map Material
+	Material* shadowMapMaterial = nullptr;
 	
 	// Deferred Pass
 	RenderTarget* gBuffer = nullptr;
@@ -51,6 +60,8 @@ private:
 
 	// For Thickness
 	RenderTarget* backFacePass = nullptr;
+
+	std::map<Light*, RenderTarget*> shadowMaps;
 
 	// Texture
 	// TODO Use RenderTarget To Generate Radiance Map

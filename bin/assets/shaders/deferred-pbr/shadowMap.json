@@ -1,0 +1,5 @@
+{
+    "name":"shadowMap",
+    "vert":"deferred-pbr/shadowMap.vert",
+    "frag":"deferred-pbr/shadowMap.frag"
+}

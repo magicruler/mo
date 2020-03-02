@@ -113,7 +113,7 @@ void CommandBuffer::SetClearDepth(float depth)
 	std::shared_ptr<CommandSetClearDepth> cmd = std::make_shared<CommandSetClearDepth>();
 	cmd->depth = depth;
 
-	AddCommand(cmd);
+	// AddCommand(cmd);
 }
 
 void CommandBuffer::SetClearColor(const glm::vec4& color)
@@ -148,6 +148,18 @@ void CommandBuffer::RenderMesh(Camera* camera, Material* material, SubMesh* mesh
 	cmd->material = material;
 	cmd->mesh = mesh;
 	cmd->transformation = transformation;
+
+	AddCommand(cmd);
+}
+
+void CommandBuffer::RenderMeshMVP(Material* material, SubMesh* mesh, glm::mat4& model, glm::mat4& view, glm::mat4& projection)
+{
+	std::shared_ptr<CommandRenderMeshMVP> cmd = std::make_shared<CommandRenderMeshMVP>();
+	cmd->view = view;
+	cmd->material = material;
+	cmd->mesh = mesh;
+	cmd->model = model;
+	cmd->projection = projection;
 
 	AddCommand(cmd);
 }
@@ -302,9 +314,6 @@ void CommandBuffer::Submit()
 			auto mesh = meshCmd->mesh;
 			auto light = lights.front();
 
-			/*spdlog::info("Material:{}, Mesh:{}", material->GetName(), mesh->name);*/
-
-			// material->Use();
 			std::vector<MATERIAL_EXTENSION> extensions = material->GetExtensions();
 			for (auto extension : extensions)
 			{
@@ -358,6 +367,22 @@ void CommandBuffer::Submit()
 			mesh->vertexArray->UnBind();
 		}
 			break;
+		case RENDER_COMMAND_TYPE::RENDER_MESH_MVP:
+		{
+			auto meshCmd = std::static_pointer_cast<CommandRenderMeshMVP>(cmd);
+			auto material = meshCmd->material;
+			auto mesh = meshCmd->mesh;
+
+			material->SetMatrix4("model", meshCmd->model);
+			material->SetMatrix4("view", meshCmd->view);
+			material->SetMatrix4("projection", meshCmd->projection);
+			material->Use();
+
+			mesh->vertexArray->Bind();
+			glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
+			mesh->vertexArray->UnBind();
+		}
+		break;
 		case RENDER_COMMAND_TYPE::SET_CLEAR_COLOR:
 		{
 			auto setCmd = std::static_pointer_cast<CommandSetClearColor>(cmd);

@@ -72,7 +72,8 @@
                     "lightType":"spot",
                     "lightIntensity": 15.0,
                     "lightColor":[3.8, 3.8, 3.8],
-                    "spotAngle":45
+                    "spotAngle":45,
+                    "castShadow": true
                 }
             ],
             "transform":
@@ -103,7 +104,8 @@
                     "type":"light",
                     "lightType":"point",
                     "lightIntensity": 20.0,
-                    "lightColor":[0.2, 0.6, 0.3]
+                    "lightColor":[0.2, 0.6, 0.3],
+                    "castShadow": false
                 }
             ],
             "transform":
