@@ -10,4 +10,7 @@ namespace Configuration
 	void SetFPS(float newFps);
 	std::string GetEntryScene();
 	void SetEntryScene(const std::string& name);
+	std::string GetArg(int index);
+	int GetArgCount();
+	void PushArg(std::string arg);
 }

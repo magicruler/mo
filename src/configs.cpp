@@ -4,6 +4,7 @@ namespace Configuration
 {
 	float fps = 0.0f;
 	std::string entryScene = "";
+	std::vector<std::string> args;
 
 	/*
 	Store Layer Name Value Pair
@@ -36,5 +37,20 @@ namespace Configuration
 	void SetEntryScene(const std::string& name)
 	{
 		entryScene = name;
+	}
+
+	std::string GetArg(int index)
+	{
+		return args[index];
+	}
+
+	int GetArgCount()
+	{
+		return args.size();
+	}
+
+	void PushArg(std::string arg)
+	{
+		args.push_back(arg);
 	}
 }

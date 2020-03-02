@@ -65,12 +65,12 @@
                     [
                         "unlitWhite.json"
                     ],
-                    "mesh": "sphere.json"
+                    "mesh": "light.json"
                 },
                 {
                     "type":"light",
                     "lightType":"spot",
-                    "lightIntensity": 15.0,
+                    "lightIntensity": 22.0,
                     "lightColor":[3.8, 3.8, 3.8],
                     "spotAngle":45,
                     "castShadow": true
@@ -78,7 +78,7 @@
             ],
             "transform":
             {
-                "position":[1.855, 2.682, 4.865],
+                "position":[0.180, 3.644, 9.598],
                 "scale":[1, 1, 1],
                 "rotation":[0, 0.0, 0.0]
             },
@@ -110,7 +110,7 @@
             ],
             "transform":
             {
-                "position":[-3, 2, -3.0],
+                "position":[-15.896, 2, -3.0],
                 "scale":[1, 1, 1],
                 "rotation":[0, 0.0, 0.0]
             },

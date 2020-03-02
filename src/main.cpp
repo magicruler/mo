@@ -39,6 +39,7 @@
 #include <filesystem>
 
 #include "asset_importer.h"
+#include "configs.h"
 
 extern "C" {
     _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -80,10 +81,15 @@ void APIENTRY glDebugOutput(GLenum source,
 
 GLFWwindow *window = nullptr;
 
-int main(int, char **args)
+int main(int argsCount, char **args)
 {
     auto path = args[0];
-	
+
+    for (int i = 0; i < argsCount; i++)
+    {
+        spdlog::info("arg {}: {}", i, args[i]);
+        Configuration::PushArg(args[i]);
+    }
 
 	#ifdef _WIN32
 	auto tokens = StringUtils::Split(path, "\\");
