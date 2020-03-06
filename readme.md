@@ -1,5 +1,7 @@
 # Mo  an interactive rendering engine
 
+It is still at an early development stage!
+
 ![Image](https://github.com/WeakKnight/mo/blob/master/screenshots/enginescreenshot01.png?raw=true)
 ![Image](https://github.com/WeakKnight/mo/blob/master/screenshots/enginescreenshot02.png?raw=true)
 
